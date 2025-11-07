@@ -23,6 +23,18 @@ export default function OnboardingStep1({
   onBack,
   onNext,
 }: OnboardingStep1Props) {
+  const stateOptionsByCountry: Record<string, string[]> = {
+    BD: [
+      "Barishal",
+      "Chattogram",
+      "Dhaka",
+      "Khulna",
+      "Rajshahi",
+      "Rangpur",
+      "Mymensingh",
+      "Sylhet",
+    ],
+  };
   const [formData, setFormData] = useState<OnboardingFormData>({
     firstName: "",
     lastName: "",
@@ -44,21 +56,21 @@ export default function OnboardingStep1({
 
   return (
     <div className="w-full max-w-xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <div className="flex items-center gap-2">
-          <span className="inline-block w-8 h-8 rounded-full bg-linear-to-tr from-blue-500 to-indigo-500" />
-          <span className="font-semibold">Lumos</span>
+      {/* Header - compact single line (leave right edge free for close button) */}
+      <div className="flex items-center justify-between gap-3 mb-4 pr-10">
+        <div className="flex items-center gap-2 text-slate-200">
+          <span className="inline-block w-6 h-6 rounded-full bg-linear-to-tr from-blue-500 to-indigo-500" />
+          <span className="text-sm font-semibold">Lumos</span>
         </div>
-        <div className="flex-1">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium">
-              Step 1 of 5: Basic Information
-            </span>
-            <span className="text-sm text-slate-400">20%</span>
-          </div>
-          <div className="h-1 bg-slate-700 rounded-full overflow-hidden">
-            <div className="h-full w-1/5 bg-linear-to-r from-blue-500 to-indigo-500" />
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <span className="truncate text-xs sm:text-sm font-medium text-slate-200">
+            Step 1 of 5: Basic Information
+          </span>
+          <div className="flex items-center gap-2 ml-auto min-w-[120px]">
+            <div className="w-24 h-1 rounded-full bg-slate-700 overflow-hidden">
+              <div className="h-full w-1/5 bg-linear-to-r from-blue-500 to-indigo-500" />
+            </div>
+            <span className="text-xs text-slate-400">20%</span>
           </div>
         </div>
       </div>
@@ -186,7 +198,7 @@ export default function OnboardingStep1({
           <select
             value={formData.country}
             onChange={(e) =>
-              setFormData({ ...formData, country: e.target.value })
+              setFormData({ ...formData, country: e.target.value, state: "" })
             }
             className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
             required
@@ -196,6 +208,7 @@ export default function OnboardingStep1({
             <option value="">Select Country</option>
             <option value="US">United States</option>
             <option value="CA">Canada</option>
+            <option value="BD">Bangladesh</option>
           </select>
         </div>
 
@@ -215,6 +228,13 @@ export default function OnboardingStep1({
             required
           >
             <option value="">Select State</option>
+            {(stateOptionsByCountry[formData.country] || []).map(
+              (stateName) => (
+                <option key={stateName} value={stateName}>
+                  {stateName}
+                </option>
+              )
+            )}
           </select>
         </div>
 
@@ -242,7 +262,7 @@ export default function OnboardingStep1({
               aria-label="Country code"
               title="Country code"
             >
-              <option value="+1">+1</option>
+              <option value="+880">+880</option>
             </select>
             <input
               type="tel"
