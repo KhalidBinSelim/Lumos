@@ -5,6 +5,9 @@ import OnboardingStep2 from "./OnboardingStep2";
 import OnboardingStep3 from "./OnboardingStep3";
 import OnboardingStep4 from "./OnboardingStep4";
 import OnboardingStep5 from "./OnboardingStep5";
+import Signup from "./Signup";
+import Login from "./Login";
+// import Login from "./Login";
 
 export default function LandingPage() {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
@@ -17,6 +20,8 @@ export default function LandingPage() {
     useState(false);
   const [showOnboardingStep5Modal, setShowOnboardingStep5Modal] =
     useState(false);
+  const [showSignupModal, setShowSignupModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   return (
     <div className="min-h-screen text-slate-100 bg-linear-to-b from-slate-900 via-[#071029] to-black">
@@ -117,6 +122,36 @@ export default function LandingPage() {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Signup Modal */}
+      {showSignupModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80">
+          <div className="relative max-w-xl w-full max-h-[85vh] overflow-y-auto">
+            <Signup
+              onClose={() => setShowSignupModal(false)}
+              onSignIn={() => {
+                setShowSignupModal(false);
+                setShowLoginModal(true); // ✅ Switch to Login modal
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Login Modal */}
+      {showLoginModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80">
+          <div className="relative max-w-xl w-full max-h-[85vh] overflow-y-auto">
+            <Login
+              onClose={() => setShowLoginModal(false)}
+              onSignUp={() => {
+                setShowLoginModal(false);
+                setShowSignupModal(true); // ✅ Switch back to Signup modal
+              }}
+            />
           </div>
         </div>
       )}
@@ -271,6 +306,10 @@ export default function LandingPage() {
             </a>
             <a
               href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                setShowLoginModal(true); // ✅ open Login modal
+              }}
               className="px-4 py-2 rounded-md bg-linear-to-r from-blue-600 to-indigo-500 shadow-md text-white font-semibold hover:scale-[1.01] transition"
             >
               <span className="text-white">Sign in</span>
@@ -860,6 +899,10 @@ export default function LandingPage() {
                 <a
                   href="#signup"
                   className="px-6 py-3 rounded-full bg-linear-to-r from-blue-600 to-indigo-500 text-white font-semibold shadow"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    setShowSignupModal(true);
+                  }}
                 >
                   <span className="text-white">Create free account</span>
                 </a>
