@@ -2,11 +2,20 @@
 import { useState } from "react";
 import OnboardingStep1 from "./OnboardingStep1";
 import OnboardingStep2 from "./OnboardingStep2";
+import OnboardingStep3 from "./OnboardingStep3";
+import OnboardingStep4 from "./OnboardingStep4";
+import OnboardingStep5 from "./OnboardingStep5";
 
 export default function LandingPage() {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
   const [showOnboardingStep2Modal, setShowOnboardingStep2Modal] =
+    useState(false);
+  const [showOnboardingStep3Modal, setShowOnboardingStep3Modal] =
+    useState(false);
+  const [showOnboardingStep4Modal, setShowOnboardingStep4Modal] =
+    useState(false);
+  const [showOnboardingStep5Modal, setShowOnboardingStep5Modal] =
     useState(false);
 
   return (
@@ -155,6 +164,87 @@ export default function LandingPage() {
               }}
               onNext={() => {
                 setShowOnboardingStep2Modal(false);
+                setShowOnboardingStep3Modal(true);
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Onboarding Step 3 Modal */}
+      {showOnboardingStep3Modal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80">
+          <div className="relative max-w-xl w-full max-h-[85vh] overflow-y-auto bg-slate-900 rounded-2xl border border-slate-700 shadow-2xl p-8">
+            <button
+              onClick={() => setShowOnboardingStep3Modal(false)}
+              className="absolute top-3 right-3 p-1.5 rounded-full bg-slate-800/60 border border-slate-700/60 text-slate-400 hover:text-slate-100 hover:bg-slate-700/60 shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
+              aria-label="Close"
+            >
+              <span className="material-symbols-outlined text-lg">close</span>
+            </button>
+            <OnboardingStep3
+              onBack={() => {
+                setShowOnboardingStep3Modal(false);
+                setShowOnboardingStep2Modal(true);
+              }}
+              onNext={() => {
+                setShowOnboardingStep3Modal(false);
+                setShowOnboardingStep4Modal(true);
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Onboarding Step 4 Modal */}
+      {showOnboardingStep4Modal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80">
+          <div className="relative max-w-xl w-full max-h-[85vh] overflow-y-auto bg-slate-900 rounded-2xl border border-slate-700 shadow-2xl p-8">
+            <button
+              onClick={() => setShowOnboardingStep4Modal(false)}
+              className="absolute top-3 right-3 p-1.5 rounded-full bg-slate-800/60 border border-slate-700/60 text-slate-400 hover:text-slate-100 hover:bg-slate-700/60 shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
+              aria-label="Close"
+            >
+              <span className="material-symbols-outlined text-lg">close</span>
+            </button>
+            <OnboardingStep4
+              onBack={() => {
+                setShowOnboardingStep4Modal(false);
+                setShowOnboardingStep3Modal(true);
+              }}
+              onSkip={() => {
+                setShowOnboardingStep4Modal(false);
+              }}
+              onNext={() => {
+                setShowOnboardingStep4Modal(false);
+                setShowOnboardingStep5Modal(true);
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Onboarding Step 5 Modal */}
+      {showOnboardingStep5Modal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80">
+          <div className="relative max-w-xl w-full max-h-[85vh] overflow-y-auto bg-slate-900 rounded-2xl border border-slate-700 shadow-2xl p-8">
+            <button
+              onClick={() => setShowOnboardingStep5Modal(false)}
+              className="absolute top-3 right-3 p-1.5 rounded-full bg-slate-800/60 border border-slate-700/60 text-slate-400 hover:text-slate-100 hover:bg-slate-700/60 shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
+              aria-label="Close"
+            >
+              <span className="material-symbols-outlined text-lg">close</span>
+            </button>
+            <OnboardingStep5
+              onBack={() => {
+                setShowOnboardingStep5Modal(false);
+                setShowOnboardingStep4Modal(true);
+              }}
+              onSkip={() => {
+                setShowOnboardingStep5Modal(false);
+              }}
+              onComplete={() => {
+                setShowOnboardingStep5Modal(false);
               }}
             />
           </div>
