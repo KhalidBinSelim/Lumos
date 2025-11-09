@@ -170,10 +170,10 @@ export default function Topbar() {
                         <div className="w-8 h-8 rounded-full bg-gradient-to-tr 
                   from-blue-500 to-indigo-500 flex items-center 
                   justify-center text-xs font-bold">
-                            J
+                            K
                         </div>
                         <span className="hidden sm:inline text-sm font-medium">
-                            John Doe
+                            Khalid
                         </span>
                         <span className="material-symbols-outlined text-[20px]">
                             expand_more
