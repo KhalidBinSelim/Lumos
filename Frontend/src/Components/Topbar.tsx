@@ -32,7 +32,7 @@ export default function Topbar() {
                 <div className="flex items-center gap-3">
                     <span className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 shadow-lg" />
                     <span className="text-xl font-extrabold tracking-tight text-white select-none">
-                        ScholarScope
+                        LUMOS
                     </span>
                 </div>
 
