@@ -32,7 +32,7 @@ export default function Topbar() {
                 <div className="flex items-center gap-3">
                     <span className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 shadow-lg" />
                     <span className="text-xl font-extrabold tracking-tight text-white select-none">
-                        ScholarScope
+                        LUMOS
                     </span>
                 </div>
 
@@ -170,10 +170,10 @@ export default function Topbar() {
                         <div className="w-8 h-8 rounded-full bg-gradient-to-tr 
                   from-blue-500 to-indigo-500 flex items-center 
                   justify-center text-xs font-bold">
-                            J
+                            K
                         </div>
                         <span className="hidden sm:inline text-sm font-medium">
-                            John Doe
+                            Khalid
                         </span>
                         <span className="material-symbols-outlined text-[20px]">
                             expand_more

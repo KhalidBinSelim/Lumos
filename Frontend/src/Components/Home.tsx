@@ -21,10 +21,10 @@ export default function Home() {
             <section className="rounded-3xl p-8 border border-slate-800 bg-gradient-to-br from-slate-900/60 via-slate-800/50 to-slate-900/30 shadow-[0_0_40px_-10px_rgba(37,99,235,0.2)] backdrop-blur-md">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                  <h1 className="text-3xl font-extrabold text-white tracking-tight">
-                    Welcome back, John! 👋
+                  <h1 className="text-xl font-bold text-white tracking-tight">
+                    Welcome back, Khalid!
                   </h1>
-                  <p className="text-slate-400 text-sm">
+                  <p className="text-slate-400 text-sm text-left">
                     Last login: Today at 9:32 AM
                   </p>
                 </div>
@@ -79,9 +79,7 @@ export default function Home() {
 
             {/* Action Required */}
             <section className="rounded-3xl p-8 border border-slate-800 bg-gradient-to-br from-slate-900/60 via-slate-800/40 to-slate-900/40 shadow-[0_0_40px_-15px_rgba(67,56,202,0.6)] backdrop-blur-md space-y-5">
-              <h2 className="text-xl font-semibold">
-                ⚠️ Actions Required
-              </h2>
+              <h2 className="text-xl font-semibold">⚠️ Actions Required</h2>
 
               <div className="grid gap-4">
                 {[
@@ -119,7 +117,9 @@ export default function Home() {
             {/* Top Matches */}
             <section className="rounded-3xl p-8 border border-slate-800 bg-gradient-to-br from-slate-900/60 via-slate-800/50 to-slate-900/40 shadow-[0_0_40px_-12px_rgba(37,99,235,0.4)]">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold">🔥 Top Matches For You</h2>
+                <h2 className="text-xl font-semibold">
+                  🔥 Top Matches For You
+                </h2>
                 <a
                   href="#"
                   className="text-blue-400 hover:text-blue-300 text-sm"
@@ -180,7 +180,7 @@ export default function Home() {
             </section>
 
             {/* Activity Summary */}
-            <section className="rounded-3xl p-8 border border-slate-800 bg-gradient-to-br from-slate-900/60 to-slate-800/40 backdrop-blur-md shadow-[0_0_40px_-15px_rgba(99,102,241,0.5)]">
+            <section className="rounded-3xl p-8 border border-slate-800 bg-gradient-to-br from-slate-900/60 to-slate-800/40 backdrop-blur-md shadow-[0_0_40px_-15px_rgba(99,102,241,0.5)] text-left">
               <h2 className="text-xl font-semibold mb-5">📊 Recent Activity</h2>
               <div className="grid md:grid-cols-2 gap-6 text-sm text-slate-300">
                 <div>

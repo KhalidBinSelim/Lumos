@@ -55,7 +55,7 @@ export default function OnboardingStep1({
   };
 
   return (
-    <div className="w-full max-w-xl mx-auto">
+    <div className="w-full max-w-xl max-h-[450px] mx-auto">
       {/* Header - compact single line (leave right edge free for close button) */}
       <div className="flex items-center justify-between gap-3 mb-4 pr-10">
         <div className="flex items-center gap-2 text-slate-200">
