@@ -227,27 +227,27 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
     <div className="w-full max-w-xl max-h-[450px] mx-auto">
       {/* Header - compact single line */}
       <div className="flex items-center justify-between gap-3 mb-4 pr-10">
-        <div className="flex items-center gap-2 text-slate-200">
-          <span className="inline-block w-6 h-6 rounded-full bg-linear-to-tr from-blue-500 to-indigo-500" />
+        <div className="flex items-center gap-2 text-[var(--color-text-primary)]">
+          <span className="inline-block w-6 h-6 rounded-full bg-gradient-to-tr from-[var(--color-primary-500)] to-[var(--color-primary-600)]" />
           <span className="text-sm font-semibold">Lumos</span>
         </div>
         <div className="flex items-center gap-3 flex-1 min-w-0">
-          <span className="truncate text-xs sm:text-sm font-medium text-slate-200">
+          <span className="truncate text-xs sm:text-sm font-medium text-[var(--color-text-primary)]">
             Step 3 of 5: Activities & Interests
           </span>
           <div className="flex items-center gap-2 ml-auto min-w-[120px]">
-            <div className="w-24 h-1 rounded-full bg-slate-700 overflow-hidden">
-              <div className="h-full w-3/5 bg-linear-to-r from-blue-500 to-indigo-500" />
+            <div className="w-24 h-1 rounded-full bg-[var(--color-bg-secondary)] overflow-hidden">
+              <div className="h-full w-3/5 bg-gradient-to-r from-[var(--color-primary-500)] to-[var(--color-primary-600)]" />
             </div>
-            <span className="text-xs text-slate-400">60%</span>
+            <span className="text-xs text-[var(--color-text-secondary)]">60%</span>
           </div>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="text-center">
-          <h2 className="text-xl font-bold">What are you passionate about?</h2>
-          <p className="mt-1 text-slate-400 text-sm">This helps us find scholarships tailored to you</p>
+          <h2 className="text-xl font-bold text-[var(--color-text-primary)]">What are you passionate about?</h2>
+          <p className="mt-1 text-[var(--color-text-secondary)] text-sm">This helps us find scholarships tailored to you</p>
         </div>
 
         {/* Error message */}
@@ -258,30 +258,30 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
         )}
 
         {/* Interests */}
-        <section className="rounded-xl border border-slate-700 bg-slate-800/50 p-4">
+        <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-primary)]/50 p-4">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold">Interests</h3>
+            <h3 className="text-sm font-semibold text-[var(--color-text-primary)]">Interests</h3>
             <div className="relative">
               <button
                 type="button"
                 onClick={() => setShowInterestMenu((s) => !s)}
-                className="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200 hover:border-slate-600 transition text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-[var(--color-text-primary)] hover:border-[var(--color-text-secondary)] transition text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isSubmitting}
               >
                 + Add Interest
               </button>
               {showInterestMenu && (
-                <div className="absolute right-0 mt-2 w-56 max-h-60 overflow-auto rounded-lg border border-slate-700 bg-slate-900 shadow-xl z-10">
+                <div className="absolute right-0 mt-2 w-56 max-h-60 overflow-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)] shadow-xl z-10">
                   <div className="p-2">
                     <button
                       type="button"
                       onClick={addCustomInterest}
-                      className="w-full text-left px-2 py-1.5 rounded-md text-blue-300 hover:bg-slate-800 text-sm"
+                      className="w-full text-left px-2 py-1.5 rounded-md text-[var(--color-primary-400)] hover:bg-[var(--color-bg-primary)] text-sm"
                     >
                       + Create custom interest
                     </button>
                   </div>
-                  <div className="border-t border-slate-800" />
+                  <div className="border-t border-[var(--color-border)]" />
                   {interestOptions.map((opt) => {
                     const active = selectedInterests.includes(opt);
                     return (
@@ -289,7 +289,7 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
                         key={opt}
                         type="button"
                         onClick={() => toggleInterest(opt)}
-                        className={`w-full text-left px-3 py-2 text-sm hover:bg-slate-800 ${active ? "text-blue-300" : "text-slate-200"}`}
+                        className={`w-full text-left px-3 py-2 text-sm hover:bg-[var(--color-bg-primary)] ${active ? "text-[var(--color-primary-400)]" : "text-[var(--color-text-primary)]"}`}
                       >
                         {active ? "✓ " : ""}
                         {opt}
@@ -304,12 +304,12 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
           {/* Selected chips */}
           <div className="flex flex-wrap gap-2">
             {selectedInterests.map((i) => (
-              <span key={i} className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-700/60 border border-slate-600 text-sm">
+              <span key={i} className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[var(--color-bg-secondary)]/60 border border-[var(--color-border)] text-sm text-[var(--color-text-primary)]">
                 {i}
                 <button 
                   type="button" 
                   onClick={() => toggleInterest(i)} 
-                  className="text-slate-300 hover:text-white disabled:opacity-50"
+                  className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] disabled:opacity-50"
                   disabled={isSubmitting}
                 >
                   ×
@@ -317,17 +317,17 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
               </span>
             ))}
           </div>
-          <div className="mt-2 text-xs text-slate-400">💡 Select at least 3 for better matches</div>
+          <div className="mt-2 text-xs text-[var(--color-text-secondary)]">💡 Select at least 3 for better matches</div>
         </section>
 
         {/* Extracurricular Activities */}
-        <section className="rounded-xl border border-slate-700 bg-slate-800/50 p-4">
+        <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-primary)]/50 p-4">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold">Extracurricular Activities</h3>
+            <h3 className="text-sm font-semibold text-[var(--color-text-primary)]">Extracurricular Activities</h3>
             <button
               type="button"
               onClick={addActivity}
-              className="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200 hover:border-slate-600 transition text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-[var(--color-text-primary)] hover:border-[var(--color-text-secondary)] transition text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isSubmitting}
             >
               + Add Activity
@@ -336,16 +336,16 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
 
           <div className="space-y-3">
             {activities.map((a) => (
-              <div key={a.id} className="rounded-lg border border-slate-700 bg-slate-900/50">
+              <div key={a.id} className="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)]/50">
                 <div className="flex items-center justify-between px-4 py-3">
-                  <div className="font-medium truncate">
-                    Activity: {a.name || <span className="text-slate-500">Untitled</span>}
+                  <div className="font-medium truncate text-[var(--color-text-primary)]">
+                    Activity: {a.name || <span className="text-[var(--color-text-secondary)]">Untitled</span>}
                   </div>
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => updateActivity(a.id, { expanded: !a.expanded })}
-                      className="text-sm text-slate-300 hover:text-white disabled:opacity-50"
+                      className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] disabled:opacity-50"
                       disabled={isSubmitting}
                     >
                       {a.expanded ? "Collapse ▲" : "Expand ▼"}
@@ -363,55 +363,55 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
                 {a.expanded && (
                   <div className="px-4 pb-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-medium mb-1">Activity</label>
+                      <label className="block text-xs font-medium mb-1 text-[var(--color-text-secondary)]">Activity</label>
                       <input
                         type="text"
                         value={a.name}
                         onChange={(e) => updateActivity(a.id, { name: e.target.value })}
-                        className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
+                        className="w-full px-3 py-2 rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border)] text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)] focus:border-[var(--color-primary-500)] focus:ring-1 focus:ring-[var(--color-primary-500)] outline-none transition"
                         placeholder="e.g., Debate Team"
                         disabled={isSubmitting}
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium mb-1">Role</label>
+                      <label className="block text-xs font-medium mb-1 text-[var(--color-text-secondary)]">Role</label>
                       <input
                         type="text"
                         value={a.role}
                         onChange={(e) => updateActivity(a.id, { role: e.target.value })}
-                        className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
+                        className="w-full px-3 py-2 rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border)] text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)] focus:border-[var(--color-primary-500)] focus:ring-1 focus:ring-[var(--color-primary-500)] outline-none transition"
                         placeholder="e.g., Captain"
                         disabled={isSubmitting}
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium mb-1">Years</label>
+                      <label className="block text-xs font-medium mb-1 text-[var(--color-text-secondary)]">Years</label>
                       <input
                         type="text"
                         value={a.years}
                         onChange={(e) => updateActivity(a.id, { years: e.target.value })}
-                        className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
+                        className="w-full px-3 py-2 rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border)] text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)] focus:border-[var(--color-primary-500)] focus:ring-1 focus:ring-[var(--color-primary-500)] outline-none transition"
                         placeholder="e.g., 2 years"
                         disabled={isSubmitting}
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium mb-1">Hours/week</label>
+                      <label className="block text-xs font-medium mb-1 text-[var(--color-text-secondary)]">Hours/week</label>
                       <input
                         type="number"
                         value={a.hoursPerWeek}
                         onChange={(e) => updateActivity(a.id, { hoursPerWeek: e.target.value })}
-                        className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
+                        className="w-full px-3 py-2 rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border)] text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)] focus:border-[var(--color-primary-500)] focus:ring-1 focus:ring-[var(--color-primary-500)] outline-none transition"
                         placeholder="e.g., 5"
                         disabled={isSubmitting}
                       />
                     </div>
                     <div className="sm:col-span-2">
-                      <label className="block text-xs font-medium mb-1">Description</label>
+                      <label className="block text-xs font-medium mb-1 text-[var(--color-text-secondary)]">Description</label>
                       <textarea
                         value={a.description}
                         onChange={(e) => updateActivity(a.id, { description: e.target.value })}
-                        className="w-full min-h-[80px] px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
+                        className="w-full min-h-[80px] px-3 py-2 rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border)] text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)] focus:border-[var(--color-primary-500)] focus:ring-1 focus:ring-[var(--color-primary-500)] outline-none transition"
                         placeholder="What did you accomplish?"
                         disabled={isSubmitting}
                       />
@@ -424,13 +424,13 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
         </section>
 
         {/* Honors & Awards */}
-        <section className="rounded-xl border border-slate-700 bg-slate-800/50 p-4">
+        <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-primary)]/50 p-4">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold">Honors & Awards (Optional)</h3>
+            <h3 className="text-sm font-semibold text-[var(--color-text-primary)]">Honors & Awards (Optional)</h3>
             <button
               type="button"
               onClick={addAward}
-              className="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200 hover:border-slate-600 transition text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-[var(--color-text-primary)] hover:border-[var(--color-text-secondary)] transition text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isSubmitting}
             >
               + Add Award
@@ -438,8 +438,8 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
           </div>
           <ul className="space-y-2">
             {awards.map((a) => (
-              <li key={a.id} className="flex items-center justify-between rounded-md border border-slate-700 bg-slate-900/50 px-3 py-2">
-                <span className="text-sm">• {a.title}</span>
+              <li key={a.id} className="flex items-center justify-between rounded-md border border-[var(--color-border)] bg-[var(--color-bg-secondary)]/50 px-3 py-2">
+                <span className="text-sm text-[var(--color-text-primary)]">• {a.title}</span>
                 <button 
                   type="button" 
                   onClick={() => deleteAward(a.id)} 
@@ -454,13 +454,13 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
         </section>
 
         {/* Work Experience */}
-        <section className="rounded-xl border border-slate-700 bg-slate-800/50 p-4">
+        <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-primary)]/50 p-4">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold">Work Experience (Optional)</h3>
+            <h3 className="text-sm font-semibold text-[var(--color-text-primary)]">Work Experience (Optional)</h3>
             <button
               type="button"
               onClick={addJob}
-              className="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200 hover:border-slate-600 transition text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-[var(--color-text-primary)] hover:border-[var(--color-text-secondary)] transition text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isSubmitting}
             >
               + Add Job
@@ -468,47 +468,47 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
           </div>
           <div className="space-y-3">
             {jobs.map((j) => (
-              <div key={j.id} className="rounded-lg border border-slate-700 bg-slate-900/50 p-3">
+              <div key={j.id} className="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)]/50 p-3">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-medium mb-1">Job Title</label>
+                    <label className="block text-xs font-medium mb-1 text-[var(--color-text-secondary)]">Job Title</label>
                     <input
                       type="text"
                       value={j.title}
                       onChange={(e) => updateJob(j.id, { title: e.target.value })}
-                      className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
+                      className="w-full px-3 py-2 rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border)] text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)] focus:border-[var(--color-primary-500)] focus:ring-1 focus:ring-[var(--color-primary-500)] outline-none transition"
                       placeholder="e.g., Tutor"
                       disabled={isSubmitting}
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium mb-1">Organization</label>
+                    <label className="block text-xs font-medium mb-1 text-[var(--color-text-secondary)]">Organization</label>
                     <input
                       type="text"
                       value={j.organization}
                       onChange={(e) => updateJob(j.id, { organization: e.target.value })}
-                      className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
+                      className="w-full px-3 py-2 rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border)] text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)] focus:border-[var(--color-primary-500)] focus:ring-1 focus:ring-[var(--color-primary-500)] outline-none transition"
                       placeholder="e.g., Local Community Center"
                       disabled={isSubmitting}
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium mb-1">Duration</label>
+                    <label className="block text-xs font-medium mb-1 text-[var(--color-text-secondary)]">Duration</label>
                     <input
                       type="text"
                       value={j.duration}
                       onChange={(e) => updateJob(j.id, { duration: e.target.value })}
-                      className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
+                      className="w-full px-3 py-2 rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border)] text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)] focus:border-[var(--color-primary-500)] focus:ring-1 focus:ring-[var(--color-primary-500)] outline-none transition"
                       placeholder="e.g., Jun 2023 - Aug 2024"
                       disabled={isSubmitting}
                     />
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="block text-xs font-medium mb-1">Description</label>
+                    <label className="block text-xs font-medium mb-1 text-[var(--color-text-secondary)]">Description</label>
                     <textarea
                       value={j.description}
                       onChange={(e) => updateJob(j.id, { description: e.target.value })}
-                      className="w-full min-h-[80px] px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
+                      className="w-full min-h-[80px] px-3 py-2 rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border)] text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)] focus:border-[var(--color-primary-500)] focus:ring-1 focus:ring-[var(--color-primary-500)] outline-none transition"
                       placeholder="What did you do and achieve?"
                       disabled={isSubmitting}
                     />
@@ -534,7 +534,7 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
           <button
             type="button"
             onClick={onBack}
-            className="px-6 py-2 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-600 transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2 rounded-lg border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-text-primary)] transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isSubmitting}
           >
             <span className="material-symbols-outlined text-sm">arrow_back</span>
@@ -542,7 +542,7 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
           </button>
           <button
             type="submit"
-            className="px-6 py-2 rounded-lg bg-linear-to-r from-blue-600 to-indigo-500 text-white font-semibold hover:scale-[1.02] transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2 rounded-lg bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-500)] text-white font-semibold hover:scale-[1.02] transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isSubmitting}
           >
             {isSubmitting ? 'Saving...' : 'Save & Continue'}

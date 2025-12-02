@@ -93,9 +93,9 @@ export default function ScholarshipDetails(): React.ReactElement {
 
     // match color class
     const matchGradient = matchScore >= 85
-        ? "from-blue-400 to-indigo-400"
+        ? "from-[var(--color-primary-400)] to-[var(--color-primary-500)]"
         : matchScore >= 70
-            ? "from-green-400 to-emerald-400"
+            ? "from-[var(--color-primary-400)] to-[var(--color-primary-500)]"
             : matchScore >= 50
                 ? "from-orange-400 to-amber-300"
                 : "from-rose-400 to-pink-400";
@@ -174,14 +174,14 @@ export default function ScholarshipDetails(): React.ReactElement {
     // Loading state
     if (loading) {
         return (
-            <div className="flex flex-col h-screen w-screen bg-gradient-to-b from-slate-950 via-[#08122f] to-black text-slate-100 overflow-hidden font-sans">
+            <div className="flex flex-col h-screen w-screen bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] overflow-hidden font-sans transition-colors duration-300">
                 <Topbar />
                 <div className="flex flex-1 overflow-hidden relative">
                     <Sidebar />
                     <main className="flex-1 flex items-center justify-center">
                         <div className="text-center">
-                            <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                            <p className="text-slate-400">Loading scholarship details...</p>
+                            <div className="w-12 h-12 border-4 border-[var(--color-primary-500)] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                            <p className="text-[var(--color-text-secondary)]">Loading scholarship details...</p>
                         </div>
                     </main>
                 </div>
@@ -192,18 +192,18 @@ export default function ScholarshipDetails(): React.ReactElement {
     // Error state
     if (error || !scholarship) {
         return (
-            <div className="flex flex-col h-screen w-screen bg-gradient-to-b from-slate-950 via-[#08122f] to-black text-slate-100 overflow-hidden font-sans">
+            <div className="flex flex-col h-screen w-screen bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] overflow-hidden font-sans transition-colors duration-300">
                 <Topbar />
                 <div className="flex flex-1 overflow-hidden relative">
                     <Sidebar />
                     <main className="flex-1 flex items-center justify-center">
                         <div className="text-center max-w-md p-6">
                             <div className="text-5xl mb-4">⚠️</div>
-                            <h2 className="text-xl font-bold text-white mb-2">Unable to Load Scholarship</h2>
-                            <p className="text-slate-400 mb-6">{error || "Scholarship not found."}</p>
+                            <h2 className="text-xl font-bold text-[var(--color-text-primary)] mb-2">Unable to Load Scholarship</h2>
+                            <p className="text-[var(--color-text-secondary)] mb-6">{error || "Scholarship not found."}</p>
                             <Link
                                 to="/home"
-                                className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-xl transition inline-block"
+                                className="px-6 py-3 bg-[var(--color-primary-600)] hover:bg-[var(--color-primary-500)] text-white font-medium rounded-xl transition inline-block"
                             >
                                 Back to Home
                             </Link>
@@ -215,7 +215,7 @@ export default function ScholarshipDetails(): React.ReactElement {
     }
 
     return (
-        <div className="flex flex-col h-screen w-screen bg-gradient-to-b from-slate-950 via-[#08122f] to-black text-slate-100 overflow-hidden font-sans">
+        <div className="flex flex-col h-screen w-screen bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] overflow-hidden font-sans transition-colors duration-300">
             <Topbar />
             <div className="flex flex-1 overflow-hidden relative">
                 <Sidebar 
@@ -227,18 +227,18 @@ export default function ScholarshipDetails(): React.ReactElement {
                 <main className="flex-1 overflow-y-auto relative pb-24">
                     {/* background glow */}
                     <div className="absolute inset-0 pointer-events-none sticky top-0">
-                        <div className="absolute -top-28 -left-36 w-96 h-96 bg-blue-500/20 blur-[200px] rounded-full" />
-                        <div className="absolute bottom-0 right-0 w-[500px] h-[400px] bg-indigo-500/20 blur-[200px] rounded-full" />
+                        <div className="absolute -top-28 -left-36 w-96 h-96 bg-[var(--color-primary-500)]/20 blur-[200px] rounded-full" />
+                        <div className="absolute bottom-0 right-0 w-[500px] h-[400px] bg-[var(--color-secondary-500)]/20 blur-[200px] rounded-full" />
                     </div>
 
                     <div className="relative z-10 max-w-4xl mx-auto p-4 sm:p-6 space-y-6">
                         {/* Header */}
                         <div className="flex items-start justify-between">
                             <div>
-                                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">{scholarship.title}</h1>
-                                <p className="text-slate-400 mt-1 text-lg">{scholarship.org}</p>
+                                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text-primary)]">{scholarship.title}</h1>
+                                <p className="text-[var(--color-text-secondary)] mt-1 text-lg">{scholarship.org}</p>
                                 {scholarship.website && (
-                                    <a href={scholarship.website} target="_blank" rel="noreferrer" className="text-blue-400 hover:text-blue-300 text-sm flex items-center gap-1 mt-1">
+                                    <a href={scholarship.website} target="_blank" rel="noreferrer" className="text-[var(--color-primary-500)] hover:text-[var(--color-primary-600)] text-sm flex items-center gap-1 mt-1">
                                         🔗 {scholarship.website.replace(/^https?:\/\//, "")}
                                     </a>
                                 )}
@@ -246,44 +246,44 @@ export default function ScholarshipDetails(): React.ReactElement {
                             <div className="flex items-center gap-3">
                                 <button
                                     onClick={() => setSaved((v) => !v)}
-                                    className={`p-2 rounded-full transition ${saved ? "bg-pink-600 text-white" : "bg-slate-800 text-slate-400 hover:text-white"}`}
+                                    className={`p-2 rounded-full transition ${saved ? "bg-pink-600 text-white" : "bg-[var(--color-bg-primary)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"}`}
                                     title="Save"
                                 >
                                     ❤️
                                 </button>
                                 <button
                                     onClick={handleShare}
-                                    className="px-4 py-2 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-medium transition"
+                                    className="px-4 py-2 rounded-full bg-[var(--color-bg-primary)] hover:bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] text-sm font-medium transition border border-[var(--color-border)]"
                                 >
                                     Share ⬆️
                                 </button>
-                                <Link to="/home" className="px-3 py-2 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition">
+                                <Link to="/home" className="px-3 py-2 rounded-full bg-[var(--color-bg-primary)] hover:bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition border border-[var(--color-border)]">
                                     ✕ Close
                                 </Link>
                             </div>
                         </div>
 
                         {/* Stats Box */}
-                        <div className="rounded-2xl border border-slate-700 bg-slate-900/60 p-6 backdrop-blur-sm">
+                        <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-6 backdrop-blur-sm">
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                                 <div>
-                                    <div className="text-sm text-slate-400 mb-1">💰 Amount</div>
-                                    <div className="text-xl font-bold text-white">{formattedAmount}</div>
+                                    <div className="text-sm text-[var(--color-text-secondary)] mb-1">💰 Amount</div>
+                                    <div className="text-xl font-bold text-[var(--color-text-primary)]">{formattedAmount}</div>
                                 </div>
                                 <div>
-                                    <div className="text-sm text-slate-400 mb-1">📅 Deadline</div>
-                                    <div className="text-xl font-bold text-white">{deadlineInfo.formatted}</div>
+                                    <div className="text-sm text-[var(--color-text-secondary)] mb-1">📅 Deadline</div>
+                                    <div className="text-xl font-bold text-[var(--color-text-primary)]">{deadlineInfo.formatted}</div>
                                 </div>
                                 <div>
-                                    <div className="text-sm text-slate-400 mb-1">🔄 Renewable</div>
-                                    <div className="text-lg font-medium text-slate-200">{scholarship.renewable ? "Yes" : "No"}</div>
+                                    <div className="text-sm text-[var(--color-text-secondary)] mb-1">🔄 Renewable</div>
+                                    <div className="text-lg font-medium text-[var(--color-text-primary)]">{scholarship.renewable ? "Yes" : "No"}</div>
                                 </div>
                                 <div>
-                                    <div className="text-sm text-slate-400 mb-1">🌍 Location</div>
-                                    <div className="text-lg font-medium text-slate-200">{scholarship.region || scholarship.location || "National"}</div>
+                                    <div className="text-sm text-[var(--color-text-secondary)] mb-1">🌍 Location</div>
+                                    <div className="text-lg font-medium text-[var(--color-text-primary)]">{scholarship.region || scholarship.location || "National"}</div>
                                 </div>
                             </div>
-                            <div className="mt-4 pt-4 border-t border-slate-800 flex flex-wrap gap-6 text-sm text-slate-400">
+                            <div className="mt-4 pt-4 border-t border-[var(--color-border)] flex flex-wrap gap-6 text-sm text-[var(--color-text-secondary)]">
                                 {scholarship.applicantsPerYear && <span>👥 ~{scholarship.applicantsPerYear} applicants/year</span>}
                                 {scholarship.awardsPerYear && <span>🏆 {scholarship.awardsPerYear} awards given</span>}
                             </div>
@@ -294,32 +294,32 @@ export default function ScholarshipDetails(): React.ReactElement {
                             <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-2">
                                     <span className="text-yellow-400">⭐</span>
-                                    <span className="font-bold text-white">YOUR MATCH: {matchScore}%</span>
+                                    <span className="font-bold text-[var(--color-text-primary)]">YOUR MATCH: {matchScore}%</span>
                                 </div>
-                                <span className={`font-medium ${matchScore >= 80 ? "text-emerald-400" : matchScore >= 60 ? "text-amber-400" : "text-slate-400"}`}>
+                                <span className={`font-medium ${matchScore >= 80 ? "text-[var(--color-primary-500)]" : matchScore >= 60 ? "text-amber-400" : "text-[var(--color-text-secondary)]"}`}>
                                     {matchScore >= 80 ? "High" : matchScore >= 60 ? "Medium" : "Low"}
                                 </span>
                             </div>
-                            <div className="h-4 bg-slate-800 rounded-full overflow-hidden">
+                            <div className="h-4 bg-[var(--color-bg-primary)] rounded-full overflow-hidden">
                                 <div
                                     className={`h-full bg-gradient-to-r ${matchGradient}`}
                                     style={{ width: `${matchPct}%` }}
                                 />
                             </div>
-                            <p className="text-slate-400 text-sm mt-2">🎯 Based on your profile match with scholarship requirements</p>
+                            <p className="text-[var(--color-text-secondary)] text-sm mt-2">🎯 Based on your profile match with scholarship requirements</p>
                         </div>
 
                         {/* Why You're a Great Fit - only show if notes exist */}
                         {scholarship.notes && (scholarship.notes.whyFit?.length || scholarship.notes.improve?.length) ? (
-                            <div className="rounded-2xl border border-slate-700 bg-slate-900/40 p-6">
+                            <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-secondary)]/40 p-6">
                                 {scholarship.notes.whyFit && scholarship.notes.whyFit.length > 0 && (
                                     <>
-                                        <h3 className="text-lg font-semibold text-white mb-4">✅ WHY YOU'RE A GREAT FIT</h3>
+                                        <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4">✅ WHY YOU'RE A GREAT FIT</h3>
                                         <div className="space-y-3">
                                             {scholarship.notes.whyFit.map((item, i) => (
                                                 <div key={i} className="flex items-start gap-3">
-                                                    <span className="text-emerald-400 mt-0.5">✓</span>
-                                                    <span className="text-slate-300">{item}</span>
+                                                    <span className="text-[var(--color-primary-500)] mt-0.5">✓</span>
+                                                    <span className="text-[var(--color-text-primary)]">{item}</span>
                                                 </div>
                                             ))}
                                         </div>
@@ -327,7 +327,7 @@ export default function ScholarshipDetails(): React.ReactElement {
                                 )}
 
                                 {scholarship.notes.improve && scholarship.notes.improve.length > 0 && (
-                                    <div className={scholarship.notes.whyFit?.length ? "mt-6 pt-6 border-t border-slate-800" : ""}>
+                                    <div className={scholarship.notes.whyFit?.length ? "mt-6 pt-6 border-t border-[var(--color-border)]" : ""}>
                                         <h4 className="text-sm font-semibold text-amber-400 mb-3 flex items-center gap-2">
                                             ⚠️ IMPROVE YOUR MATCH:
                                         </h4>
@@ -335,11 +335,11 @@ export default function ScholarshipDetails(): React.ReactElement {
                                             {scholarship.notes.improve.map((item, i) => (
                                                 <div key={i} className="flex items-start gap-3">
                                                     <span className="text-amber-400/60 mt-1">•</span>
-                                                    <span className="text-slate-300">{item}</span>
+                                                    <span className="text-[var(--color-text-primary)]">{item}</span>
                                                 </div>
                                             ))}
                                         </div>
-                                        <button className="mt-4 text-sm text-blue-400 hover:text-blue-300 font-medium">
+                                        <button className="mt-4 text-sm text-[var(--color-primary-500)] hover:text-[var(--color-primary-600)] font-medium">
                                             [Add to Profile]
                                         </button>
                                     </div>
@@ -360,8 +360,8 @@ export default function ScholarshipDetails(): React.ReactElement {
                                         key={t.id}
                                         onClick={() => setActiveTab(t.id as any)}
                                         className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition ${activeTab === t.id
-                                            ? "bg-slate-100 text-slate-900"
-                                            : "bg-slate-800/50 text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                                            ? "bg-[var(--color-text-primary)] text-[var(--color-bg-primary)]"
+                                            : "bg-[var(--color-bg-primary)] text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)] hover:text-[var(--color-text-primary)]"
                                             }`}
                                     >
                                         {t.label}
@@ -373,9 +373,9 @@ export default function ScholarshipDetails(): React.ReactElement {
                                 {activeTab === "overview" && (
                                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                         <section>
-                                            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">About This Scholarship</h3>
+                                            <h3 className="text-sm font-bold text-[var(--color-text-secondary)] uppercase tracking-wider mb-4">About This Scholarship</h3>
                                             <div className="prose prose-invert max-w-none">
-                                                <p className="text-slate-300 leading-relaxed">
+                                                <p className="text-[var(--color-text-primary)] leading-relaxed">
                                                     {scholarship.description || `The ${scholarship.title} is offered by ${scholarship.org} to support students in achieving their educational goals.`}
                                                 </p>
                                             </div>
@@ -383,11 +383,11 @@ export default function ScholarshipDetails(): React.ReactElement {
 
                                         {scholarship.eligibility && scholarship.eligibility.length > 0 && (
                                             <section>
-                                                <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Eligibility Criteria</h3>
+                                                <h3 className="text-sm font-bold text-[var(--color-text-secondary)] uppercase tracking-wider mb-4">Eligibility Criteria</h3>
                                                 <ul className="space-y-2">
                                                     {scholarship.eligibility.map((e, i) => (
-                                                        <li key={i} className="flex items-start gap-3 text-slate-300">
-                                                            <span className="text-blue-500 mt-1">✓</span>
+                                                        <li key={i} className="flex items-start gap-3 text-[var(--color-text-primary)]">
+                                                            <span className="text-[var(--color-primary-500)] mt-1">✓</span>
                                                             {e}
                                                         </li>
                                                     ))}
@@ -397,11 +397,11 @@ export default function ScholarshipDetails(): React.ReactElement {
 
                                         {scholarship.awardDetails && scholarship.awardDetails.length > 0 && (
                                             <section>
-                                                <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Award Details</h3>
+                                                <h3 className="text-sm font-bold text-[var(--color-text-secondary)] uppercase tracking-wider mb-4">Award Details</h3>
                                                 <ul className="space-y-2">
                                                     {scholarship.awardDetails.map((a, i) => (
-                                                        <li key={i} className="flex items-start gap-3 text-slate-300">
-                                                            <span className="text-blue-500 mt-1">•</span>
+                                                        <li key={i} className="flex items-start gap-3 text-[var(--color-text-primary)]">
+                                                            <span className="text-[var(--color-primary-500)] mt-1">•</span>
                                                             {a}
                                                         </li>
                                                     ))}
@@ -411,15 +411,15 @@ export default function ScholarshipDetails(): React.ReactElement {
 
                                         {scholarship.competition && (
                                             <section>
-                                                <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Competition Analysis</h3>
-                                                <div className="rounded-2xl bg-slate-900/50 border border-slate-800 p-6">
+                                                <h3 className="text-sm font-bold text-[var(--color-text-secondary)] uppercase tracking-wider mb-4">Competition Analysis</h3>
+                                                <div className="rounded-2xl bg-[var(--color-bg-secondary)] border border-[var(--color-border)] p-6">
                                                     {scholarship.competition.acceptanceRate && (
                                                         <div className="mb-4">
                                                             <div className="flex justify-between text-sm mb-2">
-                                                                <span className="text-slate-300">Acceptance Rate: {scholarship.competition.acceptanceRate}</span>
+                                                                <span className="text-[var(--color-text-primary)]">Acceptance Rate: {scholarship.competition.acceptanceRate}</span>
                                                                 <span className="text-rose-400 font-medium">Highly Competitive</span>
                                                             </div>
-                                                            <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                                                            <div className="h-2 bg-[var(--color-bg-primary)] rounded-full overflow-hidden">
                                                                 <div className="h-full bg-rose-500 w-[4%]" />
                                                             </div>
                                                         </div>
@@ -427,20 +427,20 @@ export default function ScholarshipDetails(): React.ReactElement {
 
                                                     {scholarship.competition.similarProfile && scholarship.competition.similarProfile.length > 0 && (
                                                         <div className="space-y-3">
-                                                            <p className="text-sm font-medium text-slate-300">Similar profiles that won:</p>
+                                                            <p className="text-sm font-medium text-[var(--color-text-primary)]">Similar profiles that won:</p>
                                                             <ul className="space-y-1 ml-4">
                                                                 {scholarship.competition.similarProfile.map((p, i) => (
-                                                                    <li key={i} className="text-sm text-slate-400 list-disc">{p}</li>
+                                                                    <li key={i} className="text-sm text-[var(--color-text-secondary)] list-disc">{p}</li>
                                                                 ))}
                                                             </ul>
                                                         </div>
                                                     )}
 
                                                     {scholarship.competition.percentile && (
-                                                        <div className="mt-4 pt-4 border-t border-slate-800 flex items-center gap-3">
+                                                        <div className="mt-4 pt-4 border-t border-[var(--color-border)] flex items-center gap-3">
                                                             <span className="text-yellow-400">💡</span>
-                                                            <p className="text-sm text-slate-300">
-                                                                Your profile is stronger than <span className="font-bold text-white">{scholarship.competition.percentile}%</span> of past winners
+                                                            <p className="text-sm text-[var(--color-text-primary)]">
+                                                                Your profile is stronger than <span className="font-bold text-[var(--color-text-primary)]">{scholarship.competition.percentile}%</span> of past winners
                                                             </p>
                                                         </div>
                                                     )}
@@ -450,45 +450,45 @@ export default function ScholarshipDetails(): React.ReactElement {
 
                                         {scholarship.orgInfo && (
                                             <section>
-                                                <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Organization Info</h3>
+                                                <h3 className="text-sm font-bold text-[var(--color-text-secondary)] uppercase tracking-wider mb-4">Organization Info</h3>
                                                 <div className="grid sm:grid-cols-2 gap-4 text-sm">
                                                     <div>
-                                                        <div className="text-slate-500">Organization</div>
-                                                        <div className="text-slate-200 font-medium">{scholarship.org}</div>
+                                                        <div className="text-[var(--color-text-secondary)]">Organization</div>
+                                                        <div className="text-[var(--color-text-primary)] font-medium">{scholarship.org}</div>
                                                     </div>
                                                     {scholarship.orgInfo.type && (
                                                         <div>
-                                                            <div className="text-slate-500">Type</div>
-                                                            <div className="text-slate-200 font-medium">{scholarship.orgInfo.type}</div>
+                                                            <div className="text-[var(--color-text-secondary)]">Type</div>
+                                                            <div className="text-[var(--color-text-primary)] font-medium">{scholarship.orgInfo.type}</div>
                                                         </div>
                                                     )}
                                                     {scholarship.orgInfo.founded && (
                                                         <div>
-                                                            <div className="text-slate-500">Founded</div>
-                                                            <div className="text-slate-200 font-medium">{scholarship.orgInfo.founded}</div>
+                                                            <div className="text-[var(--color-text-secondary)]">Founded</div>
+                                                            <div className="text-[var(--color-text-primary)] font-medium">{scholarship.orgInfo.founded}</div>
                                                         </div>
                                                     )}
                                                     {scholarship.orgInfo.totalAwarded && (
                                                         <div>
-                                                            <div className="text-slate-500">Total Scholarships Awarded</div>
-                                                            <div className="text-slate-200 font-medium">{scholarship.orgInfo.totalAwarded}</div>
+                                                            <div className="text-[var(--color-text-secondary)]">Total Scholarships Awarded</div>
+                                                            <div className="text-[var(--color-text-primary)] font-medium">{scholarship.orgInfo.totalAwarded}</div>
                                                         </div>
                                                     )}
                                                     {scholarship.orgInfo.contact && (
                                                         <div>
-                                                            <div className="text-slate-500">Contact</div>
-                                                            <div className="text-slate-200 font-medium">{scholarship.orgInfo.contact}</div>
+                                                            <div className="text-[var(--color-text-secondary)]">Contact</div>
+                                                            <div className="text-[var(--color-text-primary)] font-medium">{scholarship.orgInfo.contact}</div>
                                                         </div>
                                                     )}
                                                     {scholarship.orgInfo.phone && (
                                                         <div>
-                                                            <div className="text-slate-500">Phone</div>
-                                                            <div className="text-slate-200 font-medium">{scholarship.orgInfo.phone}</div>
+                                                            <div className="text-[var(--color-text-secondary)]">Phone</div>
+                                                            <div className="text-[var(--color-text-primary)] font-medium">{scholarship.orgInfo.phone}</div>
                                                         </div>
                                                     )}
                                                 </div>
                                                 {scholarship.verified && (
-                                                    <div className="mt-6 flex items-center gap-2 text-xs text-slate-500">
+                                                    <div className="mt-6 flex items-center gap-2 text-xs text-[var(--color-text-secondary)]">
                                                         <span>🔒 Verified by Lumos</span>
                                                     </div>
                                                 )}
@@ -500,10 +500,10 @@ export default function ScholarshipDetails(): React.ReactElement {
                                 {activeTab === "requirements" && (
                                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                         <section>
-                                            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Application Checklist</h3>
-                                            <div className="rounded-2xl bg-slate-900/50 border border-slate-800 overflow-hidden">
-                                                <div className="bg-slate-800/50 px-6 py-3 border-b border-slate-800">
-                                                    <h4 className="font-semibold text-slate-200">REQUIRED DOCUMENTS</h4>
+                                            <h3 className="text-sm font-bold text-[var(--color-text-secondary)] uppercase tracking-wider mb-4">Application Checklist</h3>
+                                            <div className="rounded-2xl bg-[var(--color-bg-secondary)] border border-[var(--color-border)] overflow-hidden">
+                                                <div className="bg-[var(--color-bg-primary)]/50 px-6 py-3 border-b border-[var(--color-border)]">
+                                                    <h4 className="font-semibold text-[var(--color-text-primary)]">REQUIRED DOCUMENTS</h4>
                                                 </div>
                                                 <div className="p-6 space-y-6">
                                                     {[
@@ -515,13 +515,13 @@ export default function ScholarshipDetails(): React.ReactElement {
                                                     ].map((item, i) => (
                                                         <div key={i} className="flex gap-4">
                                                             <div className="mt-1">
-                                                                <div className="w-5 h-5 rounded border border-slate-600" />
+                                                                <div className="w-5 h-5 rounded border border-[var(--color-border)]" />
                                                             </div>
                                                             <div className="flex-1">
-                                                                <div className="font-medium text-slate-200">{item.label}</div>
-                                                                <div className="text-sm text-slate-400 mt-1">{item.sub}</div>
-                                                                {item.status && <div className="text-sm text-emerald-400 mt-1">{item.status}</div>}
-                                                                <div className="mt-2 text-sm text-blue-400 font-medium cursor-pointer hover:text-blue-300">
+                                                                <div className="font-medium text-[var(--color-text-primary)]">{item.label}</div>
+                                                                <div className="text-sm text-[var(--color-text-secondary)] mt-1">{item.sub}</div>
+                                                                {item.status && <div className="text-sm text-[var(--color-primary-500)] mt-1">{item.status}</div>}
+                                                                <div className="mt-2 text-sm text-[var(--color-primary-500)] font-medium cursor-pointer hover:text-[var(--color-primary-600)]">
                                                                     {item.action}
                                                                 </div>
                                                             </div>
@@ -530,9 +530,9 @@ export default function ScholarshipDetails(): React.ReactElement {
                                                 </div>
                                             </div>
 
-                                            <div className="rounded-2xl bg-slate-900/50 border border-slate-800 overflow-hidden mt-6">
-                                                <div className="bg-slate-800/50 px-6 py-3 border-b border-slate-800">
-                                                    <h4 className="font-semibold text-slate-200">OPTIONAL MATERIALS (Strengthen Application)</h4>
+                                            <div className="rounded-2xl bg-[var(--color-bg-secondary)] border border-[var(--color-border)] overflow-hidden mt-6">
+                                                <div className="bg-[var(--color-bg-primary)]/50 px-6 py-3 border-b border-[var(--color-border)]">
+                                                    <h4 className="font-semibold text-[var(--color-text-primary)]">OPTIONAL MATERIALS (Strengthen Application)</h4>
                                                 </div>
                                                 <div className="p-6 space-y-3">
                                                     {[
@@ -542,8 +542,8 @@ export default function ScholarshipDetails(): React.ReactElement {
                                                         "Community service verification"
                                                     ].map((item, i) => (
                                                         <div key={i} className="flex gap-4 items-center">
-                                                            <div className="w-5 h-5 rounded border border-slate-600" />
-                                                            <span className="text-slate-300">{item}</span>
+                                                            <div className="w-5 h-5 rounded border border-[var(--color-border)]" />
+                                                            <span className="text-[var(--color-text-primary)]">{item}</span>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -551,13 +551,13 @@ export default function ScholarshipDetails(): React.ReactElement {
                                         </section>
 
                                         <section>
-                                            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Submission Method</h3>
-                                            <ul className="space-y-2 text-slate-300">
-                                                <li className="flex items-center gap-2"><span className="text-slate-500">•</span> Online via Tech Foundation portal</li>
-                                                <li className="flex items-center gap-2"><span className="text-slate-500">•</span> All materials must be submitted by 11:59 PM EST</li>
-                                                <li className="flex items-center gap-2"><span className="text-slate-500">•</span> Incomplete applications will not be reviewed</li>
+                                            <h3 className="text-sm font-bold text-[var(--color-text-secondary)] uppercase tracking-wider mb-4">Submission Method</h3>
+                                            <ul className="space-y-2 text-[var(--color-text-primary)]">
+                                                <li className="flex items-center gap-2"><span className="text-[var(--color-text-secondary)]">•</span> Online via Tech Foundation portal</li>
+                                                <li className="flex items-center gap-2"><span className="text-[var(--color-text-secondary)]">•</span> All materials must be submitted by 11:59 PM EST</li>
+                                                <li className="flex items-center gap-2"><span className="text-[var(--color-text-secondary)]">•</span> Incomplete applications will not be reviewed</li>
                                             </ul>
-                                            <button className="mt-4 text-blue-400 hover:text-blue-300 font-medium text-sm">
+                                            <button className="mt-4 text-[var(--color-primary-500)] hover:text-[var(--color-primary-600)] font-medium text-sm">
                                                 [Download Complete Requirements PDF]
                                             </button>
                                         </section>
@@ -567,37 +567,37 @@ export default function ScholarshipDetails(): React.ReactElement {
                                 {activeTab === "essay" && (
                                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                         <section>
-                                            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Essay Requirement</h3>
-                                            <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
+                                            <h3 className="text-sm font-bold text-[var(--color-text-secondary)] uppercase tracking-wider mb-4">Essay Requirement</h3>
+                                            <div className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-2xl p-6">
                                                 <div className="flex items-center gap-2 mb-4">
                                                     <span className="text-xl">📝</span>
-                                                    <h4 className="font-semibold text-white">
+                                                    <h4 className="font-semibold text-[var(--color-text-primary)]">
                                                         Personal Statement
                                                         {scholarship.essayWordCount && (scholarship.essayWordCount.min || scholarship.essayWordCount.max) && (
-                                                            <span className="font-normal text-slate-400 ml-2">
+                                                            <span className="font-normal text-[var(--color-text-secondary)] ml-2">
                                                                 ({scholarship.essayWordCount.min || 0}-{scholarship.essayWordCount.max || '?'} words)
                                                             </span>
                                                         )}
                                                     </h4>
                                                 </div>
                                                 {scholarship.essayPrompt ? (
-                                                    <div className="bg-slate-800/50 rounded-xl p-4 mb-6">
-                                                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2">Prompt</span>
-                                                        <p className="text-slate-200 italic">"{scholarship.essayPrompt}"</p>
+                                                    <div className="bg-[var(--color-bg-primary)]/50 rounded-xl p-4 mb-6">
+                                                        <span className="text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider block mb-2">Prompt</span>
+                                                        <p className="text-[var(--color-text-primary)] italic">"{scholarship.essayPrompt}"</p>
                                                     </div>
                                                 ) : (
-                                                    <div className="bg-slate-800/50 rounded-xl p-4 mb-6">
-                                                        <p className="text-slate-400">Essay prompt will be provided upon application.</p>
+                                                    <div className="bg-[var(--color-bg-primary)]/50 rounded-xl p-4 mb-6">
+                                                        <p className="text-[var(--color-text-secondary)]">Essay prompt will be provided upon application.</p>
                                                     </div>
                                                 )}
 
                                                 {scholarship.essayCriteria && scholarship.essayCriteria.length > 0 && (
                                                     <div>
-                                                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2">Evaluation Criteria</span>
+                                                        <span className="text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider block mb-2">Evaluation Criteria</span>
                                                         <ul className="space-y-2">
                                                             {scholarship.essayCriteria.map((c, i) => (
-                                                                <li key={i} className="flex items-start gap-2 text-slate-300 text-sm">
-                                                                    <span className="text-blue-500">•</span>
+                                                                <li key={i} className="flex items-start gap-2 text-[var(--color-text-primary)] text-sm">
+                                                                    <span className="text-[var(--color-primary-500)]">•</span>
                                                                     {c}
                                                                 </li>
                                                             ))}
@@ -608,26 +608,26 @@ export default function ScholarshipDetails(): React.ReactElement {
                                         </section>
 
                                         <section>
-                                            <div className="bg-gradient-to-br from-blue-900/20 to-indigo-900/20 border border-blue-500/30 rounded-2xl p-6">
+                                            <div className="bg-gradient-to-br from-[var(--color-primary-900)]/20 to-[var(--color-secondary-900)]/20 border border-[var(--color-primary-500)]/30 rounded-2xl p-6">
                                                 <div className="flex items-start gap-4">
-                                                    <div className="p-3 bg-blue-500/20 rounded-xl">
+                                                    <div className="p-3 bg-[var(--color-primary-500)]/20 rounded-xl">
                                                         <span className="text-2xl">💡</span>
                                                     </div>
                                                     <div>
-                                                        <h4 className="font-bold text-white text-lg">AI ESSAY ASSISTANT</h4>
-                                                        <p className="text-slate-300 mt-1 mb-4">
+                                                        <h4 className="font-bold text-[var(--color-text-primary)] text-lg">AI ESSAY ASSISTANT</h4>
+                                                        <p className="text-[var(--color-text-primary)] mt-1 mb-4">
                                                             Let our AI help you craft a compelling essay that showcases your unique story while staying true to your voice.
                                                         </p>
                                                         <div className="space-y-2 mb-4">
                                                             {["Brainstorm ideas from your profile", "Create an outline", "Generate first draft", "Refine and personalize"].map((item, i) => (
-                                                                <div key={i} className="flex items-center gap-2 text-sm text-slate-300">
-                                                                    <span className="text-blue-400">✓</span> {item}
+                                                                <div key={i} className="flex items-center gap-2 text-sm text-[var(--color-text-primary)]">
+                                                                    <span className="text-[var(--color-primary-500)]">✓</span> {item}
                                                                 </div>
                                                             ))}
                                                         </div>
                                                         <button
                                                             onClick={() => setAiOpen(true)}
-                                                            className="px-5 py-2.5 bg-white text-blue-900 font-bold rounded-full hover:bg-blue-50 transition shadow-lg shadow-blue-900/20"
+                                                            className="px-5 py-2.5 bg-white text-[var(--color-primary-900)] font-bold rounded-full hover:bg-[var(--color-primary-100)] transition shadow-lg shadow-[var(--color-primary-500)]/20"
                                                         >
                                                             Start Essay with AI Copilot →
                                                         </button>
@@ -637,19 +637,19 @@ export default function ScholarshipDetails(): React.ReactElement {
                                         </section>
 
                                         <section>
-                                            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Tips From Past Winners</h3>
+                                            <h3 className="text-sm font-bold text-[var(--color-text-secondary)] uppercase tracking-wider mb-4">Tips From Past Winners</h3>
                                             <div className="space-y-4">
                                                 {[
                                                     { quote: "Be specific about your project idea. Judges want to see concrete plans, not vague aspirations.", author: "Sarah J." },
                                                     { quote: "Connect your personal story to your tech goals. What experiences shaped your vision?", author: "Marcus T." },
                                                     { quote: "Show, don't tell. Use examples from your leadership roles to demonstrate your capabilities.", author: "Priya K." }
                                                 ].map((tip, i) => (
-                                                    <div key={i} className="bg-slate-900/30 border border-slate-800 rounded-xl p-4">
-                                                        <p className="text-slate-300 italic mb-2">" {tip.quote} "</p>
-                                                        <p className="text-slate-500 text-sm text-right">- {tip.author}</p>
+                                                    <div key={i} className="bg-[var(--color-bg-primary)]/30 border border-[var(--color-border)] rounded-xl p-4">
+                                                        <p className="text-[var(--color-text-primary)] italic mb-2">" {tip.quote} "</p>
+                                                        <p className="text-[var(--color-text-secondary)] text-sm text-right">- {tip.author}</p>
                                                     </div>
                                                 ))}
-                                                <button className="text-blue-400 hover:text-blue-300 text-sm font-medium">
+                                                <button className="text-[var(--color-primary-500)] hover:text-[var(--color-primary-600)] text-sm font-medium">
                                                     [View More Examples]
                                                 </button>
                                             </div>
@@ -660,8 +660,8 @@ export default function ScholarshipDetails(): React.ReactElement {
                                 {activeTab === "timeline" && (
                                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                         <section>
-                                            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Key Dates</h3>
-                                            <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 space-y-6">
+                                            <h3 className="text-sm font-bold text-[var(--color-text-secondary)] uppercase tracking-wider mb-4">Key Dates</h3>
+                                            <div className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-2xl p-6 space-y-6">
                                                 {scholarship.timeline && scholarship.timeline.length > 0 ? (
                                                     scholarship.timeline.map((t, i) => {
                                                         const date = new Date(t.date);
@@ -669,17 +669,17 @@ export default function ScholarshipDetails(): React.ReactElement {
                                                         return (
                                                             <div key={i} className="flex gap-4">
                                                                 <div className="flex-shrink-0 w-12 text-center">
-                                                                    <div className="text-xs text-slate-500 uppercase font-bold">{date.toLocaleString('default', { month: 'short' })}</div>
-                                                                    <div className="text-xl font-bold text-white">{date.getDate()}</div>
+                                                                    <div className="text-xs text-[var(--color-text-secondary)] uppercase font-bold">{date.toLocaleString('default', { month: 'short' })}</div>
+                                                                    <div className="text-xl font-bold text-[var(--color-text-primary)]">{date.getDate()}</div>
                                                                 </div>
-                                                                <div className="flex-1 pb-6 border-l border-slate-800 pl-6 relative last:pb-0 last:border-l-0">
-                                                                    <div className={`absolute left-[-5px] top-1 w-2.5 h-2.5 rounded-full ${isPast ? "bg-emerald-500" : "bg-slate-600"}`} />
-                                                                    <h4 className="font-medium text-white">{t.label}</h4>
-                                                                    <p className="text-sm text-slate-400 mt-0.5">
+                                                                <div className="flex-1 pb-6 border-l border-[var(--color-border)] pl-6 relative last:pb-0 last:border-l-0">
+                                                                    <div className={`absolute left-[-5px] top-1 w-2.5 h-2.5 rounded-full ${isPast ? "bg-[var(--color-primary-500)]" : "bg-[var(--color-bg-primary)]"}`} />
+                                                                    <h4 className="font-medium text-[var(--color-text-primary)]">{t.label}</h4>
+                                                                    <p className="text-sm text-[var(--color-text-secondary)] mt-0.5">
                                                                         {isPast ? "✅ Completed" : `⏰ ${Math.ceil((date.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days away`}
                                                                     </p>
                                                                     {!isPast && i === 1 && (
-                                                                        <button onClick={downloadICS} className="text-blue-400 hover:text-blue-300 text-sm font-medium mt-2">
+                                                                        <button onClick={downloadICS} className="text-[var(--color-primary-500)] hover:text-[var(--color-primary-600)] text-sm font-medium mt-2">
                                                                             [Add to Calendar]
                                                                         </button>
                                                                     )}
@@ -690,17 +690,17 @@ export default function ScholarshipDetails(): React.ReactElement {
                                                 ) : (
                                                     <div className="flex gap-4">
                                                         <div className="flex-shrink-0 w-12 text-center">
-                                                            <div className="text-xs text-slate-500 uppercase font-bold">{deadlineInfo.dateObj.toLocaleString('default', { month: 'short' })}</div>
-                                                            <div className="text-xl font-bold text-white">{deadlineInfo.dateObj.getDate()}</div>
+                                                            <div className="text-xs text-[var(--color-text-secondary)] uppercase font-bold">{deadlineInfo.dateObj.toLocaleString('default', { month: 'short' })}</div>
+                                                            <div className="text-xl font-bold text-[var(--color-text-primary)]">{deadlineInfo.dateObj.getDate()}</div>
                                                         </div>
                                                         <div className="flex-1 pb-6 pl-6 relative">
-                                                            <div className={`absolute left-[-5px] top-1 w-2.5 h-2.5 rounded-full ${deadlineInfo.isPast ? "bg-emerald-500" : "bg-slate-600"}`} />
-                                                            <h4 className="font-medium text-white">Application Deadline</h4>
-                                                            <p className="text-sm text-slate-400 mt-0.5">
+                                                            <div className={`absolute left-[-5px] top-1 w-2.5 h-2.5 rounded-full ${deadlineInfo.isPast ? "bg-[var(--color-primary-500)]" : "bg-[var(--color-bg-primary)]"}`} />
+                                                            <h4 className="font-medium text-[var(--color-text-primary)]">Application Deadline</h4>
+                                                            <p className="text-sm text-[var(--color-text-secondary)] mt-0.5">
                                                                 {deadlineInfo.isPast ? "✅ Completed" : `⏰ ${deadlineInfo.daysLeft} days away`}
                                                             </p>
                                                             {!deadlineInfo.isPast && (
-                                                                <button onClick={downloadICS} className="text-blue-400 hover:text-blue-300 text-sm font-medium mt-2">
+                                                                <button onClick={downloadICS} className="text-[var(--color-primary-500)] hover:text-[var(--color-primary-600)] text-sm font-medium mt-2">
                                                                     [Add to Calendar]
                                                                 </button>
                                                             )}
@@ -711,7 +711,7 @@ export default function ScholarshipDetails(): React.ReactElement {
                                         </section>
 
                                         <section>
-                                            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Recommended Application Schedule</h3>
+                                            <h3 className="text-sm font-bold text-[var(--color-text-secondary)] uppercase tracking-wider mb-4">Recommended Application Schedule</h3>
                                             <div className="space-y-4">
                                                 {[
                                                     { time: "4 weeks before deadline (Jan 18)", tasks: ["Complete application form", "Request letters of recommendation", "Order official transcripts"] },
@@ -722,11 +722,11 @@ export default function ScholarshipDetails(): React.ReactElement {
                                                     <div key={i} className="flex gap-4">
                                                         <span className="text-lg">📌</span>
                                                         <div>
-                                                            <div className="font-medium text-slate-200">{item.time}</div>
+                                                            <div className="font-medium text-[var(--color-text-primary)]">{item.time}</div>
                                                             <ul className="mt-1 space-y-1">
                                                                 {item.tasks.map((task, j) => (
-                                                                    <li key={j} className="text-sm text-slate-400 flex items-center gap-2">
-                                                                        <span className="w-1 h-1 bg-slate-500 rounded-full" />
+                                                                    <li key={j} className="text-sm text-[var(--color-text-secondary)] flex items-center gap-2">
+                                                                        <span className="w-1 h-1 bg-[var(--color-text-secondary)] rounded-full" />
                                                                         {task}
                                                                     </li>
                                                                 ))}
@@ -735,33 +735,33 @@ export default function ScholarshipDetails(): React.ReactElement {
                                                     </div>
                                                 ))}
                                                 <div className="flex gap-4 mt-4 pl-9">
-                                                    <button className="text-blue-400 hover:text-blue-300 text-sm font-medium">[Create Personalized Schedule]</button>
-                                                    <button onClick={downloadICS} className="text-blue-400 hover:text-blue-300 text-sm font-medium">[Add All to Calendar]</button>
+                                                    <button className="text-[var(--color-primary-500)] hover:text-[var(--color-primary-600)] text-sm font-medium">[Create Personalized Schedule]</button>
+                                                    <button onClick={downloadICS} className="text-[var(--color-primary-500)] hover:text-[var(--color-primary-600)] text-sm font-medium">[Add All to Calendar]</button>
                                                 </div>
                                             </div>
                                         </section>
 
                                         <section>
-                                            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Automated Reminders</h3>
-                                            <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
-                                                <p className="text-slate-300 mb-4">Get notified about important deadlines</p>
+                                            <h3 className="text-sm font-bold text-[var(--color-text-secondary)] uppercase tracking-wider mb-4">Automated Reminders</h3>
+                                            <div className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-2xl p-6">
+                                                <p className="text-[var(--color-text-primary)] mb-4">Get notified about important deadlines</p>
                                                 <div className="space-y-3">
                                                     <label className="flex items-center gap-3 cursor-pointer">
-                                                        <input type="checkbox" checked={reminders.email} onChange={(e) => setReminders(r => ({ ...r, email: e.target.checked }))} className="w-5 h-5 rounded border-slate-600 bg-slate-800 text-blue-500 focus:ring-blue-500/40" />
-                                                        <span className="text-slate-200">Email reminders</span>
+                                                        <input type="checkbox" checked={reminders.email} onChange={(e) => setReminders(r => ({ ...r, email: e.target.checked }))} className="w-5 h-5 rounded border-[var(--color-border)] bg-[var(--color-bg-primary)] text-[var(--color-primary-500)] focus:ring-[var(--color-primary-500)]/40" />
+                                                        <span className="text-[var(--color-text-primary)]">Email reminders</span>
                                                     </label>
                                                     <label className="flex items-center gap-3 cursor-pointer">
-                                                        <input type="checkbox" checked={reminders.sms} onChange={(e) => setReminders(r => ({ ...r, sms: e.target.checked }))} className="w-5 h-5 rounded border-slate-600 bg-slate-800 text-blue-500 focus:ring-blue-500/40" />
-                                                        <span className="text-slate-200">SMS reminders (optional)</span>
+                                                        <input type="checkbox" checked={reminders.sms} onChange={(e) => setReminders(r => ({ ...r, sms: e.target.checked }))} className="w-5 h-5 rounded border-[var(--color-border)] bg-[var(--color-bg-primary)] text-[var(--color-primary-500)] focus:ring-[var(--color-primary-500)]/40" />
+                                                        <span className="text-[var(--color-text-primary)]">SMS reminders (optional)</span>
                                                     </label>
                                                     <label className="flex items-center gap-3 cursor-pointer">
-                                                        <input type="checkbox" checked={reminders.push} onChange={(e) => setReminders(r => ({ ...r, push: e.target.checked }))} className="w-5 h-5 rounded border-slate-600 bg-slate-800 text-blue-500 focus:ring-blue-500/40" />
-                                                        <span className="text-slate-200">Push notifications</span>
+                                                        <input type="checkbox" checked={reminders.push} onChange={(e) => setReminders(r => ({ ...r, push: e.target.checked }))} className="w-5 h-5 rounded border-[var(--color-border)] bg-[var(--color-bg-primary)] text-[var(--color-primary-500)] focus:ring-[var(--color-primary-500)]/40" />
+                                                        <span className="text-[var(--color-text-primary)]">Push notifications</span>
                                                     </label>
                                                 </div>
 
-                                                <div className="mt-6 pt-6 border-t border-slate-800">
-                                                    <span className="text-sm font-medium text-slate-400 block mb-3">Remind me:</span>
+                                                <div className="mt-6 pt-6 border-t border-[var(--color-border)]">
+                                                    <span className="text-sm font-medium text-[var(--color-text-secondary)] block mb-3">Remind me:</span>
                                                     <div className="flex flex-wrap gap-2">
                                                         {[
                                                             { label: "2 weeks before deadline", key: "twoWeeks" },
@@ -769,7 +769,7 @@ export default function ScholarshipDetails(): React.ReactElement {
                                                             { label: "3 days before deadline", key: "threeDays" },
                                                             { label: "1 day before deadline", key: "oneDay" }
                                                         ].map((opt) => (
-                                                            <label key={opt.key} className={`px-3 py-1.5 rounded-full text-sm cursor-pointer transition ${reminders[opt.key as keyof typeof reminders] ? "bg-blue-500/20 text-blue-300 border border-blue-500/30" : "bg-slate-800 text-slate-400 border border-transparent"}`}>
+                                                            <label key={opt.key} className={`px-3 py-1.5 rounded-full text-sm cursor-pointer transition ${reminders[opt.key as keyof typeof reminders] ? "bg-[var(--color-primary-500)]/20 text-[var(--color-primary-500)] border border-[var(--color-primary-500)]/30" : "bg-[var(--color-bg-primary)] text-[var(--color-text-secondary)] border border-transparent"}`}>
                                                                 <input type="checkbox" className="hidden" checked={reminders[opt.key as keyof typeof reminders] as boolean} onChange={(e) => setReminders(r => ({ ...r, [opt.key]: e.target.checked }))} />
                                                                 {reminders[opt.key as keyof typeof reminders] && "✓ "}
                                                                 {opt.label}
@@ -778,7 +778,7 @@ export default function ScholarshipDetails(): React.ReactElement {
                                                     </div>
                                                 </div>
 
-                                                <button className="mt-6 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-sm font-medium transition">
+                                                <button className="mt-6 px-4 py-2 bg-[var(--color-bg-primary)] hover:bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] rounded-lg text-sm font-medium transition border border-[var(--color-border)]">
                                                     Save Preferences
                                                 </button>
                                             </div>
@@ -788,16 +788,16 @@ export default function ScholarshipDetails(): React.ReactElement {
                             </div>
                         </div>
                         {/* Action Buttons */}
-                        <div className="flex flex-col sm:flex-row items-center justify-end gap-4 mt-8 pt-8 border-t border-slate-800">
+                        <div className="flex flex-col sm:flex-row items-center justify-end gap-4 mt-8 pt-8 border-t border-[var(--color-border)]">
                             <button
                                 onClick={() => setSaved((v) => !v)}
-                                className={`w-full sm:w-auto px-6 py-3 rounded-xl font-semibold transition flex items-center justify-center gap-2 ${saved ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-slate-800 text-white hover:bg-slate-700"}`}
+                                className={`w-full sm:w-auto px-6 py-3 rounded-xl font-semibold transition flex items-center justify-center gap-2 ${saved ? "bg-[var(--color-primary-500)]/10 text-[var(--color-primary-500)] border border-[var(--color-primary-500)]/20" : "bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-secondary)] border border-[var(--color-border)]"}`}
                             >
                                 {saved ? "❤️ Saved" : "❤️ Save for Later"}
                             </button>
                             <button
                                 onClick={() => alert("Start application flow")}
-                                className="w-full sm:w-auto px-8 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold shadow-lg shadow-blue-900/20 hover:scale-[1.02] transition flex items-center justify-center gap-2"
+                                className="w-full sm:w-auto px-8 py-3 rounded-xl bg-[var(--color-primary-600)] hover:bg-[var(--color-primary-500)] text-white font-bold shadow-lg shadow-[var(--color-primary-500)]/20 hover:scale-[1.02] transition flex items-center justify-center gap-2"
                             >
                                 Start Application →
                             </button>
@@ -809,32 +809,32 @@ export default function ScholarshipDetails(): React.ReactElement {
             {/* AI Modal */}
             {aiOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="w-full max-w-2xl p-6 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl">
+                    <div className="w-full max-w-2xl p-6 rounded-3xl bg-[var(--color-bg-secondary)] border border-[var(--color-border)] shadow-2xl">
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-blue-500/20 rounded-lg">
+                                <div className="p-2 bg-[var(--color-primary-500)]/20 rounded-lg">
                                     <span className="text-xl">✨</span>
                                 </div>
-                                <h3 className="text-xl font-bold text-white">AI Essay Assistant</h3>
+                                <h3 className="text-xl font-bold text-[var(--color-text-primary)]">AI Essay Assistant</h3>
                             </div>
-                            <button onClick={() => setAiOpen(false)} className="p-2 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white transition">✕</button>
+                            <button onClick={() => setAiOpen(false)} className="p-2 rounded-full hover:bg-[var(--color-bg-primary)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition">✕</button>
                         </div>
 
                         <div className="space-y-6">
-                            <p className="text-slate-300">We'll help you brainstorm and create an outline. Use quick notes to personalize suggestions.</p>
+                            <p className="text-[var(--color-text-primary)]">We'll help you brainstorm and create an outline. Use quick notes to personalize suggestions.</p>
 
                             <div className="grid sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="text-sm font-medium text-slate-400 block mb-2">Tone</label>
-                                    <select className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-blue-500 outline-none transition">
+                                    <label className="text-sm font-medium text-[var(--color-text-secondary)] block mb-2">Tone</label>
+                                    <select className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-xl p-3 text-[var(--color-text-primary)] focus:border-[var(--color-primary-500)] outline-none transition">
                                         <option>Authentic</option>
                                         <option>Professional</option>
                                         <option>Passionate</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-slate-400 block mb-2">Focus</label>
-                                    <select className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 focus:border-blue-500 outline-none transition">
+                                    <label className="text-sm font-medium text-[var(--color-text-secondary)] block mb-2">Focus</label>
+                                    <select className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-xl p-3 text-[var(--color-text-primary)] focus:border-[var(--color-primary-500)] outline-none transition">
                                         <option>Leadership</option>
                                         <option>Community Impact</option>
                                         <option>Personal Growth</option>
@@ -843,17 +843,17 @@ export default function ScholarshipDetails(): React.ReactElement {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-400 mb-2">Quick notes to include</label>
+                                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">Quick notes to include</label>
                                 <textarea
-                                    className="w-full bg-slate-950 border border-slate-800 p-4 rounded-xl text-slate-200 placeholder:text-slate-600 focus:border-blue-500 outline-none transition resize-none"
+                                    className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border)] p-4 rounded-xl text-[var(--color-text-primary)] placeholder:text-[var(--color-text-secondary)] focus:border-[var(--color-primary-500)] outline-none transition resize-none"
                                     placeholder="e.g., led campus hackathon, volunteered at local CS club..."
                                     rows={3}
                                 />
                             </div>
 
                             <div className="flex justify-end gap-3 pt-2">
-                                <button className="px-6 py-3 rounded-xl text-slate-300 hover:bg-slate-800 font-medium transition" onClick={() => setAiOpen(false)}>Cancel</button>
-                                <button className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold shadow-lg shadow-blue-900/20 hover:scale-[1.02] transition" onClick={generateOutline}>Generate Outline</button>
+                                <button className="px-6 py-3 rounded-xl text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-primary)] font-medium transition" onClick={() => setAiOpen(false)}>Cancel</button>
+                                <button className="px-6 py-3 rounded-xl bg-[var(--color-primary-600)] hover:bg-[var(--color-primary-500)] text-white font-bold shadow-lg shadow-[var(--color-primary-500)]/20 hover:scale-[1.02] transition" onClick={generateOutline}>Generate Outline</button>
                             </div>
                         </div>
                     </div>

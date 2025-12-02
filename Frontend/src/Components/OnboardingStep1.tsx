@@ -104,25 +104,25 @@ export default function OnboardingStep1({
     <div className="w-full max-w-xl max-h-[450px] mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between gap-3 mb-4 pr-10">
-        <div className="flex items-center gap-2 text-slate-200">
-          <span className="inline-block w-6 h-6 rounded-full bg-linear-to-tr from-blue-500 to-indigo-500" />
+        <div className="flex items-center gap-2 text-[var(--color-text-primary)]">
+          <span className="inline-block w-6 h-6 rounded-full bg-gradient-to-tr from-[var(--color-primary-500)] to-[var(--color-primary-600)]" />
           <span className="text-sm font-semibold">Lumos</span>
         </div>
         <div className="flex items-center gap-3 flex-1 min-w-0">
-          <span className="truncate text-xs sm:text-sm font-medium text-slate-200">
+          <span className="truncate text-xs sm:text-sm font-medium text-[var(--color-text-primary)]">
             Step 1 of 5: Basic Information
           </span>
           <div className="flex items-center gap-2 ml-auto min-w-[120px]">
-            <div className="w-24 h-1 rounded-full bg-slate-700 overflow-hidden">
-              <div className="h-full w-1/5 bg-linear-to-r from-blue-500 to-indigo-500" />
+            <div className="w-24 h-1 rounded-full bg-[var(--color-bg-secondary)] overflow-hidden">
+              <div className="h-full w-1/5 bg-gradient-to-r from-[var(--color-primary-500)] to-[var(--color-primary-600)]" />
             </div>
-            <span className="text-xs text-slate-400">20%</span>
+            <span className="text-xs text-[var(--color-text-secondary)]">20%</span>
           </div>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <h2 className="text-xl font-bold text-center mb-6">
+        <h2 className="text-xl font-bold text-center mb-6 text-[var(--color-text-primary)]">
           Tell us about yourself
         </h2>
 
@@ -136,7 +136,7 @@ export default function OnboardingStep1({
         {/* Name fields */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-1.5">
+            <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-primary)]">
               First Name *
             </label>
             <input
@@ -145,14 +145,14 @@ export default function OnboardingStep1({
               onChange={(e) =>
                 setFormData({ ...formData, firstName: e.target.value })
               }
-              className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
+              className="w-full px-3 py-2 rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border)] text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)] focus:border-[var(--color-primary-500)] focus:ring-1 focus:ring-[var(--color-primary-500)] outline-none transition"
               required
               placeholder="Enter your first name"
               disabled={isSubmitting}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1.5">
+            <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-primary)]">
               Last Name *
             </label>
             <input
@@ -161,7 +161,7 @@ export default function OnboardingStep1({
               onChange={(e) =>
                 setFormData({ ...formData, lastName: e.target.value })
               }
-              className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
+              className="w-full px-3 py-2 rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border)] text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)] focus:border-[var(--color-primary-500)] focus:ring-1 focus:ring-[var(--color-primary-500)] outline-none transition"
               required
               placeholder="Enter your last name"
               disabled={isSubmitting}
@@ -171,7 +171,7 @@ export default function OnboardingStep1({
 
         {/* Date of Birth */}
         <div>
-          <label className="block text-sm font-medium mb-1.5">
+          <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-primary)]">
             Date of Birth *
           </label>
           <div className="grid grid-cols-3 gap-2">
@@ -188,7 +188,7 @@ export default function OnboardingStep1({
                   },
                 })
               }
-              className="px-2 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
+              className="px-2 py-2 rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border)] text-[var(--color-text-primary)] focus:border-[var(--color-primary-500)] focus:ring-1 focus:ring-[var(--color-primary-500)] outline-none transition"
               required
               disabled={isSubmitting}
             >
@@ -209,7 +209,7 @@ export default function OnboardingStep1({
                   dateOfBirth: { ...formData.dateOfBirth, day: e.target.value },
                 })
               }
-              className="px-2 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
+              className="px-2 py-2 rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border)] text-[var(--color-text-primary)] focus:border-[var(--color-primary-500)] focus:ring-1 focus:ring-[var(--color-primary-500)] outline-none transition"
               required
               disabled={isSubmitting}
             >
@@ -233,7 +233,7 @@ export default function OnboardingStep1({
                   },
                 })
               }
-              className="px-2 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
+              className="px-2 py-2 rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border)] text-[var(--color-text-primary)] focus:border-[var(--color-primary-500)] focus:ring-1 focus:ring-[var(--color-primary-500)] outline-none transition"
               required
               disabled={isSubmitting}
             >
@@ -252,13 +252,13 @@ export default function OnboardingStep1({
 
         {/* Location fields */}
         <div>
-          <label className="block text-sm font-medium mb-1.5">Country *</label>
+          <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-primary)]">Country *</label>
           <select
             value={formData.country}
             onChange={(e) =>
               setFormData({ ...formData, country: e.target.value, state: "" })
             }
-            className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
+            className="w-full px-3 py-2 rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border)] text-[var(--color-text-primary)] focus:border-[var(--color-primary-500)] focus:ring-1 focus:ring-[var(--color-primary-500)] outline-none transition"
             required
             aria-label="Country"
             title="Country"
@@ -275,7 +275,7 @@ export default function OnboardingStep1({
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1.5">
+          <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-primary)]">
             State/Province *
           </label>
           <select
@@ -286,7 +286,7 @@ export default function OnboardingStep1({
             onChange={(e) =>
               setFormData({ ...formData, state: e.target.value })
             }
-            className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
+            className="w-full px-3 py-2 rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border)] text-[var(--color-text-primary)] focus:border-[var(--color-primary-500)] focus:ring-1 focus:ring-[var(--color-primary-500)] outline-none transition"
             required
             disabled={isSubmitting}
           >
@@ -302,12 +302,12 @@ export default function OnboardingStep1({
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1.5">City *</label>
+          <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-primary)]">City *</label>
           <input
             type="text"
             value={formData.city}
             onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-            className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
+            className="w-full px-3 py-2 rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border)] text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)] focus:border-[var(--color-primary-500)] focus:ring-1 focus:ring-[var(--color-primary-500)] outline-none transition"
             required
             placeholder="Enter your city"
             title="City"
@@ -317,12 +317,12 @@ export default function OnboardingStep1({
 
         {/* Phone number */}
         <div>
-          <label className="block text-sm font-medium mb-1.5">
+          <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-primary)]">
             Phone Number (optional)
           </label>
           <div className="flex gap-2">
             <select
-              className="w-20 px-2 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
+              className="w-20 px-2 py-2 rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border)] text-[var(--color-text-primary)] focus:border-[var(--color-primary-500)] focus:ring-1 focus:ring-[var(--color-primary-500)] outline-none transition"
               aria-label="Country code"
               title="Country code"
               disabled={isSubmitting}
@@ -335,7 +335,7 @@ export default function OnboardingStep1({
               onChange={(e) =>
                 setFormData({ ...formData, phone: e.target.value })
               }
-              className="flex-1 px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
+              className="flex-1 px-3 py-2 rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border)] text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)] focus:border-[var(--color-primary-500)] focus:ring-1 focus:ring-[var(--color-primary-500)] outline-none transition"
               placeholder="(___) ___-____"
               disabled={isSubmitting}
             />
@@ -347,7 +347,7 @@ export default function OnboardingStep1({
           <button
             type="button"
             onClick={onBack}
-            className="px-6 py-2 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-600 transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2 rounded-lg border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-text-primary)] transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isSubmitting}
           >
             <span className="material-symbols-outlined text-sm">
@@ -357,7 +357,7 @@ export default function OnboardingStep1({
           </button>
           <button
             type="submit"
-            className="px-6 py-2 rounded-lg bg-linear-to-r from-blue-600 to-indigo-500 text-white font-semibold hover:scale-[1.02] transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2 rounded-lg bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-500)] text-white font-semibold hover:scale-[1.02] transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isSubmitting}
           >
             {isSubmitting ? 'Saving...' : 'Save & Continue'}

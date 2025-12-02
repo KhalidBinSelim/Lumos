@@ -320,7 +320,7 @@ export default function MyApplications() {
     };
 
     return (
-        <div className="flex flex-col h-screen w-screen bg-gradient-to-b from-slate-950 via-[#08122f] to-black text-slate-100 overflow-hidden font-sans">
+        <div className="flex flex-col h-screen w-screen bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] overflow-hidden font-sans transition-colors duration-300">
             <Topbar />
             <div className="flex flex-1 overflow-hidden relative">
                 <Sidebar
@@ -332,24 +332,24 @@ export default function MyApplications() {
                 <main className="flex-1 overflow-y-auto relative p-4 sm:p-6" onClick={() => setOpenDropdown(null)}>
                     {/* Background Glow */}
                     <div className="absolute inset-0 pointer-events-none sticky top-0">
-                        <div className="absolute -top-28 -left-36 w-96 h-96 bg-blue-500/10 blur-[200px] rounded-full" />
-                        <div className="absolute bottom-0 right-0 w-[500px] h-[400px] bg-indigo-500/10 blur-[200px] rounded-full" />
+                        <div className="absolute -top-28 -left-36 w-96 h-96 bg-[var(--color-primary-500)]/10 blur-[100px] rounded-full" />
+                        <div className="absolute bottom-0 right-0 w-[500px] h-[400px] bg-[var(--color-secondary-500)]/10 blur-[100px] rounded-full" />
                     </div>
 
                     <div className="relative z-10 max-w-5xl mx-auto space-y-6">
 
                         {/* Header */}
                         <div>
-                            <h1 className="text-2xl font-bold text-white">My Applications</h1>
-                            <p className="text-slate-400">Track and manage your scholarship applications</p>
+                            <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">My Applications</h1>
+                            <p className="text-[var(--color-text-secondary)]">Track and manage your scholarship applications</p>
                         </div>
 
                         {/* Loading State */}
                         {loading && (
                             <div className="flex items-center justify-center py-20">
                                 <div className="text-center">
-                                    <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                                    <p className="text-slate-400">Loading applications...</p>
+                                    <div className="w-12 h-12 border-4 border-[var(--color-primary-500)] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                                    <p className="text-[var(--color-text-secondary)]">Loading applications...</p>
                                 </div>
                             </div>
                         )}
@@ -373,32 +373,32 @@ export default function MyApplications() {
 
                                 {/* Summary Stats */}
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    <div className="bg-slate-900/50 border border-slate-800 p-4 rounded-xl backdrop-blur-sm">
-                                        <div className="text-slate-400 text-sm mb-1">Total Applications</div>
-                                        <div className="text-2xl font-bold text-white">{stats.total}</div>
+                                    <div className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] p-4 rounded-xl backdrop-blur-sm">
+                                        <div className="text-[var(--color-text-secondary)] text-sm mb-1">Total Applications</div>
+                                        <div className="text-2xl font-bold text-[var(--color-text-primary)]">{stats.total}</div>
                                     </div>
-                                    <div className="bg-slate-900/50 border border-slate-800 p-4 rounded-xl backdrop-blur-sm">
-                                        <div className="text-slate-400 text-sm mb-1">In Progress</div>
+                                    <div className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] p-4 rounded-xl backdrop-blur-sm">
+                                        <div className="text-[var(--color-text-secondary)] text-sm mb-1">In Progress</div>
                                         <div className="text-2xl font-bold text-yellow-400">{stats.inProgress}</div>
                                     </div>
-                                    <div className="bg-slate-900/50 border border-slate-800 p-4 rounded-xl backdrop-blur-sm">
-                                        <div className="text-slate-400 text-sm mb-1">Submitted</div>
-                                        <div className="text-2xl font-bold text-blue-400">{stats.submitted}</div>
+                                    <div className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] p-4 rounded-xl backdrop-blur-sm">
+                                        <div className="text-[var(--color-text-secondary)] text-sm mb-1">Submitted</div>
+                                        <div className="text-2xl font-bold text-[var(--color-primary-500)]">{stats.submitted}</div>
                                     </div>
-                                    <div className="bg-slate-900/50 border border-slate-800 p-4 rounded-xl backdrop-blur-sm">
-                                        <div className="text-slate-400 text-sm mb-1">Won</div>
-                                        <div className="text-2xl font-bold text-emerald-400">{stats.won} <span className="text-sm font-normal text-slate-400">(${stats.wonAmount.toLocaleString()})</span></div>
+                                    <div className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] p-4 rounded-xl backdrop-blur-sm">
+                                        <div className="text-[var(--color-text-secondary)] text-sm mb-1">Won</div>
+                                        <div className="text-2xl font-bold text-[var(--color-primary-400)]">{stats.won} <span className="text-sm font-normal text-[var(--color-text-secondary)]">(${stats.wonAmount.toLocaleString()})</span></div>
                                     </div>
                                 </div>
 
                                 {/* Tabs & Filters */}
-                                <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-slate-900/40 border border-slate-800 p-2 rounded-2xl">
+                                <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-[var(--color-bg-secondary)]/40 border border-[var(--color-border)] p-2 rounded-2xl">
                                     <div className="flex items-center gap-1 overflow-x-auto w-full md:w-auto scrollbar-hide">
                                         {(["All", "In Progress", "Submitted", "Won", "Rejected"] as const).map((tab) => (
                                             <button
                                                 key={tab}
                                                 onClick={() => setActiveTab(tab)}
-                                                className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition ${activeTab === tab ? "bg-slate-800 text-white shadow-sm" : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"}`}
+                                                className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition ${activeTab === tab ? "bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] shadow-sm border border-[var(--color-border)]" : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-primary)]/50"}`}
                                             >
                                                 {tab} <span className="ml-1 opacity-60 text-xs">
                                                     ({tab === "All" ? stats.total : tab === "In Progress" ? stats.inProgress : tab === "Submitted" ? stats.submitted : tab === "Won" ? stats.won : stats.rejected})
@@ -408,19 +408,19 @@ export default function MyApplications() {
                                     </div>
                                     <div className="flex items-center gap-3 w-full md:w-auto">
                                         <div className="relative flex-1 md:w-64">
-                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 material-symbols-outlined text-lg">search</span>
+                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)] material-symbols-outlined text-lg">search</span>
                                             <input
                                                 type="text"
                                                 placeholder="Search apps..."
                                                 value={searchQuery}
                                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                                className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-4 py-2 text-sm text-slate-200 focus:border-blue-500 outline-none"
+                                                className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-lg pl-9 pr-4 py-2 text-sm text-[var(--color-text-primary)] focus:border-[var(--color-primary-500)] outline-none"
                                             />
                                         </div>
                                         <select
                                             value={sortOption}
                                             onChange={(e) => setSortOption(e.target.value)}
-                                            className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:border-blue-500 outline-none cursor-pointer"
+                                            className="bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] focus:border-[var(--color-primary-500)] outline-none cursor-pointer"
                                         >
                                             <option>Deadline</option>
                                             <option>Amount</option>
@@ -433,15 +433,15 @@ export default function MyApplications() {
                                 <div className="space-y-4">
                                     {filteredApps.length > 0 ? (
                                         filteredApps.map((app) => (
-                                            <div key={app.id} className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 relative group hover:border-slate-700 transition">
+                                            <div key={app.id} className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-2xl p-6 relative group hover:border-[var(--color-text-secondary)] transition">
                                                 {/* Card Header */}
                                                 <div className="flex justify-between items-start mb-4">
                                                     <div>
-                                                        <h3 className="text-lg font-bold text-white">{app.title}</h3>
+                                                        <h3 className="text-lg font-bold text-[var(--color-text-primary)]">{app.title}</h3>
                                                         <div className="flex items-center gap-3 text-sm mt-1">
-                                                            <span className="text-emerald-400 font-medium">💰 ${app.amount.toLocaleString()}</span>
-                                                            <span className="text-slate-500">•</span>
-                                                            <span className="text-slate-300">
+                                                            <span className="text-[var(--color-primary-500)] font-medium">💰 ${app.amount.toLocaleString()}</span>
+                                                            <span className="text-[var(--color-text-secondary)]">•</span>
+                                                            <span className="text-[var(--color-text-secondary)]">
                                                                 {app.status === "In Progress" && app.deadline && `📅 Due: ${new Date(app.deadline).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} (${getDaysLeft(app.deadline)} days)`}
                                                                 {app.status === "Submitted" && app.submittedDate && `📅 Submitted: ${new Date(app.submittedDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`}
                                                                 {app.status === "Won" && app.wonDate && `🏆 Won: ${new Date(app.wonDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`}
@@ -452,31 +452,31 @@ export default function MyApplications() {
                                                     <div className="relative">
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); setOpenDropdown(openDropdown === app.id ? null : app.id); }}
-                                                            className="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition"
+                                                            className="p-2 rounded-lg hover:bg-[var(--color-bg-primary)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition"
                                                         >
                                                             <span className="material-symbols-outlined">more_vert</span>
                                                         </button>
 
                                                         {/* Dropdown Menu */}
                                                         {openDropdown === app.id && (
-                                                            <div className="absolute right-0 top-full mt-2 w-56 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl z-20 overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+                                                            <div className="absolute right-0 top-full mt-2 w-56 bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-xl shadow-2xl z-20 overflow-hidden animate-in fade-in zoom-in-95 duration-100">
                                                                 <div className="py-1">
-                                                                    <button className="w-full px-4 py-2 text-left text-sm text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2">
+                                                                    <button className="w-full px-4 py-2 text-left text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-primary)] hover:text-[var(--color-text-primary)] flex items-center gap-2">
                                                                         <span>📧</span> Email to Myself
                                                                     </button>
-                                                                    <button className="w-full px-4 py-2 text-left text-sm text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2">
+                                                                    <button className="w-full px-4 py-2 text-left text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-primary)] hover:text-[var(--color-text-primary)] flex items-center gap-2">
                                                                         <span>📋</span> Duplicate Application
                                                                     </button>
-                                                                    <button className="w-full px-4 py-2 text-left text-sm text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2">
+                                                                    <button className="w-full px-4 py-2 text-left text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-primary)] hover:text-[var(--color-text-primary)] flex items-center gap-2">
                                                                         <span>🗓️</span> Set Custom Reminder
                                                                     </button>
-                                                                    <div className="h-px bg-slate-800 my-1" />
-                                                                    <button className="w-full px-4 py-2 text-left text-sm text-amber-400 hover:bg-slate-800 flex items-center gap-2">
+                                                                    <div className="h-px bg-[var(--color-border)] my-1" />
+                                                                    <button className="w-full px-4 py-2 text-left text-sm text-amber-400 hover:bg-[var(--color-bg-primary)] flex items-center gap-2">
                                                                         <span>⏸️</span> Pause Application
                                                                     </button>
                                                                     <button
                                                                         onClick={() => setShowDeleteModal(app.id)}
-                                                                        className="w-full px-4 py-2 text-left text-sm text-rose-400 hover:bg-slate-800 flex items-center gap-2"
+                                                                        className="w-full px-4 py-2 text-left text-sm text-rose-400 hover:bg-[var(--color-bg-primary)] flex items-center gap-2"
                                                                     >
                                                                         <span>🗑️</span> Delete Application
                                                                     </button>
@@ -491,10 +491,10 @@ export default function MyApplications() {
                                                     <>
                                                         <div className="mb-4">
                                                             <div className="flex justify-between text-sm mb-1">
-                                                                <span className="text-slate-400">Progress</span>
-                                                                <span className="text-white font-medium">{app.progress}%</span>
+                                                                <span className="text-[var(--color-text-secondary)]">Progress</span>
+                                                                <span className="text-[var(--color-text-primary)] font-medium">{app.progress}%</span>
                                                             </div>
-                                                            <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                                                            <div className="h-2 bg-[var(--color-bg-primary)] rounded-full overflow-hidden">
                                                                 <div className="h-full bg-yellow-500 rounded-full" style={{ width: `${app.progress}%` }} />
                                                             </div>
                                                             <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-xs font-medium text-yellow-400">
@@ -511,8 +511,8 @@ export default function MyApplications() {
                                                                         {req.status === "completed" ? "✅" : req.status === "draft" ? "🟡" : "❌"}
                                                                     </span>
                                                                     <div className="flex-1">
-                                                                        <span className={`text-slate-300 ${req.status === "completed" ? "line-through opacity-60" : ""}`}>{req.label}</span>
-                                                                        {req.details && <span className="text-slate-500 ml-2 text-xs">({req.details})</span>}
+                                                                        <span className={`text-[var(--color-text-secondary)] ${req.status === "completed" ? "line-through opacity-60" : ""}`}>{req.label}</span>
+                                                                        {req.details && <span className="text-[var(--color-text-secondary)] ml-2 text-xs">({req.details})</span>}
                                                                     </div>
                                                                 </div>
                                                             ))}
@@ -523,39 +523,39 @@ export default function MyApplications() {
                                                 {app.status === "Submitted" && (
                                                     <>
                                                         <div className="mb-4">
-                                                            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-medium text-emerald-400 mb-3">
-                                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                                            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--color-primary-500)]/10 border border-[var(--color-primary-500)]/20 text-xs font-medium text-[var(--color-primary-500)] mb-3">
+                                                                <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary-500)]" />
                                                                 Submitted - Under Review
                                                             </div>
                                                             {app.decisionBy && (
-                                                                <div className="text-sm text-slate-300">
-                                                                    Decision by: <span className="text-white font-medium">{new Date(app.decisionBy).toLocaleDateString()}</span>
+                                                                <div className="text-sm text-[var(--color-text-secondary)]">
+                                                                    Decision by: <span className="text-[var(--color-text-primary)] font-medium">{new Date(app.decisionBy).toLocaleDateString()}</span>
                                                                 </div>
                                                             )}
                                                         </div>
 
-                                                        <div className="bg-slate-950/50 rounded-xl p-4 border border-slate-800 mb-4">
-                                                            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Requirements Submitted</div>
+                                                        <div className="bg-[var(--color-bg-primary)]/50 rounded-xl p-4 border border-[var(--color-border)] mb-4">
+                                                            <div className="text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">Requirements Submitted</div>
                                                             <ul className="space-y-1">
                                                                 {app.requirements?.map((req, i) => (
-                                                                    <li key={i} className="text-sm text-slate-400 flex items-center gap-2">
-                                                                        <span className="w-1 h-1 bg-slate-600 rounded-full" />
+                                                                    <li key={i} className="text-sm text-[var(--color-text-secondary)] flex items-center gap-2">
+                                                                        <span className="w-1 h-1 bg-[var(--color-text-secondary)] rounded-full" />
                                                                         {req.label}
                                                                     </li>
                                                                 ))}
                                                             </ul>
-                                                            <div className="mt-3 pt-3 border-t border-slate-800 flex justify-between items-center text-xs">
-                                                                <span className="text-slate-500">Confirmation #: <span className="text-slate-300 font-mono">{app.confirmationNumber}</span></span>
-                                                                <button className="text-blue-400 hover:text-blue-300">📧 Email</button>
+                                                            <div className="mt-3 pt-3 border-t border-[var(--color-border)] flex justify-between items-center text-xs">
+                                                                <span className="text-[var(--color-text-secondary)]">Confirmation #: <span className="text-[var(--color-text-secondary)] font-mono">{app.confirmationNumber}</span></span>
+                                                                <button className="text-[var(--color-primary-500)] hover:text-[var(--color-primary-600)]">📧 Email</button>
                                                             </div>
                                                         </div>
 
                                                         {app.nextSteps && (
                                                             <div className="mb-4">
-                                                                <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Application Status Timeline</div>
+                                                                <div className="text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">Application Status Timeline</div>
                                                                 <div className="space-y-2">
                                                                     {app.nextSteps.map((step, i) => (
-                                                                        <div key={i} className="flex items-center gap-2 text-sm text-slate-300">
+                                                                        <div key={i} className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
                                                                             <span>{i === 0 || i === 1 ? "✅" : i === 2 ? "🟡" : "⏳"}</span>
                                                                             {step}
                                                                         </div>
@@ -568,38 +568,38 @@ export default function MyApplications() {
 
                                                 {app.status === "Won" && (
                                                     <>
-                                                        <div className="mb-6 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 rounded-xl p-4">
+                                                        <div className="mb-6 bg-gradient-to-r from-[var(--color-primary-500)]/10 to-[var(--color-primary-400)]/10 border border-[var(--color-primary-500)]/20 rounded-xl p-4">
                                                             <div className="flex items-center gap-2 mb-2">
                                                                 <span className="text-2xl">🎉</span>
-                                                                <span className="font-bold text-emerald-400">Awarded!</span>
+                                                                <span className="font-bold text-[var(--color-primary-500)]">Awarded!</span>
                                                             </div>
                                                             <div className="space-y-1 text-sm">
                                                                 <div className="flex justify-between">
-                                                                    <span className="text-slate-400">Amount:</span>
-                                                                    <span className="text-white font-medium">{app.awardDetails?.amount}</span>
+                                                                    <span className="text-[var(--color-text-secondary)]">Amount:</span>
+                                                                    <span className="text-[var(--color-text-primary)] font-medium">{app.awardDetails?.amount}</span>
                                                                 </div>
                                                                 <div className="flex justify-between">
-                                                                    <span className="text-slate-400">Disbursement:</span>
-                                                                    <span className="text-white font-medium">{app.awardDetails?.disbursement}</span>
+                                                                    <span className="text-[var(--color-text-secondary)]">Disbursement:</span>
+                                                                    <span className="text-[var(--color-text-primary)] font-medium">{app.awardDetails?.disbursement}</span>
                                                                 </div>
                                                                 <div className="flex justify-between">
-                                                                    <span className="text-slate-400">Expected:</span>
-                                                                    <span className="text-white font-medium">{app.awardDetails?.expected}</span>
+                                                                    <span className="text-[var(--color-text-secondary)]">Expected:</span>
+                                                                    <span className="text-[var(--color-text-primary)] font-medium">{app.awardDetails?.expected}</span>
                                                                 </div>
                                                             </div>
                                                         </div>
 
                                                         <div className="mb-4">
-                                                            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Next Steps Required</div>
+                                                            <div className="text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">Next Steps Required</div>
                                                             <div className="space-y-2 text-sm">
-                                                                <div className="flex items-center gap-2 text-slate-300">
-                                                                    <input type="checkbox" className="rounded border-slate-700 bg-slate-800" /> Accept award by Jan 31, 2024
+                                                                <div className="flex items-center gap-2 text-[var(--color-text-secondary)]">
+                                                                    <input type="checkbox" className="rounded border-[var(--color-border)] bg-[var(--color-bg-primary)]" /> Accept award by Jan 31, 2024
                                                                 </div>
-                                                                <div className="flex items-center gap-2 text-slate-300">
-                                                                    <input type="checkbox" className="rounded border-slate-700 bg-slate-800" /> Complete W-9 form
+                                                                <div className="flex items-center gap-2 text-[var(--color-text-secondary)]">
+                                                                    <input type="checkbox" className="rounded border-[var(--color-border)] bg-[var(--color-bg-primary)]" /> Complete W-9 form
                                                                 </div>
-                                                                <div className="flex items-center gap-2 text-slate-300">
-                                                                    <span className="text-emerald-400">✓</span> Thank you letter sent
+                                                                <div className="flex items-center gap-2 text-[var(--color-text-secondary)]">
+                                                                    <span className="text-[var(--color-primary-500)]">✓</span> Thank you letter sent
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -613,24 +613,24 @@ export default function MyApplications() {
                                                                 <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
                                                                 Not Selected
                                                             </div>
-                                                            <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
-                                                                <p className="text-slate-400 text-sm italic">"{app.feedback}"</p>
+                                                            <div className="bg-[var(--color-bg-primary)]/50 p-4 rounded-xl border border-[var(--color-border)]">
+                                                                <p className="text-[var(--color-text-secondary)] text-sm italic">"{app.feedback}"</p>
                                                             </div>
                                                         </div>
 
                                                         <div className="mb-4">
-                                                            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">What's Next?</div>
+                                                            <div className="text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">What's Next?</div>
                                                             <div className="flex flex-wrap gap-2">
-                                                                <button className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 transition">Find Similar Scholarships</button>
-                                                                <button className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 transition">Set Reapplication Reminder</button>
+                                                                <button className="px-3 py-1.5 rounded-lg bg-[var(--color-bg-primary)] hover:bg-[var(--color-bg-secondary)] text-xs text-[var(--color-text-secondary)] transition">Find Similar Scholarships</button>
+                                                                <button className="px-3 py-1.5 rounded-lg bg-[var(--color-bg-primary)] hover:bg-[var(--color-bg-secondary)] text-xs text-[var(--color-text-secondary)] transition">Set Reapplication Reminder</button>
                                                             </div>
                                                         </div>
                                                     </>
                                                 )}
 
                                                 {/* Footer Actions */}
-                                                <div className="flex items-center justify-between pt-4 border-t border-slate-800 mt-auto">
-                                                    <span className="text-xs text-slate-500">{app.notes || `Last updated: ${new Date().toLocaleDateString()}`}</span>
+                                                <div className="flex items-center justify-between pt-4 border-t border-[var(--color-border)] mt-auto">
+                                                    <span className="text-xs text-[var(--color-text-secondary)]">{app.notes || `Last updated: ${new Date().toLocaleDateString()}`}</span>
                                                     <div className="flex gap-3">
                                                         {app.status === "In Progress" && (
                                                             <>
@@ -644,17 +644,17 @@ export default function MyApplications() {
                                                                             // For now, just show the application
                                                                         }
                                                                     }}
-                                                                    className="text-sm font-medium text-slate-300 hover:text-white transition"
+                                                                    className="text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition"
                                                                 >
                                                                     View Details
                                                                 </button>
-                                                                <button className="text-sm font-bold text-blue-400 hover:text-blue-300 transition">Continue Application</button>
+                                                                <button className="text-sm font-bold text-[var(--color-primary-500)] hover:text-[var(--color-primary-600)] transition">Continue Application</button>
                                                             </>
                                                         )}
                                                         {app.status === "Submitted" && (
                                                             <>
-                                                                <button className="text-sm font-medium text-slate-300 hover:text-white transition">Track Status</button>
-                                                                <button className="text-sm font-bold text-blue-400 hover:text-blue-300 transition">View Submission</button>
+                                                                <button className="text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition">Track Status</button>
+                                                                <button className="text-sm font-bold text-[var(--color-primary-500)] hover:text-[var(--color-primary-600)] transition">View Submission</button>
                                                             </>
                                                         )}
                                                         {app.status === "Won" && (
@@ -663,17 +663,17 @@ export default function MyApplications() {
                                                                     onClick={() => {
                                                                         localStorage.setItem("application_id", app.id);
                                                                     }}
-                                                                    className="text-sm font-medium text-slate-300 hover:text-white transition"
+                                                                    className="text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition"
                                                                 >
                                                                     View Details
                                                                 </button>
-                                                                <button className="text-sm font-bold text-emerald-400 hover:text-emerald-300 transition">Accept Award</button>
+                                                                <button className="text-sm font-bold text-[var(--color-primary-500)] hover:text-[var(--color-primary-600)] transition">Accept Award</button>
                                                             </>
                                                         )}
                                                         {app.status === "Rejected" && (
                                                             <>
-                                                                <button className="text-sm font-medium text-slate-300 hover:text-white transition">Archive</button>
-                                                                <button className="text-sm font-bold text-blue-400 hover:text-blue-300 transition">View Submission</button>
+                                                                <button className="text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition">Archive</button>
+                                                                <button className="text-sm font-bold text-[var(--color-primary-500)] hover:text-[var(--color-primary-600)] transition">View Submission</button>
                                                             </>
                                                         )}
                                                     </div>
@@ -681,19 +681,19 @@ export default function MyApplications() {
                                             </div>
                                         ))
                                     ) : (
-                                        <div className="text-center py-20 rounded-3xl border border-slate-800 bg-slate-900/30 border-dashed">
-                                            <div className="inline-flex p-4 rounded-full bg-slate-800/50 mb-4">
+                                        <div className="text-center py-20 rounded-3xl border border-[var(--color-border)] bg-[var(--color-bg-secondary)]/30 border-dashed">
+                                            <div className="inline-flex p-4 rounded-full bg-[var(--color-bg-secondary)] mb-4">
                                                 <span className="text-4xl">📝</span>
                                             </div>
-                                            <h3 className="text-xl font-bold text-white mb-2">No Applications Found</h3>
-                                            <p className="text-slate-400 max-w-md mx-auto mb-6">
+                                            <h3 className="text-xl font-bold text-[var(--color-text-primary)] mb-2">No Applications Found</h3>
+                                            <p className="text-[var(--color-text-secondary)] max-w-md mx-auto mb-6">
                                                 {activeTab === "All"
                                                     ? "Start applying to scholarships to see them here. We'll track your progress and remind you of deadlines."
                                                     : `You don't have any applications in the "${activeTab}" status.`
                                                 }
                                             </p>
                                             <div className="flex justify-center gap-4">
-                                                <Link to="/discovery" className="px-6 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition shadow-lg shadow-blue-900/20">
+                                                <Link to="/discovery" className="px-6 py-2 rounded-xl bg-[var(--color-primary-600)] hover:bg-[var(--color-primary-500)] text-white text-sm font-bold transition shadow-lg shadow-[var(--color-primary-500)]/20">
                                                     Discover Scholarships →
                                                 </Link>
                                             </div>
@@ -708,8 +708,8 @@ export default function MyApplications() {
                 {/* Delete Modal */}
                 {showDeleteModal && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
-                        <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl">
-                            <h3 className="text-xl font-bold text-white mb-2">Delete Application?</h3>
+                        <div className="w-full max-w-md bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-2xl p-6 shadow-2xl">
+                            <h3 className="text-xl font-bold text-[var(--color-text-primary)] mb-2">Delete Application?</h3>
                             <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-4 mb-6">
                                 <p className="text-rose-400 font-medium mb-2">⚠️ This will permanently delete:</p>
                                 <ul className="list-disc list-inside text-sm text-rose-300/80 space-y-1">
@@ -723,7 +723,7 @@ export default function MyApplications() {
                             <div className="flex gap-3">
                                 <button
                                     onClick={() => setShowDeleteModal(null)}
-                                    className="flex-1 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition"
+                                    className="flex-1 px-4 py-2 rounded-xl bg-[var(--color-bg-primary)] hover:bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] font-medium transition"
                                 >
                                     Cancel
                                 </button>
