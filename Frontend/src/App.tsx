@@ -11,6 +11,7 @@ import EssayCopilot from "./Components/EssayCopilot";
 import Calendar from "./Components/Calendar";
 import Saved from "./Components/Saved";
 import ApiTest from "./Components/ApiTest";
+import Admin from "./Components/admin/AdminPanel";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/dashboard" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/api-test" element={<ApiTest />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
     </Router>
   );

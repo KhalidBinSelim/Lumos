@@ -1,10 +1,17 @@
+
 import { useState, useEffect, useRef } from "react";
+
+const user = localStorage.getItem("user");
+const userObject = JSON.parse(user || "{}");
+console.log(userObject);
 
 export default function Topbar() {
     const [showNotifications, setShowNotifications] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
     const notifRef = useRef<HTMLDivElement | null>(null);
     const profileRef = useRef<HTMLDivElement | null>(null);
+
+
 
     // close dropdowns when clicking outside
     useEffect(() => {
@@ -22,6 +29,11 @@ export default function Topbar() {
         document.addEventListener("mousedown", handleOutside);
         return () => document.removeEventListener("mousedown", handleOutside);
     }, []);
+    const logout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/';
+    };
 
     return (
         <header className="sticky top-0 z-50 flex items-center justify-between px-8 py-4 
@@ -173,7 +185,7 @@ export default function Topbar() {
                             K
                         </div>
                         <span className="hidden sm:inline text-sm font-medium">
-                            Khalid
+                            {userObject.firstName}
                         </span>
                         <span className="material-symbols-outlined text-[20px]">
                             expand_more
@@ -187,9 +199,9 @@ export default function Topbar() {
                         backdrop-blur-xl shadow-[0_8px_30px_-8px_rgba(59,130,246,0.5)] overflow-hidden">
                             <div className="p-4 border-b border-slate-800/70">
                                 <p className="font-semibold text-white flex items-center gap-2">
-                                    👤 John Doe
+                                    👤 {userObject.firstName} {userObject.lastName}
                                 </p>
-                                <p className="text-xs text-slate-400">john@email.com</p>
+                                <p className="text-xs text-slate-400">{userObject.email}</p>
                             </div>
 
                             <div className="p-2 text-sm text-slate-200">
@@ -217,9 +229,13 @@ export default function Topbar() {
 
                                 <div className="border-t border-slate-800 my-2" />
 
-                                <a href="#" className="flex items-center gap-2 px-3 py-2 rounded-md text-red-400 hover:bg-red-500/10 transition">
+                                <button
+                                    onClick={logout}
+                                    className="flex items-center gap-2 px-3 py-2 rounded-md text-red-400 hover:bg-red-500/10 transition w-full text-left"
+                                >
                                     🚪 Sign Out
-                                </a>
+                                </button>
+
                             </div>
                         </div>
                     )}

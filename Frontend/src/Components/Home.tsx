@@ -25,6 +25,8 @@ export default function Home() {
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<"free" | "monthly" | "semiannual">("monthly");
 
+  const scholarship_id = localStorage.setItem("scholarship_id", "692f060dd6f40252a7bd99c7");
+
   return (
     <div className="flex flex-col h-screen w-screen bg-gradient-to-b from-slate-950 via-[#08122f] to-black text-slate-100 overflow-hidden">
       <Topbar />
