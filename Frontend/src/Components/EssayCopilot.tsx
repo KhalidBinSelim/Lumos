@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import Topbar from "./Topbar";
 import Sidebar from "./Sidebar";
+import SettingsModal from "./SettingsModal";
+import HelpModal from "./HelpModal";
+import SubscriptionModal from "./SubscriptionModal";
 import { Link } from "react-router-dom";
 
 export default function EssayCopilot() {
@@ -8,6 +11,11 @@ export default function EssayCopilot() {
   const [tone, setTone] = useState("Conversational & Personal");
   const [essayContent, setEssayContent] = useState("");
   const [wordCount, setWordCount] = useState(0);
+  
+  // Modal states
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
   
   // Mock Data
   const scholarship = {
@@ -41,7 +49,11 @@ This scholarship would not just support my education; it would invest in a futur
     <div className="flex flex-col h-screen w-screen bg-gradient-to-b from-slate-950 via-[#08122f] to-black text-slate-100 overflow-hidden font-sans">
       <Topbar />
       <div className="flex flex-1 overflow-hidden relative">
-        <Sidebar />
+        <Sidebar 
+          onSubscriptionsClick={() => setShowSubscriptionModal(true)}
+          onSettingsClick={() => setShowSettingsModal(true)}
+          onHelpClick={() => setShowHelpModal(true)}
+        />
 
         <main className="flex-1 overflow-y-auto relative p-4 sm:p-6">
           {/* Background Glow */}
@@ -320,6 +332,11 @@ This scholarship would not just support my education; it would invest in a futur
           </div>
         </main>
       </div>
+      
+      {/* Modals */}
+      {showSubscriptionModal && <SubscriptionModal onClose={() => setShowSubscriptionModal(false)} />}
+      {showSettingsModal && <SettingsModal onClose={() => setShowSettingsModal(false)} />}
+      {showHelpModal && <HelpModal onClose={() => setShowHelpModal(false)} />}
     </div>
   );
 }

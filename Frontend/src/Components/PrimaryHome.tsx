@@ -6,6 +6,9 @@ import OnboardingStep2 from "./OnboardingStep2";
 import OnboardingStep3 from "./OnboardingStep3";
 import OnboardingStep4 from "./OnboardingStep4";
 import OnboardingStep5 from "./OnboardingStep5";
+import SettingsModal from "./SettingsModal";
+import HelpModal from "./HelpModal";
+import SubscriptionModal from "./SubscriptionModal";
 import Subscriptions from "./Subscriptions";
 import CheckoutPage from "./CheckoutPage";
 import PaymentSuccess from "./PaymentSuccess";
@@ -23,6 +26,11 @@ export default function Welcome() {
     useState(false);
   const [showOnboardingStep5Modal, setShowOnboardingStep5Modal] =
     useState(false);
+  
+  // Modal states
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
   // const [showSignupModal, setShowSignupModal] = useState(false);
   // const [showSignupModal, setShowSignupModal] = useState(false);
   // const [showLoginModal, setShowLoginModal] = useState(false);
