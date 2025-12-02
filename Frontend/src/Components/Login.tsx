@@ -2,7 +2,7 @@ import { type FormEvent, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 type LoginProps = {
-  onClose: () => void;
+  onClose?: () => void;
   onSignUp?: () => void;
 };
 
@@ -55,11 +55,19 @@ export default function Login({ onClose, onSignUp }: LoginProps) {
     console.info("Redirect to forgot password");
   };
 
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      navigate("/");
+    }
+  };
+
   return (
     <div className="relative flex flex-col gap-6 bg-slate-900/80 border border-slate-700 rounded-3xl p-8 shadow-[0_40px_120px_-30px_rgba(37,99,235,0.55)] max-w-lg w-full">
       <button
         type="button"
-        onClick={onClose}
+        onClick={handleClose}
         className="absolute top-7 right-7 p-1.5 rounded-full bg-slate-800/60 border border-slate-700/60 text-slate-400 hover:text-slate-100 hover:bg-slate-700/60 transition"
         aria-label="Close login"
       >
@@ -68,7 +76,7 @@ export default function Login({ onClose, onSignUp }: LoginProps) {
 
       <button
         type="button"
-        onClick={onClose}
+        onClick={handleClose}
         className="flex items-center gap-3 text-slate-200 hover:text-white w-fit transition"
         aria-label="Back to landing page"
       >

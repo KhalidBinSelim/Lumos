@@ -1,24 +1,14 @@
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
-
-
-// import "./App.css";
-// import LandingPage from "./Components/LandingPage";
-
-// function App() {
-//   return <LandingPage />;
-// }
-
-// export default App;
-
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LandingPage from "./Components/LandingPage";
 import Home from "./Components/Home";
 import "./App.css";
 import ScholarshipDetails from "./Components/ScholarshipDetails";
 import PrimaryHome from "./Components/PrimaryHome";
+import Discovery from "./Components/Discovery";
+import Login from "./Components/Login";
+import MyApplications from "./Components/MyApplications";
+import EssayCopilot from "./Components/EssayCopilot";
+import Calendar from "./Components/Calendar";
 
 function App() {
   return (
@@ -28,6 +18,11 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/details" element={<ScholarshipDetails />} />
         <Route path="/phome" element={<PrimaryHome />} />
+        <Route path="/discovery" element={<Discovery />} />
+        <Route path="/applications" element={<MyApplications />} />
+        <Route path="/essay-copilot" element={<EssayCopilot />} />
+        <Route path="/calendar" element={<Calendar />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </Router>
   );
