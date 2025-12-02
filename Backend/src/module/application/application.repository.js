@@ -3,6 +3,8 @@ const Application = require('./application.model');
 class ApplicationRepository {
   /**
    * Create a new application
+   * @param {Object} applicationData - { userId, scholarshipId, essayId?, state? }
+   * @returns {Promise<Application>}
    */
   async create(applicationData) {
     const application = new Application(applicationData);
@@ -11,382 +13,199 @@ class ApplicationRepository {
 
   /**
    * Find application by ID
+   * @param {string} id - Application ID
+   * @param {boolean} populate - Whether to populate references
+   * @returns {Promise<Application|null>}
    */
-  async findById(id, populate = true) {
+  async findById(id, populate = false) {
     const query = Application.findById(id);
     if (populate) {
-      query.populate('scholarship');
+      query.populate('userId', 'name email')
+           .populate('scholarshipId')
+           .populate('essayId');
     }
     return await query.exec();
   }
 
   /**
-   * Find application by user and scholarship
+   * Find all applications by user ID
+   * @param {string} userId - User ID
+   * @param {Object} options - { state?, populate?, page?, limit? }
+   * @returns {Promise<{ applications: Application[], total: number }>}
    */
-  async findByUserAndScholarship(userId, scholarshipId) {
-    return await Application.findOne({
-      user: userId,
-      scholarship: scholarshipId,
-    }).populate('scholarship');
+  async findByUserId(userId, options = {}) {
+    const { state, populate = false, page = 1, limit = 20 } = options;
+    
+    const query = { userId };
+    if (state) {
+      query.state = state;
+    }
+
+    const skip = (page - 1) * limit;
+
+    let applicationsQuery = Application.find(query)
+      .sort({ updatedAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    if (populate) {
+      applicationsQuery = applicationsQuery
+        .populate('scholarshipId')
+        .populate('essayId');
+    }
+
+    const [applications, total] = await Promise.all([
+      applicationsQuery.exec(),
+      Application.countDocuments(query),
+    ]);
+
+    return { applications, total };
   }
 
   /**
-   * Check if application exists
+   * Find all applications by scholarship ID
+   * @param {string} scholarshipId - Scholarship ID
+   * @param {Object} options - { state?, populate?, page?, limit? }
+   * @returns {Promise<{ applications: Application[], total: number }>}
+   */
+  async findByScholarshipId(scholarshipId, options = {}) {
+    const { state, populate = false, page = 1, limit = 20 } = options;
+    
+    const query = { scholarshipId };
+    if (state) {
+      query.state = state;
+    }
+
+    const skip = (page - 1) * limit;
+
+    let applicationsQuery = Application.find(query)
+      .sort({ updatedAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    if (populate) {
+      applicationsQuery = applicationsQuery
+        .populate('userId', 'name email')
+        .populate('essayId');
+    }
+
+    const [applications, total] = await Promise.all([
+      applicationsQuery.exec(),
+      Application.countDocuments(query),
+    ]);
+
+    return { applications, total };
+  }
+
+  /**
+   * Find application by user ID and scholarship ID
+   * @param {string} userId - User ID
+   * @param {string} scholarshipId - Scholarship ID
+   * @returns {Promise<Application|null>}
+   */
+  async findByUserAndScholarship(userId, scholarshipId) {
+    return await Application.findOne({ userId, scholarshipId })
+      .populate('scholarshipId')
+      .populate('essayId');
+  }
+
+  /**
+   * Check if application exists for user and scholarship
+   * @param {string} userId - User ID
+   * @param {string} scholarshipId - Scholarship ID
+   * @returns {Promise<boolean>}
    */
   async exists(userId, scholarshipId) {
-    const app = await Application.findOne({
-      user: userId,
-      scholarship: scholarshipId,
-    }).select('_id');
+    const app = await Application.findOne({ userId, scholarshipId }).select('_id');
     return !!app;
   }
 
   /**
-   * Find all applications for a user
-   */
-  async findByUser(userId, filters = {}, options = {}) {
-    const {
-      page = 1,
-      limit = 20,
-      sortBy = 'lastActivityAt',
-      sortOrder = 'desc',
-    } = options;
-
-    const query = { user: userId };
-
-    // Status filter
-    if (filters.status && filters.status !== 'All') {
-      query.status = filters.status;
-    }
-
-    // Search filter
-    if (filters.search) {
-      // We'll need to filter after populating scholarship
-    }
-
-    const skip = (page - 1) * limit;
-    const sortOptions = {};
-    sortOptions[sortBy] = sortOrder === 'desc' ? -1 : 1;
-
-    let applications = await Application.find(query)
-      .populate('scholarship')
-      .sort(sortOptions)
-      .skip(skip)
-      .limit(parseInt(limit))
-      .lean();
-
-    // Apply search filter on populated data
-    if (filters.search) {
-      const searchLower = filters.search.toLowerCase();
-      applications = applications.filter(app => 
-        app.scholarship?.title?.toLowerCase().includes(searchLower) ||
-        app.scholarship?.org?.toLowerCase().includes(searchLower)
-      );
-    }
-
-    const total = await Application.countDocuments(query);
-
-    return {
-      applications,
-      pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total,
-        pages: Math.ceil(total / limit),
-      },
-    };
-  }
-
-  /**
-   * Get application statistics for a user
-   */
-  async getStatsByUser(userId) {
-    const stats = await Application.aggregate([
-      { $match: { user: userId } },
-      {
-        $group: {
-          _id: '$status',
-          count: { $sum: 1 },
-        },
-      },
-    ]);
-
-    // Get won amount
-    const wonApps = await Application.find({
-      user: userId,
-      status: 'Won',
-    }).populate('scholarship', 'amount');
-
-    const wonAmount = wonApps.reduce((sum, app) => {
-      return sum + (app.scholarship?.amount || 0);
-    }, 0);
-
-    const result = {
-      total: 0,
-      inProgress: 0,
-      submitted: 0,
-      won: 0,
-      rejected: 0,
-      withdrawn: 0,
-      wonAmount,
-    };
-
-    stats.forEach(stat => {
-      result.total += stat.count;
-      switch (stat._id) {
-        case 'In Progress':
-          result.inProgress = stat.count;
-          break;
-        case 'Submitted':
-          result.submitted = stat.count;
-          break;
-        case 'Won':
-          result.won = stat.count;
-          break;
-        case 'Rejected':
-          result.rejected = stat.count;
-          break;
-        case 'Withdrawn':
-          result.withdrawn = stat.count;
-          break;
-      }
-    });
-
-    return result;
-  }
-
-  /**
-   * Get urgent applications (deadline within 7 days)
-   */
-  async getUrgentApplications(userId) {
-    const sevenDaysFromNow = new Date();
-    sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
-
-    const applications = await Application.find({
-      user: userId,
-      status: 'In Progress',
-    }).populate({
-      path: 'scholarship',
-      match: {
-        deadline: { $lte: sevenDaysFromNow, $gte: new Date() },
-      },
-    }).lean();
-
-    // Filter out applications where scholarship didn't match
-    return applications.filter(app => app.scholarship !== null);
-  }
-
-  /**
    * Update application by ID
+   * @param {string} id - Application ID
+   * @param {Object} updateData - Fields to update
+   * @returns {Promise<Application|null>}
    */
   async updateById(id, updateData) {
     return await Application.findByIdAndUpdate(
       id,
       { $set: updateData },
       { new: true, runValidators: true }
-    ).populate('scholarship');
+    ).populate('scholarshipId').populate('essayId');
   }
 
   /**
-   * Update requirement status
+   * Update application state
+   * @param {string} id - Application ID
+   * @param {string} state - New state ('working' or 'submitted')
+   * @returns {Promise<Application|null>}
    */
-  async updateRequirement(applicationId, requirementId, status, details = null) {
-    const updateObj = {
-      'requirements.$.status': status,
-    };
-    if (details) {
-      updateObj['requirements.$.details'] = details;
+  async updateState(id, state) {
+    const updateData = { state };
+    if (state === 'submitted') {
+      updateData.submittedAt = new Date();
     }
-    if (status === 'completed') {
-      updateObj['requirements.$.completedAt'] = new Date();
-    }
-
-    const application = await Application.findOneAndUpdate(
-      { _id: applicationId, 'requirements._id': requirementId },
-      { $set: updateObj },
-      { new: true }
-    ).populate('scholarship');
-
-    if (application) {
-      application.calculateProgress();
-      await application.save();
-    }
-
-    return application;
+    return await this.updateById(id, updateData);
   }
 
   /**
-   * Add requirement
+   * Link essay to application
+   * @param {string} id - Application ID
+   * @param {string} essayId - Essay ID
+   * @returns {Promise<Application|null>}
    */
-  async addRequirement(applicationId, requirement) {
-    return await Application.findByIdAndUpdate(
-      applicationId,
-      { $push: { requirements: requirement } },
-      { new: true }
-    ).populate('scholarship');
+  async linkEssay(id, essayId) {
+    return await this.updateById(id, { essayId });
   }
 
   /**
-   * Remove requirement
-   */
-  async removeRequirement(applicationId, requirementId) {
-    return await Application.findByIdAndUpdate(
-      applicationId,
-      { $pull: { requirements: { _id: requirementId } } },
-      { new: true }
-    ).populate('scholarship');
-  }
-
-  /**
-   * Save essay draft
-   */
-  async saveEssayDraft(applicationId, content, wordCount) {
-    const application = await Application.findById(applicationId);
-    if (!application) return null;
-
-    const newDraft = {
-      content,
-      wordCount,
-      version: (application.essay?.drafts?.length || 0) + 1,
-      lastUpdated: new Date(),
-    };
-
-    application.essay = application.essay || {};
-    application.essay.drafts = application.essay.drafts || [];
-    application.essay.drafts.push(newDraft);
-    application.essay.currentDraft = application.essay.drafts.length - 1;
-
-    application.addTimelineEvent('Essay Updated', `Draft ${newDraft.version} saved`);
-
-    return await application.save();
-  }
-
-  /**
-   * Add document to application
-   */
-  async addDocument(applicationId, document) {
-    const application = await Application.findByIdAndUpdate(
-      applicationId,
-      { $push: { documents: document } },
-      { new: true }
-    ).populate('scholarship');
-
-    return application;
-  }
-
-  /**
-   * Remove document from application
-   */
-  async removeDocument(applicationId, documentId) {
-    return await Application.findByIdAndUpdate(
-      applicationId,
-      { $pull: { documents: { _id: documentId } } },
-      { new: true }
-    ).populate('scholarship');
-  }
-
-  /**
-   * Submit application
-   */
-  async submit(applicationId, confirmationNumber) {
-    const application = await Application.findById(applicationId);
-    if (!application) return null;
-
-    application.submit(confirmationNumber);
-    return await application.save();
-  }
-
-  /**
-   * Mark as won
-   */
-  async markAsWon(applicationId, awardDetails) {
-    const application = await Application.findById(applicationId);
-    if (!application) return null;
-
-    application.markAsWon(awardDetails);
-    return await application.save();
-  }
-
-  /**
-   * Mark as rejected
-   */
-  async markAsRejected(applicationId, feedback) {
-    const application = await Application.findById(applicationId);
-    if (!application) return null;
-
-    application.markAsRejected(feedback);
-    return await application.save();
-  }
-
-  /**
-   * Withdraw application
-   */
-  async withdraw(applicationId) {
-    const application = await Application.findById(applicationId);
-    if (!application) return null;
-
-    application.withdraw();
-    return await application.save();
-  }
-
-  /**
-   * Delete application
+   * Delete application by ID
+   * @param {string} id - Application ID
+   * @returns {Promise<Application|null>}
    */
   async deleteById(id) {
     return await Application.findByIdAndDelete(id);
   }
 
   /**
-   * Get applications with upcoming deadlines for calendar
+   * Delete all applications for a user
+   * @param {string} userId - User ID
+   * @returns {Promise<{ deletedCount: number }>}
    */
-  async getForCalendar(userId, startDate, endDate) {
-    const applications = await Application.find({
-      user: userId,
-      status: { $in: ['In Progress', 'Submitted'] },
-    }).populate({
-      path: 'scholarship',
-      match: {
-        deadline: { $gte: startDate, $lte: endDate },
+  async deleteByUserId(userId) {
+    return await Application.deleteMany({ userId });
+  }
+
+  /**
+   * Get application statistics for a user
+   * @param {string} userId - User ID
+   * @returns {Promise<Object>}
+   */
+  async getStatsByUserId(userId) {
+    const stats = await Application.aggregate([
+      { $match: { userId: new (require('mongoose').Types.ObjectId)(userId) } },
+      {
+        $group: {
+          _id: '$state',
+          count: { $sum: 1 },
+        },
       },
-      select: 'title deadline amount',
-    }).lean();
+    ]);
 
-    return applications.filter(app => app.scholarship !== null);
-  }
+    const result = {
+      total: 0,
+      working: 0,
+      submitted: 0,
+    };
 
-  /**
-   * Update reminders
-   */
-  async updateReminders(applicationId, reminders) {
-    return await Application.findByIdAndUpdate(
-      applicationId,
-      { $set: { reminders } },
-      { new: true }
-    ).populate('scholarship');
-  }
+    stats.forEach(stat => {
+      result.total += stat.count;
+      if (stat._id === 'working') result.working = stat.count;
+      if (stat._id === 'submitted') result.submitted = stat.count;
+    });
 
-  /**
-   * Add next step
-   */
-  async addNextStep(applicationId, step) {
-    return await Application.findByIdAndUpdate(
-      applicationId,
-      { $push: { nextSteps: step } },
-      { new: true }
-    ).populate('scholarship');
-  }
-
-  /**
-   * Complete next step
-   */
-  async completeNextStep(applicationId, stepIndex) {
-    const application = await Application.findById(applicationId);
-    if (!application || !application.nextSteps[stepIndex]) return null;
-
-    application.nextSteps[stepIndex].completed = true;
-    return await application.save();
+    return result;
   }
 }
 
 module.exports = new ApplicationRepository();
-

@@ -5,9 +5,9 @@ class ApplicationController {
    * POST /api/applications
    * Create a new application
    */
-  async createApplication(req, res) {
+  async create(req, res) {
     try {
-      const { scholarshipId } = req.body;
+      const { scholarshipId, essayId } = req.body;
 
       if (!scholarshipId) {
         return res.status(400).json({
@@ -18,12 +18,13 @@ class ApplicationController {
 
       const application = await applicationService.createApplication(
         req.user.id,
-        scholarshipId
+        scholarshipId,
+        essayId
       );
 
       res.status(201).json({
         success: true,
-        message: 'Application started successfully',
+        message: 'Application created successfully',
         data: application,
       });
     } catch (error) {
@@ -38,29 +39,92 @@ class ApplicationController {
    * GET /api/applications
    * Get all applications for current user
    */
-  async getApplications(req, res) {
+  async getByUser(req, res) {
     try {
-      const filters = {
-        status: req.query.status,
-        search: req.query.search,
-      };
-
       const options = {
-        page: req.query.page || 1,
-        limit: req.query.limit || 20,
-        sortBy: req.query.sortBy || 'lastActivityAt',
-        sortOrder: req.query.sortOrder || 'desc',
+        state: req.query.state,
+        page: parseInt(req.query.page) || 1,
+        limit: parseInt(req.query.limit) || 20,
       };
 
-      const result = await applicationService.getUserApplications(
+      const result = await applicationService.getApplicationsByUserId(
         req.user.id,
-        filters,
         options
       );
 
       res.status(200).json({
         success: true,
-        data: result,
+        data: result.applications,
+        pagination: {
+          total: result.total,
+          page: options.page,
+          limit: options.limit,
+          pages: Math.ceil(result.total / options.limit),
+        },
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+
+  /**
+   * GET /api/applications/scholarship/:scholarshipId
+   * Get all applications for a scholarship
+   */
+  async getByScholarship(req, res) {
+    try {
+      const { scholarshipId } = req.params;
+      const options = {
+        state: req.query.state,
+        page: parseInt(req.query.page) || 1,
+        limit: parseInt(req.query.limit) || 20,
+      };
+
+      const result = await applicationService.getApplicationsByScholarshipId(
+        scholarshipId,
+        options
+      );
+
+      res.status(200).json({
+        success: true,
+        data: result.applications,
+        pagination: {
+          total: result.total,
+          page: options.page,
+          limit: options.limit,
+          pages: Math.ceil(result.total / options.limit),
+        },
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+
+  /**
+   * GET /api/applications/check/:scholarshipId
+   * Check if user has application for scholarship
+   */
+  async checkExists(req, res) {
+    try {
+      const { scholarshipId } = req.params;
+      
+      const application = await applicationService.getByUserAndScholarship(
+        req.user.id,
+        scholarshipId
+      );
+
+      res.status(200).json({
+        success: true,
+        data: {
+          exists: !!application,
+          application: application || null,
+        },
       });
     } catch (error) {
       res.status(500).json({
@@ -72,11 +136,11 @@ class ApplicationController {
 
   /**
    * GET /api/applications/stats
-   * Get application statistics
+   * Get application statistics for current user
    */
   async getStats(req, res) {
     try {
-      const stats = await applicationService.getApplicationStats(req.user.id);
+      const stats = await applicationService.getStats(req.user.id);
 
       res.status(200).json({
         success: true,
@@ -91,63 +155,10 @@ class ApplicationController {
   }
 
   /**
-   * GET /api/applications/urgent
-   * Get urgent applications
-   */
-  async getUrgentApplications(req, res) {
-    try {
-      const applications = await applicationService.getUrgentApplications(req.user.id);
-
-      res.status(200).json({
-        success: true,
-        data: applications,
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  }
-
-  /**
-   * GET /api/applications/calendar
-   * Get applications for calendar view
-   */
-  async getForCalendar(req, res) {
-    try {
-      const { startDate, endDate } = req.query;
-
-      if (!startDate || !endDate) {
-        return res.status(400).json({
-          success: false,
-          message: 'Start date and end date are required',
-        });
-      }
-
-      const applications = await applicationService.getForCalendar(
-        req.user.id,
-        startDate,
-        endDate
-      );
-
-      res.status(200).json({
-        success: true,
-        data: applications,
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  }
-
-  /**
    * GET /api/applications/:id
    * Get application by ID
    */
-  async getApplicationById(req, res) {
+  async getById(req, res) {
     try {
       const application = await applicationService.getApplicationById(
         req.params.id,
@@ -159,7 +170,9 @@ class ApplicationController {
         data: application,
       });
     } catch (error) {
-      res.status(404).json({
+      const status = error.message === 'Unauthorized' ? 403 : 
+                     error.message === 'Application not found' ? 404 : 400;
+      res.status(status).json({
         success: false,
         message: error.message,
       });
@@ -167,194 +180,29 @@ class ApplicationController {
   }
 
   /**
-   * PUT /api/applications/:id
-   * Update application
+   * PUT /api/applications/:id/state
+   * Update application state
    */
-  async updateApplication(req, res) {
+  async updateState(req, res) {
     try {
-      const application = await applicationService.updateApplication(
-        req.params.id,
-        req.user.id,
-        req.body
-      );
+      const { state } = req.body;
 
-      res.status(200).json({
-        success: true,
-        message: 'Application updated successfully',
-        data: application,
-      });
-    } catch (error) {
-      res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  }
-
-  /**
-   * PUT /api/applications/:id/requirements/:reqId
-   * Update requirement status
-   */
-  async updateRequirement(req, res) {
-    try {
-      const { status, details } = req.body;
-
-      const application = await applicationService.updateRequirement(
-        req.params.id,
-        req.user.id,
-        req.params.reqId,
-        status,
-        details
-      );
-
-      res.status(200).json({
-        success: true,
-        message: 'Requirement updated successfully',
-        data: application,
-      });
-    } catch (error) {
-      res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  }
-
-  /**
-   * POST /api/applications/:id/requirements
-   * Add requirement
-   */
-  async addRequirement(req, res) {
-    try {
-      const application = await applicationService.addRequirement(
-        req.params.id,
-        req.user.id,
-        req.body
-      );
-
-      res.status(201).json({
-        success: true,
-        message: 'Requirement added successfully',
-        data: application,
-      });
-    } catch (error) {
-      res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  }
-
-  /**
-   * DELETE /api/applications/:id/requirements/:reqId
-   * Remove requirement
-   */
-  async removeRequirement(req, res) {
-    try {
-      const application = await applicationService.removeRequirement(
-        req.params.id,
-        req.user.id,
-        req.params.reqId
-      );
-
-      res.status(200).json({
-        success: true,
-        message: 'Requirement removed successfully',
-        data: application,
-      });
-    } catch (error) {
-      res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  }
-
-  /**
-   * PUT /api/applications/:id/essay
-   * Save essay draft
-   */
-  async saveEssayDraft(req, res) {
-    try {
-      const { content } = req.body;
-
-      if (!content) {
+      if (!state || !['working', 'submitted'].includes(state)) {
         return res.status(400).json({
           success: false,
-          message: 'Essay content is required',
+          message: 'Valid state (working or submitted) is required',
         });
       }
 
-      const application = await applicationService.saveEssayDraft(
+      const application = await applicationService.updateState(
         req.params.id,
         req.user.id,
-        content
+        state
       );
 
       res.status(200).json({
         success: true,
-        message: 'Essay draft saved successfully',
-        data: application,
-      });
-    } catch (error) {
-      res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  }
-
-  /**
-   * POST /api/applications/:id/documents
-   * Upload document to application
-   */
-  async uploadDocument(req, res) {
-    try {
-      if (!req.file) {
-        return res.status(400).json({
-          success: false,
-          message: 'No file uploaded',
-        });
-      }
-
-      const { type, name } = req.body;
-
-      const application = await applicationService.uploadDocument(
-        req.params.id,
-        req.user.id,
-        req.file,
-        type,
-        name
-      );
-
-      res.status(200).json({
-        success: true,
-        message: 'Document uploaded successfully',
-        data: application,
-      });
-    } catch (error) {
-      res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  }
-
-  /**
-   * DELETE /api/applications/:id/documents/:docId
-   * Delete document from application
-   */
-  async deleteDocument(req, res) {
-    try {
-      const application = await applicationService.deleteDocument(
-        req.params.id,
-        req.user.id,
-        req.params.docId
-      );
-
-      res.status(200).json({
-        success: true,
-        message: 'Document deleted successfully',
+        message: `Application ${state === 'submitted' ? 'submitted' : 'updated'} successfully`,
         data: application,
       });
     } catch (error) {
@@ -369,14 +217,11 @@ class ApplicationController {
    * POST /api/applications/:id/submit
    * Submit application
    */
-  async submitApplication(req, res) {
+  async submit(req, res) {
     try {
-      const { confirmationNumber } = req.body;
-
       const application = await applicationService.submitApplication(
         req.params.id,
-        req.user.id,
-        confirmationNumber
+        req.user.id
       );
 
       res.status(200).json({
@@ -393,69 +238,29 @@ class ApplicationController {
   }
 
   /**
-   * POST /api/applications/:id/won
-   * Mark application as won
+   * PUT /api/applications/:id/essay
+   * Link essay to application
    */
-  async markAsWon(req, res) {
+  async linkEssay(req, res) {
     try {
-      const application = await applicationService.markAsWon(
+      const { essayId } = req.body;
+
+      if (!essayId) {
+        return res.status(400).json({
+          success: false,
+          message: 'Essay ID is required',
+        });
+      }
+
+      const application = await applicationService.linkEssay(
         req.params.id,
         req.user.id,
-        req.body.awardDetails
+        essayId
       );
 
       res.status(200).json({
         success: true,
-        message: 'Congratulations! Application marked as won',
-        data: application,
-      });
-    } catch (error) {
-      res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  }
-
-  /**
-   * POST /api/applications/:id/rejected
-   * Mark application as rejected
-   */
-  async markAsRejected(req, res) {
-    try {
-      const application = await applicationService.markAsRejected(
-        req.params.id,
-        req.user.id,
-        req.body.feedback
-      );
-
-      res.status(200).json({
-        success: true,
-        message: 'Application marked as rejected',
-        data: application,
-      });
-    } catch (error) {
-      res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  }
-
-  /**
-   * POST /api/applications/:id/withdraw
-   * Withdraw application
-   */
-  async withdrawApplication(req, res) {
-    try {
-      const application = await applicationService.withdrawApplication(
-        req.params.id,
-        req.user.id
-      );
-
-      res.status(200).json({
-        success: true,
-        message: 'Application withdrawn',
+        message: 'Essay linked successfully',
         data: application,
       });
     } catch (error) {
@@ -470,7 +275,7 @@ class ApplicationController {
    * DELETE /api/applications/:id
    * Delete application
    */
-  async deleteApplication(req, res) {
+  async delete(req, res) {
     try {
       await applicationService.deleteApplication(req.params.id, req.user.id);
 
@@ -479,116 +284,9 @@ class ApplicationController {
         message: 'Application deleted successfully',
       });
     } catch (error) {
-      res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  }
-
-  /**
-   * PUT /api/applications/:id/reminders
-   * Update reminders
-   */
-  async updateReminders(req, res) {
-    try {
-      const application = await applicationService.updateReminders(
-        req.params.id,
-        req.user.id,
-        req.body
-      );
-
-      res.status(200).json({
-        success: true,
-        message: 'Reminders updated successfully',
-        data: application,
-      });
-    } catch (error) {
-      res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  }
-
-  /**
-   * POST /api/applications/:id/next-steps
-   * Add next step
-   */
-  async addNextStep(req, res) {
-    try {
-      const application = await applicationService.addNextStep(
-        req.params.id,
-        req.user.id,
-        req.body
-      );
-
-      res.status(201).json({
-        success: true,
-        message: 'Next step added successfully',
-        data: application,
-      });
-    } catch (error) {
-      res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  }
-
-  /**
-   * PUT /api/applications/:id/next-steps/:index/complete
-   * Complete next step
-   */
-  async completeNextStep(req, res) {
-    try {
-      const application = await applicationService.completeNextStep(
-        req.params.id,
-        req.user.id,
-        parseInt(req.params.index)
-      );
-
-      res.status(200).json({
-        success: true,
-        message: 'Step marked as complete',
-        data: application,
-      });
-    } catch (error) {
-      res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  }
-
-  /**
-   * POST /api/applications/:id/duplicate
-   * Duplicate application
-   */
-  async duplicateApplication(req, res) {
-    try {
-      const { scholarshipId } = req.body;
-
-      if (!scholarshipId) {
-        return res.status(400).json({
-          success: false,
-          message: 'Target scholarship ID is required',
-        });
-      }
-
-      const application = await applicationService.duplicateApplication(
-        req.params.id,
-        req.user.id,
-        scholarshipId
-      );
-
-      res.status(201).json({
-        success: true,
-        message: 'Application duplicated successfully',
-        data: application,
-      });
-    } catch (error) {
-      res.status(400).json({
+      const status = error.message === 'Unauthorized' ? 403 : 
+                     error.message === 'Application not found' ? 404 : 400;
+      res.status(status).json({
         success: false,
         message: error.message,
       });
@@ -597,4 +295,3 @@ class ApplicationController {
 }
 
 module.exports = new ApplicationController();
-
