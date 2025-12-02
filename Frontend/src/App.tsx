@@ -9,6 +9,7 @@ import Login from "./Components/Login";
 import MyApplications from "./Components/MyApplications";
 import EssayCopilot from "./Components/EssayCopilot";
 import Calendar from "./Components/Calendar";
+import ApiTest from "./Components/ApiTest";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/essay-copilot" element={<EssayCopilot />} />
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/api-test" element={<ApiTest />} />
       </Routes>
     </Router>
   );
