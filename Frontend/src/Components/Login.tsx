@@ -29,7 +29,7 @@ export default function Login({ onClose, onSignUp }: LoginProps) {
 
       // Call real API
       console.log('🔐 Attempting login with:', { email: email.trim() });
-      
+
       const response = await authApi.login({
         email: email.trim(),
         password: password,
@@ -60,9 +60,9 @@ export default function Login({ onClose, onSignUp }: LoginProps) {
         data: error?.data,
         isNetworkError: error?.isNetworkError,
       });
-      
+
       let errorMessage = "Invalid email or password. Please try again.";
-      
+
       if (error?.isNetworkError) {
         errorMessage = "Cannot connect to server. Please make sure the backend is running.";
       } else if (error?.message) {
@@ -70,7 +70,7 @@ export default function Login({ onClose, onSignUp }: LoginProps) {
       } else if (error?.data?.message) {
         errorMessage = error.data.message;
       }
-      
+
       setFeedbackMessage(errorMessage);
     } finally {
       setIsSubmitting(false);
