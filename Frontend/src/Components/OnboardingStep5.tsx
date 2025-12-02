@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import axios from 'axios';
 
 type UploadState = "idle" | "dragging" | "uploading" | "error" | "success";
 
@@ -6,6 +7,8 @@ interface FileItem {
   id: string;
   name: string;
   sizeLabel: string;
+  url?: string;
+  publicId?: string;
 }
 
 interface ExtractStatus {
@@ -28,9 +31,13 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
   const [extract, setExtract] = useState<ExtractStatus>({ inProgress: false, progress: 0 });
 
   const [transcriptState, setTranscriptState] = useState<UploadState>("idle");
+  const [transcriptFile, setTranscriptFile] = useState<FileItem | null>(null);
+  const [transcriptError, setTranscriptError] = useState<string | null>(null);
+
   const [otherDocs, setOtherDocs] = useState<FileItem[]>([]);
 
   const [processingScreen, setProcessingScreen] = useState<"idle" | "processing" | "done">("idle");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const processingTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -39,62 +46,236 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
     };
   }, []);
 
-  const handleDrop = (files: FileList | null, target: "resume" | "transcript" | "other") => {
+  const uploadFile = async (file: File, endpoint: string, onProgress?: (progress: number) => void) => {
+    const token = localStorage.getItem("token");
+    
+    if (!token) {
+      throw new Error('Authentication required. Please log in again.');
+    }
+
+    const formData = new FormData();
+    formData.append(endpoint === 'resume' ? 'resume' : endpoint === 'transcript' ? 'transcript' : 'document', file);
+
+    const response = await axios.post(
+      `http://localhost:5000/api/users/upload/${endpoint}`,
+      formData,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        },
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            onProgress?.(percentCompleted);
+          }
+        }
+      }
+    );
+
+    return response.data;
+  };
+
+  const handleDrop = async (files: FileList | null, target: "resume" | "transcript" | "other") => {
     if (!files || files.length === 0) return;
     const file = files[0];
     const sizeMb = file.size / (1024 * 1024);
+    
     if (sizeMb > 10) {
       if (target === "resume") {
         setResumeState("error");
         setResumeError("File size exceeds 10MB limit");
       } else if (target === "transcript") {
         setTranscriptState("error");
+        setTranscriptError("File size exceeds 10MB limit");
       }
       return;
     }
-    const item: FileItem = { id: crypto.randomUUID(), name: file.name, sizeLabel: `${sizeMb.toFixed(1)}MB` };
-    if (target === "resume") {
-      setResumeError(null);
-      setResumeFile(item);
-      setResumeState("uploading");
-      setResumeProgress(0);
-      // Fake upload progress
-      const start = Date.now();
-      const interval = window.setInterval(() => {
-        const elapsed = Date.now() - start;
-        const pct = Math.min(100, Math.round(20 + (elapsed / 2000) * 80));
-        setResumeProgress(pct);
-        if (pct >= 100) {
-          window.clearInterval(interval);
-          setResumeState("success");
-          // Start fake extraction
-          setExtract({ inProgress: true, progress: 0 });
-          const t0 = Date.now();
-          const ext = window.setInterval(() => {
-            const epct = Math.min(100, Math.round((Date.now() - t0) / 30));
-            setExtract({ inProgress: epct < 100, progress: epct, completeMsg: epct >= 100 ? "Complete! Found 6 items" : undefined });
-            if (epct >= 100) window.clearInterval(ext);
-          }, 100);
+
+    const item: FileItem = { 
+      id: crypto.randomUUID(), 
+      name: file.name, 
+      sizeLabel: `${sizeMb.toFixed(1)}MB` 
+    };
+
+    try {
+      if (target === "resume") {
+        setResumeError(null);
+        setResumeFile(item);
+        setResumeState("uploading");
+        setResumeProgress(0);
+
+        const response = await uploadFile(file, 'resume', (progress) => {
+          setResumeProgress(progress);
+        });
+
+        setResumeFile({
+          ...item,
+          url: response.url,
+          publicId: response.publicId
+        });
+        setResumeState("success");
+
+        // Start extraction simulation (or use real API response)
+        setExtract({ inProgress: true, progress: 0 });
+        const t0 = Date.now();
+        const ext = window.setInterval(() => {
+          const epct = Math.min(100, Math.round((Date.now() - t0) / 30));
+          setExtract({ 
+            inProgress: epct < 100, 
+            progress: epct, 
+            completeMsg: epct >= 100 ? "Complete! Found 6 items" : undefined 
+          });
+          if (epct >= 100) window.clearInterval(ext);
+        }, 100);
+
+      } else if (target === "transcript") {
+        setTranscriptError(null);
+        setTranscriptFile(item);
+        setTranscriptState("uploading");
+
+        const response = await uploadFile(file, 'transcript');
+
+        setTranscriptFile({
+          ...item,
+          url: response.url,
+          publicId: response.publicId
+        });
+        setTranscriptState("success");
+
+      } else {
+        // Other documents
+        const response = await uploadFile(file, 'documents');
+        setOtherDocs((prev) => [...prev, {
+          ...item,
+          url: response.url,
+          publicId: response.publicId
+        }]);
+      }
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      
+      if (target === "resume") {
+        setResumeState("error");
+        if (error.response?.status === 401) {
+          setResumeError('Session expired. Please log in again.');
+        } else if (error.response?.data?.message) {
+          setResumeError(error.response.data.message);
+        } else {
+          setResumeError('Upload failed. Please try again.');
         }
-      }, 120);
-    } else if (target === "transcript") {
-      setTranscriptState("success");
-    } else {
-      setOtherDocs((prev) => [...prev, item]);
+      } else if (target === "transcript") {
+        setTranscriptState("error");
+        if (error.response?.status === 401) {
+          setTranscriptError('Session expired. Please log in again.');
+        } else if (error.response?.data?.message) {
+          setTranscriptError(error.response.data.message);
+        } else {
+          setTranscriptError('Upload failed. Please try again.');
+        }
+      }
+    }
+  };
+
+  const deleteFile = async (fileId: string, publicId: string, type: "resume" | "transcript" | "other") => {
+    try {
+      const token = localStorage.getItem("token");
+      
+      if (!token) {
+        console.error('No token found');
+        return;
+      }
+
+      await axios.delete(
+        `http://localhost:5000/api/users/upload/${type}/${publicId}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          }
+        }
+      );
+
+      if (type === "resume") {
+        setResumeFile(null);
+        setResumeState("idle");
+        setExtract({ inProgress: false, progress: 0 });
+      } else if (type === "transcript") {
+        setTranscriptFile(null);
+        setTranscriptState("idle");
+      } else {
+        setOtherDocs((prev) => prev.filter((d) => d.id !== fileId));
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
     }
   };
 
   const startProcessing = () => {
     setProcessingScreen("processing");
-    // Simulate 30s processing screen
-    processingTimerRef.current = window.setTimeout(() => {
-      setProcessingScreen("done");
+    setIsSubmitting(true);
+    
+    // Simulate processing and then mark onboarding as complete
+    processingTimerRef.current = window.setTimeout(async () => {
+      try {
+        const token = localStorage.getItem("token");
+        
+        if (token) {
+          // Mark onboarding as complete
+          await axios.put(
+            'http://localhost:5000/api/users/profile/complete',
+            {},
+            {
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              }
+            }
+          );
+        }
+        
+        setProcessingScreen("done");
+        setIsSubmitting(false);
+      } catch (error) {
+        console.error('Complete onboarding error:', error);
+        setProcessingScreen("done");
+        setIsSubmitting(false);
+      }
     }, 30000) as unknown as number;
   };
 
   const stopProcessing = () => {
     if (processingTimerRef.current) window.clearTimeout(processingTimerRef.current);
     setProcessingScreen("done");
+    setIsSubmitting(false);
+  };
+
+  const handleSkip = async () => {
+    try {
+      setIsSubmitting(true);
+      const token = localStorage.getItem("token");
+      
+      if (token) {
+        // Mark onboarding as complete even if skipped
+        await axios.put(
+          'http://localhost:5000/api/users/profile/complete',
+          {},
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+      }
+      
+      onSkip();
+    } catch (error) {
+      console.error('Skip error:', error);
+      // Proceed anyway
+      onSkip();
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const renderDropZone = (
@@ -103,16 +284,27 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
     opts?: { compact?: boolean }
   ) => {
     const compact = opts?.compact;
+    
     if (state === "error") {
       return (
         <div className="rounded-lg border border-rose-500/60 bg-rose-500/10 p-4 text-sm">
           <div className="font-medium">❌ Upload failed</div>
-          <div className="text-slate-300">File size exceeds 10MB limit</div>
+          <div className="text-slate-300">{resumeError || transcriptError || "Upload error occurred"}</div>
           <div className="mt-2">
             <button
               type="button"
-              onClick={() => onFiles(null)}
+              onClick={() => {
+                if (resumeError) {
+                  setResumeState("idle");
+                  setResumeError(null);
+                }
+                if (transcriptError) {
+                  setTranscriptState("idle");
+                  setTranscriptError(null);
+                }
+              }}
               className="px-3 py-1.5 rounded-md border border-slate-700 text-slate-200 hover:border-slate-600"
+              disabled={isSubmitting}
             >
               Try Again
             </button>
@@ -120,12 +312,12 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
         </div>
       );
     }
+    
     if (state === "uploading") {
       return (
         <div className="rounded-lg border border-slate-700 bg-slate-900/50 p-4 text-sm">
           <div className="flex items-center justify-between">
-            <div>⏳ Uploading {resumeFile?.name}...</div>
-            <button type="button" className="text-slate-300 hover:text-white">Cancel Upload</button>
+            <div>⏳ Uploading {resumeFile?.name || transcriptFile?.name}...</div>
           </div>
           <div className="mt-2 h-2 rounded-full bg-slate-800 overflow-hidden">
             <div className="h-full bg-linear-to-r from-blue-500 to-indigo-500" style={{ width: `${resumeProgress}%` }} />
@@ -134,6 +326,7 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
         </div>
       );
     }
+    
     if (state === "dragging") {
       return (
         <div className="rounded-lg border-2 border-dashed border-blue-500 bg-blue-500/10 p-8 text-center text-sm">
@@ -141,10 +334,11 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
         </div>
       );
     }
+    
     // idle
     return (
       <label
-        className={`block rounded-lg ${compact ? "p-6" : "p-8"} border border-slate-700 bg-slate-900/50 text-center cursor-pointer hover:border-slate-600 transition`}
+        className={`block rounded-lg ${compact ? "p-6" : "p-8"} border border-slate-700 bg-slate-900/50 text-center cursor-pointer hover:border-slate-600 transition ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
         <div className="text-sm">📎 Drop file here or click to browse</div>
         {!compact && (
@@ -155,6 +349,7 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
           className="hidden"
           onChange={(e) => onFiles(e.target.files)}
           accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+          disabled={isSubmitting}
         />
       </label>
     );
@@ -203,6 +398,7 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
                 type="button"
                 onClick={stopProcessing}
                 className="px-6 py-2 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-600"
+                disabled={isSubmitting}
               >
                 Go to Dashboard
               </button>
@@ -220,7 +416,13 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
               </div>
             </div>
             <div className="mt-6 flex items-center justify-center gap-3">
-              <button type="button" className="px-6 py-2 rounded-lg bg-linear-to-r from-blue-600 to-indigo-500 text-white font-semibold">View My Matches →</button>
+              <button 
+                type="button" 
+                onClick={onComplete}
+                className="px-6 py-2 rounded-lg bg-linear-to-r from-blue-600 to-indigo-500 text-white font-semibold"
+              >
+                View My Matches →
+              </button>
               <button type="button" className="px-6 py-2 rounded-lg border border-slate-700 text-slate-300">Take the Tour</button>
             </div>
           </div>
@@ -263,9 +465,28 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
               <div className="flex items-center justify-between">
                 <div>✅ {resumeFile.name} ({resumeFile.sizeLabel})</div>
                 <div className="flex items-center gap-2">
-                  <button type="button" className="text-slate-300 hover:text-white">👁️ Preview</button>
-                  <button type="button" className="text-slate-300 hover:text-white">🔄 Replace</button>
-                  <button type="button" className="text-rose-300 hover:text-rose-200" onClick={() => { setResumeFile(null); setResumeState("idle"); }}>🗑️ Delete</button>
+                  <button 
+                    type="button" 
+                    className="text-slate-300 hover:text-white disabled:opacity-50"
+                    disabled={isSubmitting}
+                  >
+                    👁️ Preview
+                  </button>
+                  <button 
+                    type="button" 
+                    className="text-slate-300 hover:text-white disabled:opacity-50"
+                    disabled={isSubmitting}
+                  >
+                    🔄 Replace
+                  </button>
+                  <button 
+                    type="button" 
+                    className="text-rose-300 hover:text-rose-200 disabled:opacity-50" 
+                    onClick={() => resumeFile.publicId && deleteFile(resumeFile.id, resumeFile.publicId, "resume")}
+                    disabled={isSubmitting}
+                  >
+                    🗑️ Delete
+                  </button>
                 </div>
               </div>
               <div className="mt-3">
@@ -292,6 +513,24 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
         <section className="rounded-xl border border-slate-700 bg-slate-800/50 p-4">
           <h3 className="text-sm font-semibold mb-3">📜 TRANSCRIPT (Optional)</h3>
           {renderDropZone(transcriptState, (files) => handleDrop(files, "transcript"), { compact: true })}
+          {transcriptState === "success" && transcriptFile && (
+            <div className="mt-3 text-sm">
+              <div className="flex items-center justify-between">
+                <div>✅ {transcriptFile.name} ({transcriptFile.sizeLabel})</div>
+                <button 
+                  type="button" 
+                  className="text-rose-300 hover:text-rose-200 disabled:opacity-50" 
+                  onClick={() => transcriptFile.publicId && deleteFile(transcriptFile.id, transcriptFile.publicId, "transcript")}
+                  disabled={isSubmitting}
+                >
+                  🗑️ Delete
+                </button>
+              </div>
+            </div>
+          )}
+          {transcriptState === "error" && transcriptError && (
+            <div className="mt-2 text-sm text-rose-300">{transcriptError}</div>
+          )}
           <div className="mt-2 text-xs text-slate-400">💡 Helps verify GPA and coursework</div>
         </section>
 
@@ -299,20 +538,30 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
         <section className="rounded-xl border border-slate-700 bg-slate-800/50 p-4">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-semibold">🎓 OTHER DOCUMENTS (Optional)</h3>
-            <button
-              type="button"
-              onClick={() => handleDrop({ length: 1, 0: new File([""], "document.pdf") } as unknown as FileList, "other")}
-              className="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200 hover:border-slate-600 transition text-sm"
-            >
+            <label className="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200 hover:border-slate-600 transition text-sm cursor-pointer disabled:opacity-50">
               + Add Document
-            </button>
+              <input
+                type="file"
+                className="hidden"
+                onChange={(e) => e.target.files && handleDrop(e.target.files, "other")}
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                disabled={isSubmitting}
+              />
+            </label>
           </div>
           {otherDocs.length > 0 ? (
             <ul className="space-y-2 text-sm">
               {otherDocs.map((d) => (
                 <li key={d.id} className="flex items-center justify-between rounded-md border border-slate-700 bg-slate-900/50 px-3 py-2">
                   <span>• {d.name} ({d.sizeLabel})</span>
-                  <button type="button" className="text-rose-300 hover:text-rose-200" onClick={() => setOtherDocs((prev) => prev.filter((x) => x.id !== d.id))}>× Delete</button>
+                  <button 
+                    type="button" 
+                    className="text-rose-300 hover:text-rose-200 disabled:opacity-50" 
+                    onClick={() => d.publicId && deleteFile(d.id, d.publicId, "other")}
+                    disabled={isSubmitting}
+                  >
+                    × Delete
+                  </button>
                 </li>
               ))}
             </ul>
@@ -333,7 +582,13 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
                 <div>✓ Awards: 2 added to your profile</div>
                 <div>✓ Work Experience: 1 added to your profile</div>
                 <div className="mt-2">
-                  <button type="button" className="px-3 py-1.5 rounded-md border border-slate-700 text-slate-200 hover:border-slate-600 text-sm">Review Extracted Data</button>
+                  <button 
+                    type="button" 
+                    className="px-3 py-1.5 rounded-md border border-slate-700 text-slate-200 hover:border-slate-600 text-sm disabled:opacity-50"
+                    disabled={isSubmitting}
+                  >
+                    Review Extracted Data
+                  </button>
                 </div>
                 <div className="text-xs text-slate-400 mt-1">Not accurate? You can edit later in your profile.</div>
               </div>
@@ -346,7 +601,8 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
           <button
             type="button"
             onClick={onBack}
-            className="px-6 py-2 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-600 transition flex items-center gap-1"
+            className="px-6 py-2 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-600 transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isSubmitting}
           >
             <span className="material-symbols-outlined text-sm">arrow_back</span>
             Back
@@ -354,17 +610,19 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
           <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={onSkip}
-              className="px-4 py-2 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-600 transition"
+              onClick={handleSkip}
+              className="px-4 py-2 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isSubmitting}
             >
               Skip Documents
             </button>
             <button
               type="button"
               onClick={startProcessing}
-              className="px-6 py-2 rounded-lg bg-linear-to-r from-blue-600 to-indigo-500 text-white font-semibold hover:scale-[1.02] transition flex items-center gap-1"
+              className="px-6 py-2 rounded-lg bg-linear-to-r from-blue-600 to-indigo-500 text-white font-semibold hover:scale-[1.02] transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isSubmitting}
             >
-              Complete Profile →
+              {isSubmitting ? 'Processing...' : 'Complete Profile →'}
             </button>
           </div>
         </div>
@@ -372,5 +630,3 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
     </div>
   );
 }
-
-
