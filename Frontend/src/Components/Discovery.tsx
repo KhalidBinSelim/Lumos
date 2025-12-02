@@ -2,6 +2,9 @@ import React, { useState, useMemo } from "react";
 import Topbar from "./Topbar";
 import Sidebar from "./Sidebar";
 import { Link } from "react-router-dom";
+import SettingsModal from "./SettingsModal";
+import HelpModal from "./HelpModal";
+import SubscriptionModal from "./SubscriptionModal";
 
 // Mock Data
 const MOCK_SCHOLARSHIPS = [
@@ -69,45 +72,49 @@ const MOCK_SCHOLARSHIPS = [
 
 export default function Discovery() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState<"cards" | "list" | "compact">("cards");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
+  
   const [filters, setFilters] = useState({
     amount: [] as string[],
     deadline: "Next 30d",
     eligibility: [] as string[],
-    category: ["STEM"],
-    demographics: ["First-Gen"],
-    requirements: ["No Essay"],
-    location: "National",
+    category: [] as string[],
+    demographics: [] as string[],
+    requirements: [] as string[],
+    location: "National"
   });
-  const [viewMode, setViewMode] = useState<"list" | "cards" | "compact">("list");
 
-  const [showSuggestions, setShowSuggestions] = useState(false);
-
-  // Filter Logic (Mock)
-  const filteredScholarships = useMemo(() => {
-    return MOCK_SCHOLARSHIPS.filter((s) => {
-      if (searchQuery && !s.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-      // Add more filter logic here as needed for the mock
-      return true;
-    });
-  }, [searchQuery, filters]);
-
-  // Mock Suggestions Data
   const suggestions = useMemo(() => {
     if (!searchQuery) return null;
-    const q = searchQuery.toLowerCase();
+    
     return {
-      scholarships: MOCK_SCHOLARSHIPS.filter(s => s.title.toLowerCase().includes(q)).slice(0, 2),
+      scholarships: MOCK_SCHOLARSHIPS.filter(s => 
+        s.title.toLowerCase().includes(searchQuery.toLowerCase())
+      ).slice(0, 3),
       tags: [
-        { label: "Technology", count: 15 },
-        { label: "Leadership", count: 23 }
-      ].filter(t => t.label.toLowerCase().includes(q) || q === "tech"),
-      orgs: MOCK_SCHOLARSHIPS.filter(s => s.org.toLowerCase().includes(q)).map(s => ({ name: s.org, count: 3 })).slice(0, 1)
+        { label: "Computer Science", count: 47 },
+        { label: "First Generation", count: 23 }
+      ],
+      orgs: [
+        { name: "Tech Foundation", count: 5 }
+      ]
     };
   }, [searchQuery]);
 
-  const toggleFilter = (category: keyof typeof filters, value: string) => {
-    setFilters((prev) => {
-      const current = prev[category];
+  const filteredScholarships = useMemo(() => {
+    return MOCK_SCHOLARSHIPS.filter(s =>
+      !searchQuery || s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.org.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [searchQuery]);
+
+  const toggleFilter = (category: string, value: string) => {
+    setFilters(prev => {
+      const current = prev[category as keyof typeof prev];
       if (Array.isArray(current)) {
         return {
           ...prev,
@@ -125,7 +132,11 @@ export default function Discovery() {
     <div className="flex flex-col h-screen w-screen bg-gradient-to-b from-slate-950 via-[#08122f] to-black text-slate-100 overflow-hidden font-sans">
       <Topbar />
       <div className="flex flex-1 overflow-hidden relative">
-        <Sidebar />
+        <Sidebar 
+          onSubscriptionsClick={() => setShowSubscriptionModal(true)}
+          onSettingsClick={() => setShowSettingsModal(true)}
+          onHelpClick={() => setShowHelpModal(true)}
+        />
 
         <main className="flex-1 overflow-y-auto relative p-4 sm:p-6">
             {/* Background Glow */}
@@ -546,6 +557,11 @@ export default function Discovery() {
             </div>
         </main>
       </div>
+      
+      {/* Modals */}
+      {showSubscriptionModal && <SubscriptionModal onClose={() => setShowSubscriptionModal(false)} />}
+      {showSettingsModal && <SettingsModal onClose={() => setShowSettingsModal(false)} />}
+      {showHelpModal && <HelpModal onClose={() => setShowHelpModal(false)} />}
     </div>
   );
 }

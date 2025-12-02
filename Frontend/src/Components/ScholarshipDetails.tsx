@@ -2,6 +2,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Topbar from "./Topbar";
 import Sidebar from "./Sidebar";
+import SettingsModal from "./SettingsModal";
+import HelpModal from "./HelpModal";
+import SubscriptionModal from "./SubscriptionModal";
 import { Link } from "react-router-dom";
 import { scholarshipsApi, type Scholarship } from "../api/scholarships";
 
@@ -25,6 +28,11 @@ export default function ScholarshipDetails(): React.ReactElement {
         threeDays: true,
         oneDay: true,
     });
+    
+    // Modal states
+    const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+    const [showSettingsModal, setShowSettingsModal] = useState(false);
+    const [showHelpModal, setShowHelpModal] = useState(false);
 
     // Fetch scholarship data on mount
     useEffect(() => {
@@ -210,7 +218,11 @@ export default function ScholarshipDetails(): React.ReactElement {
         <div className="flex flex-col h-screen w-screen bg-gradient-to-b from-slate-950 via-[#08122f] to-black text-slate-100 overflow-hidden font-sans">
             <Topbar />
             <div className="flex flex-1 overflow-hidden relative">
-                <Sidebar />
+                <Sidebar 
+                    onSubscriptionsClick={() => setShowSubscriptionModal(true)}
+                    onSettingsClick={() => setShowSettingsModal(true)}
+                    onHelpClick={() => setShowHelpModal(true)}
+                />
 
                 <main className="flex-1 overflow-y-auto relative pb-24">
                     {/* background glow */}
@@ -847,6 +859,11 @@ export default function ScholarshipDetails(): React.ReactElement {
                     </div>
                 </div>
             )}
+            
+            {/* Modals */}
+            {showSubscriptionModal && <SubscriptionModal onClose={() => setShowSubscriptionModal(false)} />}
+            {showSettingsModal && <SettingsModal onClose={() => setShowSettingsModal(false)} />}
+            {showHelpModal && <HelpModal onClose={() => setShowHelpModal(false)} />}
         </div>
     );
 }

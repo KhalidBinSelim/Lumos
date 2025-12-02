@@ -1,18 +1,25 @@
-import React, { useState, useMemo } from "react";
+import { useState } from "react";
 import Topbar from "./Topbar";
 import Sidebar from "./Sidebar";
+import SettingsModal from "./SettingsModal";
+import HelpModal from "./HelpModal";
+import SubscriptionModal from "./SubscriptionModal";
 
 // Mock Data
 const DEADLINES = [
-  { id: 1, title: "Community Service Leaders", date: "2024-02-08", amount: 2500, status: "In Progress", urgent: true },
-  { id: 2, title: "Tech Leaders Scholarship", date: "2024-02-15", amount: 5000, status: "In Progress", urgent: false },
-  { id: 3, title: "Johnson Grant", date: "2024-02-22", amount: 3500, status: "Not Started", urgent: false },
-  { id: 4, title: "Future Innovators", date: "2024-02-28", amount: 1000, status: "Submitted", urgent: false },
-  { id: 5, title: "Design Excellence", date: "2024-03-05", amount: 2000, status: "Not Started", urgent: false },
+  { id: 1, title: "Tech Leaders Scholarship", date: "2024-02-08", amount: 5000, status: "In Progress", urgent: true },
+  { id: 2, title: "Women in STEM Award", date: "2024-02-15", amount: 3000, status: "Draft", urgent: true },
+  { id: 3, title: "Community Service Leaders", date: "2024-02-20", amount: 2500, status: "Not Started", urgent: false },
+  { id: 4, title: "NextGen Coding Grant", date: "2024-02-22", amount: 1000, status: "In Progress", urgent: false },
 ];
 
 export default function Calendar() {
   const [view, setView] = useState<"month" | "week" | "list">("month");
+  
+  // Modal states
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date(2024, 1, 1)); // Feb 2024 for mock
 
   const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
@@ -45,7 +52,11 @@ export default function Calendar() {
     <div className="flex flex-col h-screen w-screen bg-gradient-to-b from-slate-950 via-[#08122f] to-black text-slate-100 overflow-hidden font-sans">
       <Topbar />
       <div className="flex flex-1 overflow-hidden relative">
-        <Sidebar />
+        <Sidebar 
+          onSubscriptionsClick={() => setShowSubscriptionModal(true)}
+          onSettingsClick={() => setShowSettingsModal(true)}
+          onHelpClick={() => setShowHelpModal(true)}
+        />
 
         <main className="flex-1 overflow-y-auto relative p-4 sm:p-6">
           {/* Background Glow */}
@@ -236,6 +247,11 @@ export default function Calendar() {
           </div>
         </main>
       </div>
+      
+      {/* Modals */}
+      {showSubscriptionModal && <SubscriptionModal onClose={() => setShowSubscriptionModal(false)} />}
+      {showSettingsModal && <SettingsModal onClose={() => setShowSettingsModal(false)} />}
+      {showHelpModal && <HelpModal onClose={() => setShowHelpModal(false)} />}
     </div>
   );
 }
