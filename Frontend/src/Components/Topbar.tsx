@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 
 export default function Topbar() {
@@ -39,17 +38,13 @@ export default function Topbar() {
             {/* Left Section */}
             <div className="flex items-center gap-10">
                 <div className="flex items-center gap-3">
-                    <span className="w-9 h-9 rounded-full bg-gradient-to-tr from-[var(--color-primary-600)] to-[var(--color-primary-500)] shadow-lg shadow-[var(--color-primary-500)]/20" />
+                    <span className="material-symbols-outlined text-green-500 text-2xl">
+                school
+              </span>
                     <span className="text-xl font-extrabold tracking-tight text-[var(--color-text-primary)] select-none">
-                        LUMOS
+                        Lumos
                     </span>
                 </div>
-
-                <nav className="hidden md:flex gap-6 text-[var(--color-text-secondary)] text-sm">
-                    <a href="#" className="hover:text-[var(--color-primary-500)] transition">Dashboard</a>
-                    <a href="#" className="hover:text-[var(--color-primary-500)] transition">Discover</a>
-                    <a href="#" className="hover:text-[var(--color-primary-500)] transition">Applications</a>
-                </nav>
             </div>
 
             {/* Right Section */}

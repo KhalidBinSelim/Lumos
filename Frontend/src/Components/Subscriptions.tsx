@@ -82,11 +82,11 @@ export default function Subscriptions({ onClose, onUpgrade }: SubscriptionsProps
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className="relative w-full max-w-7xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-slate-950 via-slate-900 to-black text-white rounded-2xl border border-slate-700 shadow-2xl">
+      <div className="relative w-full max-w-7xl max-h-[90vh] overflow-y-auto bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] rounded-2xl border border-[var(--color-border)] shadow-2xl">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-full bg-slate-800/60 border border-slate-700/60 text-slate-400 hover:text-white hover:bg-slate-700/60 transition z-10"
+          className="absolute top-4 right-4 p-2 rounded-full bg-[var(--color-bg-secondary)] border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-primary)] transition z-10"
         >
           <span className="material-symbols-outlined">close</span>
         </button>
@@ -94,32 +94,32 @@ export default function Subscriptions({ onClose, onUpgrade }: SubscriptionsProps
         <div className="px-8 py-12">
           {/* Header */}
           <div className="mb-12">
-            <h1 className="text-4xl font-bold mb-4">Subscription Plans</h1>
-            <p className="text-slate-400 text-lg">
+            <h1 className="text-4xl font-bold mb-4 text-[var(--color-text-primary)]">Subscription Plans</h1>
+            <p className="text-[var(--color-text-secondary)] text-lg">
               Choose the plan that fits your scholarship journey
             </p>
           </div>
 
           {/* Current Subscription Card */}
-          <div className="mb-12 p-6 rounded-2xl bg-slate-800/40 border border-slate-700 flex flex-col items-center text-center">
-            <div className="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center mb-4">
-              <span className="material-symbols-outlined text-3xl text-blue-400">
+          <div className="mb-12 p-6 rounded-2xl bg-[var(--color-bg-secondary)] border border-[var(--color-border)] flex flex-col items-center text-center">
+            <div className="w-16 h-16 rounded-full bg-[var(--color-primary-500)]/20 flex items-center justify-center mb-4">
+              <span className="material-symbols-outlined text-3xl text-[var(--color-primary-500)]">
                 workspace_premium
               </span>
             </div>
             
-            <h2 className="text-xl font-semibold mb-2">
+            <h2 className="text-xl font-semibold mb-2 text-[var(--color-text-primary)]">
               Current Subscription
             </h2>
             
-            <p className="text-slate-300 mb-4">
+            <p className="text-[var(--color-text-secondary)] mb-4">
               {plans.find((p) => p.id === currentSubscription.plan)?.name} -{" "}
-              <span className="text-blue-400">
+              <span className="text-[var(--color-primary-500)]">
                 ${plans.find((p) => p.id === currentSubscription.plan)?.price}
                 /{plans.find((p) => p.id === currentSubscription.plan)?.period}
               </span>
               {currentSubscription.expiresAt && (
-                <span className="block text-sm text-slate-400 mt-1">
+                <span className="block text-sm text-[var(--color-text-secondary)] mt-1">
                   Renews on {currentSubscription.expiresAt}
                 </span>
               )}
@@ -147,25 +147,25 @@ export default function Subscriptions({ onClose, onUpgrade }: SubscriptionsProps
                   key={plan.id}
                   className={`rounded-2xl p-8 flex flex-col relative overflow-hidden transition ${
                     plan.highlighted
-                      ? "bg-slate-800/60 border border-blue-500/30 shadow-lg shadow-blue-900/10"
+                      ? "bg-[var(--color-bg-secondary)] border border-[var(--color-primary-500)]/30 shadow-lg shadow-[var(--color-primary-500)]/10"
                       : plan.badge
-                      ? "bg-gradient-to-b from-slate-800/80 to-slate-900/80 border border-indigo-500/40 shadow-xl shadow-indigo-900/20"
-                      : "bg-slate-800/40 border border-slate-700"
-                  } hover:border-blue-500/50`}
+                      ? "bg-gradient-to-b from-[var(--color-bg-secondary)] to-[var(--color-bg-primary)] border border-[var(--color-secondary-500)]/40 shadow-xl shadow-[var(--color-secondary-500)]/20"
+                      : "bg-[var(--color-bg-secondary)]/40 border border-[var(--color-border)]"
+                  } hover:border-[var(--color-primary-500)]/50`}
                 >
                   {plan.badge && (
-                    <div className="absolute top-0 right-0 bg-indigo-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
+                    <div className="absolute top-0 right-0 bg-[var(--color-secondary-500)] text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
                       {plan.badge}
                     </div>
                   )}
 
                   <div className="mb-6">
-                    <h3 className="text-xl font-semibold mb-2">{plan.name}</h3>
+                    <h3 className="text-xl font-semibold mb-2 text-[var(--color-text-primary)]">{plan.name}</h3>
                     <div className="flex items-baseline gap-1">
-                      <span className="text-4xl font-bold">${plan.price}</span>
-                      <span className="text-slate-400">/{plan.period}</span>
+                      <span className="text-4xl font-bold text-[var(--color-text-primary)]">${plan.price}</span>
+                      <span className="text-[var(--color-text-secondary)]">/{plan.period}</span>
                     </div>
-                    <p className="text-slate-400 text-sm mt-4">
+                    <p className="text-[var(--color-text-secondary)] text-sm mt-4">
                       {plan.description}
                     </p>
                   </div>
@@ -174,11 +174,11 @@ export default function Subscriptions({ onClose, onUpgrade }: SubscriptionsProps
                     {plan.features.map((feature, idx) => (
                       <li
                         key={idx}
-                        className="flex items-start gap-3 text-slate-300 text-sm"
+                        className="flex items-start gap-3 text-[var(--color-text-secondary)] text-sm"
                       >
                         <span
                           className={`material-symbols-outlined text-lg shrink-0 ${
-                            plan.badge ? "text-indigo-400" : "text-blue-400"
+                            plan.badge ? "text-[var(--color-secondary-400)]" : "text-[var(--color-primary-400)]"
                           }`}
                         >
                           check_circle
@@ -193,12 +193,12 @@ export default function Subscriptions({ onClose, onUpgrade }: SubscriptionsProps
                     disabled={isCurrent}
                     className={`w-full py-3 rounded-lg font-medium transition ${
                       isCurrent
-                        ? "bg-slate-700 text-slate-400 cursor-not-allowed"
+                        ? "bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] cursor-not-allowed"
                         : isUpgrade
                         ? plan.badge
-                          ? "bg-indigo-600 text-white hover:bg-indigo-500 shadow-lg shadow-indigo-600/20"
-                          : "bg-blue-600 text-white hover:bg-blue-500 shadow-lg shadow-blue-600/20"
-                        : "border border-slate-600 text-white hover:bg-slate-800"
+                          ? "bg-[var(--color-secondary-600)] text-white hover:bg-[var(--color-secondary-500)] shadow-lg shadow-[var(--color-secondary-600)]/20"
+                          : "bg-[var(--color-primary-600)] text-white hover:bg-[var(--color-primary-500)] shadow-lg shadow-[var(--color-primary-600)]/20"
+                        : "border border-[var(--color-border)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-secondary)]"
                     }`}
                   >
                     {isCurrent ? "Current Plan" : plan.buttonText}
@@ -209,23 +209,23 @@ export default function Subscriptions({ onClose, onUpgrade }: SubscriptionsProps
           </div>
 
           {/* Help Section */}
-          <div className="mt-12 p-6 rounded-2xl bg-slate-800/40 border border-slate-700 flex flex-col items-center text-center">
-            <div className="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center mb-4">
-              <span className="material-symbols-outlined text-3xl text-blue-400">
+          <div className="mt-12 p-6 rounded-2xl bg-[var(--color-bg-secondary)] border border-[var(--color-border)] flex flex-col items-center text-center">
+            <div className="w-16 h-16 rounded-full bg-[var(--color-primary-500)]/20 flex items-center justify-center mb-4">
+              <span className="material-symbols-outlined text-3xl text-[var(--color-primary-500)]">
                 info
               </span>
             </div>
 
-            <h3 className="font-semibold text-lg mb-2">
+            <h3 className="font-semibold text-lg mb-2 text-[var(--color-text-primary)]">
               Need help choosing a plan?
             </h3>
             
-            <p className="text-slate-400 mb-6">
+            <p className="text-[var(--color-text-secondary)] mb-6">
               Our team is here to help you find the perfect plan for your
               scholarship journey. Contact us for personalized recommendations.
             </p>
             
-            <button className="px-6 py-2.5 rounded-full bg-blue-600 text-white hover:bg-blue-500 transition font-medium shadow-lg shadow-blue-600/20">
+            <button className="px-6 py-2.5 rounded-full bg-[var(--color-primary-600)] text-white hover:bg-[var(--color-primary-500)] transition font-medium shadow-lg shadow-[var(--color-primary-600)]/20">
               Contact Support
             </button>
           </div>

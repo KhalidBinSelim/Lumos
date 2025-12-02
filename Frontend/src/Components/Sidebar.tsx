@@ -28,7 +28,7 @@ export default function Sidebar({
   ];
 
   return (
-    <aside className="hidden md:flex flex-col w-64 bg-[var(--color-bg-primary)] border-r border-[var(--color-border)] transition-colors duration-300">
+    <aside className="hidden md:flex flex-col w-64 bg-[var(--color-bg-primary)]/60 backdrop-blur-md border-r border-[var(--color-border)] transition-colors duration-300">
       <div className="flex-1 px-6 py-8 overflow-y-auto">
         <nav className="space-y-2">
           {mainNav.map((item) => {
