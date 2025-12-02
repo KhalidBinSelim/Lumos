@@ -1,9 +1,7 @@
 
 import { useState, useEffect, useRef } from "react";
 
-const user = localStorage.getItem("user");
-const userObject = JSON.parse(user || "{}");
-console.log(userObject);
+
 
 export default function Topbar() {
     const [showNotifications, setShowNotifications] = useState(false);
@@ -34,6 +32,9 @@ export default function Topbar() {
         localStorage.removeItem('user');
         window.location.href = '/';
     };
+    const user = localStorage.getItem("user");
+    const userObject = JSON.parse(user || "{}");
+    console.log(userObject);
 
     return (
         <header className="sticky top-0 z-50 flex items-center justify-between px-8 py-4 

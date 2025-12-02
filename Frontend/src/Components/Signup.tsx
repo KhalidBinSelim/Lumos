@@ -15,7 +15,7 @@ export default function Signup({ onClose, onSignIn }: SignupProps) {
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
-  
+
   const navigate = useNavigate();
 
   const isFormValid = useMemo(() => {
@@ -36,11 +36,11 @@ export default function Signup({ onClose, onSignIn }: SignupProps) {
       setFeedbackMessage(null);
 
       // Call real API
-      console.log('📝 Attempting registration with:', { 
-        email: email.trim(), 
-        fullName: fullName.trim() 
+      console.log('📝 Attempting registration with:', {
+        email: email.trim(),
+        fullName: fullName.trim()
       });
-      
+
       const response = await authApi.register({
         email: email.trim(),
         password: password,
@@ -53,7 +53,8 @@ export default function Signup({ onClose, onSignIn }: SignupProps) {
       if (response.data?.token) {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
-        console.log('💾 Token and user data saved to localStorage');
+        const userObject = JSON.parse(localStorage.getItem('user') || '{}');
+        console.log('💾 Token and user data saved to localStorage',userObject);
       } else {
         console.warn('⚠️ No token in response:', response);
       }
@@ -74,9 +75,9 @@ export default function Signup({ onClose, onSignIn }: SignupProps) {
         data: error?.data,
         isNetworkError: error?.isNetworkError,
       });
-      
+
       let errorMessage = "We ran into an issue creating your account. Please try again.";
-      
+
       if (error?.isNetworkError) {
         errorMessage = "Cannot connect to server. Please make sure the backend is running.";
       } else if (error?.message) {
@@ -88,7 +89,7 @@ export default function Signup({ onClose, onSignIn }: SignupProps) {
         const validationErrors = error.data.errors.map((err: any) => err.msg || err.message).join(', ');
         errorMessage = validationErrors || errorMessage;
       }
-      
+
       setFeedbackMessage(errorMessage);
     } finally {
       setIsSubmitting(false);

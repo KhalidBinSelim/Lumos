@@ -26,7 +26,6 @@ function App() {
         <Route path="/essay-copilot" element={<EssayCopilot />} />
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/saved" element={<Saved />} />
-        <Route path="/dashboard" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/api-test" element={<ApiTest />} />
         <Route path="/admin" element={<Admin />} />
