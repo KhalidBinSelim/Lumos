@@ -289,7 +289,7 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
       return (
         <div className="rounded-lg border border-rose-500/60 bg-rose-500/10 p-4 text-sm">
           <div className="font-medium">❌ Upload failed</div>
-          <div className="text-slate-300">{resumeError || transcriptError || "Upload error occurred"}</div>
+          <div className="text-[var(--color-text-secondary)]">{resumeError || transcriptError || "Upload error occurred"}</div>
           <div className="mt-2">
             <button
               type="button"
@@ -303,7 +303,7 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
                   setTranscriptError(null);
                 }
               }}
-              className="px-3 py-1.5 rounded-md border border-slate-700 text-slate-200 hover:border-slate-600"
+              className="px-3 py-1.5 rounded-md border border-[var(--color-border)] text-[var(--color-text-primary)] hover:border-[var(--color-text-secondary)]"
               disabled={isSubmitting}
             >
               Try Again
@@ -315,21 +315,21 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
     
     if (state === "uploading") {
       return (
-        <div className="rounded-lg border border-slate-700 bg-slate-900/50 p-4 text-sm">
+        <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)]/50 p-4 text-sm">
           <div className="flex items-center justify-between">
-            <div>⏳ Uploading {resumeFile?.name || transcriptFile?.name}...</div>
+            <div className="text-[var(--color-text-primary)]">⏳ Uploading {resumeFile?.name || transcriptFile?.name}...</div>
           </div>
-          <div className="mt-2 h-2 rounded-full bg-slate-800 overflow-hidden">
-            <div className="h-full bg-linear-to-r from-blue-500 to-indigo-500" style={{ width: `${resumeProgress}%` }} />
+          <div className="mt-2 h-2 rounded-full bg-[var(--color-bg-primary)] overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-[var(--color-primary-500)] to-[var(--color-primary-600)]" style={{ width: `${resumeProgress}%` }} />
           </div>
-          <div className="mt-1 text-xs text-slate-400">{resumeProgress}%</div>
+          <div className="mt-1 text-xs text-[var(--color-text-secondary)]">{resumeProgress}%</div>
         </div>
       );
     }
     
     if (state === "dragging") {
       return (
-        <div className="rounded-lg border-2 border-dashed border-blue-500 bg-blue-500/10 p-8 text-center text-sm">
+        <div className="rounded-lg border-2 border-dashed border-[var(--color-primary-500)] bg-[var(--color-primary-500)]/10 p-8 text-center text-sm text-[var(--color-text-primary)]">
           ⬇️ Drop your file here
         </div>
       );
@@ -338,11 +338,11 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
     // idle
     return (
       <label
-        className={`block rounded-lg ${compact ? "p-6" : "p-8"} border border-slate-700 bg-slate-900/50 text-center cursor-pointer hover:border-slate-600 transition ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`block rounded-lg ${compact ? "p-6" : "p-8"} border border-[var(--color-border)] bg-[var(--color-bg-secondary)]/50 text-center cursor-pointer hover:border-[var(--color-text-secondary)] transition ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
-        <div className="text-sm">📎 Drop file here or click to browse</div>
+        <div className="text-sm text-[var(--color-text-primary)]">📎 Drop file here or click to browse</div>
         {!compact && (
-          <div className="mt-2 text-xs text-slate-400">Accepted: PDF, DOCX, JPG, PNG • Max size: 10MB</div>
+          <div className="mt-2 text-xs text-[var(--color-text-secondary)]">Accepted: PDF, DOCX, JPG, PNG • Max size: 10MB</div>
         )}
         <input
           type="file"
@@ -359,45 +359,45 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
     return (
       <div className="w-full max-w-xl mx-auto">
         <div className="flex items-center justify-between gap-3 mb-4 pr-10">
-          <div className="flex items-center gap-2 text-slate-200">
-            <span className="inline-block w-6 h-6 rounded-full bg-linear-to-tr from-blue-500 to-indigo-500" />
+          <div className="flex items-center gap-2 text-[var(--color-text-primary)]">
+            <span className="inline-block w-6 h-6 rounded-full bg-gradient-to-tr from-[var(--color-primary-500)] to-[var(--color-primary-600)]" />
             <span className="text-sm font-semibold">Lumos</span>
           </div>
           <div className="flex items-center gap-3 flex-1 min-w-0">
-            <span className="truncate text-xs sm:text-sm font-medium text-slate-200">Step 5 of 5: Upload Documents</span>
+            <span className="truncate text-xs sm:text-sm font-medium text-[var(--color-text-primary)]">Step 5 of 5: Upload Documents</span>
             <div className="flex items-center gap-2 ml-auto min-w-[120px]">
-              <div className="w-24 h-1 rounded-full bg-slate-700 overflow-hidden">
-                <div className="h-full w-full bg-linear-to-r from-blue-500 to-indigo-500" />
+              <div className="w-24 h-1 rounded-full bg-[var(--color-bg-secondary)] overflow-hidden">
+                <div className="h-full w-full bg-gradient-to-r from-[var(--color-primary-500)] to-[var(--color-primary-600)]" />
               </div>
-              <span className="text-xs text-slate-400">100%</span>
+              <span className="text-xs text-[var(--color-text-secondary)]">100%</span>
             </div>
           </div>
         </div>
 
         {processingScreen === "processing" ? (
           <div className="text-center py-10">
-            <div className="text-2xl">🎉 Profile Complete!</div>
-            <div className="mt-2 text-slate-300">Your scholarship journey starts now</div>
-            <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800/50 p-6 text-left">
-              <div className="font-semibold mb-3">HERE'S WHAT HAPPENS NEXT:</div>
-              <div className="space-y-4 text-sm">
+            <div className="text-2xl text-[var(--color-text-primary)]">🎉 Profile Complete!</div>
+            <div className="mt-2 text-[var(--color-text-secondary)]">Your scholarship journey starts now</div>
+            <div className="mt-6 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-secondary)]/50 p-6 text-left">
+              <div className="font-semibold mb-3 text-[var(--color-text-primary)]">HERE'S WHAT HAPPENS NEXT:</div>
+              <div className="space-y-4 text-sm text-[var(--color-text-primary)]">
                 <div>
                   1️⃣ We're analyzing 10,000+ scholarships
-                  <div className="mt-1 h-2 rounded-full bg-slate-800 overflow-hidden">
-                    <div className="h-full w-2/3 bg-linear-to-r from-blue-500 to-indigo-500" />
+                  <div className="mt-1 h-2 rounded-full bg-[var(--color-bg-primary)] overflow-hidden">
+                    <div className="h-full w-2/3 bg-gradient-to-r from-[var(--color-primary-500)] to-[var(--color-primary-600)]" />
                   </div>
                 </div>
                 <div>2️⃣ AI is personalizing your dashboard</div>
                 <div>3️⃣ We'll send you a summary email</div>
-                <div className="text-slate-400">⏱️ This takes about 30 seconds...</div>
+                <div className="text-[var(--color-text-secondary)]">⏱️ This takes about 30 seconds...</div>
               </div>
             </div>
-            <div className="mt-6 text-slate-400">[Processing... Do not close this window]</div>
+            <div className="mt-6 text-[var(--color-text-secondary)]">[Processing... Do not close this window]</div>
             <div className="mt-6">
               <button
                 type="button"
                 onClick={stopProcessing}
-                className="px-6 py-2 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-600"
+                className="px-6 py-2 rounded-lg border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-text-primary)]"
                 disabled={isSubmitting}
               >
                 Go to Dashboard
@@ -406,10 +406,10 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
           </div>
         ) : (
           <div className="text-center py-10">
-            <div className="text-2xl">✅ All Set!</div>
-            <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800/50 p-6 text-left">
-              <div className="font-semibold mb-3">🎯 We found 47 scholarships you qualify for!</div>
-              <div className="text-sm space-y-2">
+            <div className="text-2xl text-[var(--color-text-primary)]">✅ All Set!</div>
+            <div className="mt-6 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-secondary)]/50 p-6 text-left">
+              <div className="font-semibold mb-3 text-[var(--color-text-primary)]">🎯 We found 47 scholarships you qualify for!</div>
+              <div className="text-sm space-y-2 text-[var(--color-text-primary)]">
                 <div>Total Potential: $142,500</div>
                 <div>📝 3 applications have deadlines this month</div>
                 <div>💡 Top Match: Tech Leaders Scholarship ($5,000) — 89% match</div>
@@ -419,11 +419,11 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
               <button 
                 type="button" 
                 onClick={onComplete}
-                className="px-6 py-2 rounded-lg bg-linear-to-r from-blue-600 to-indigo-500 text-white font-semibold"
+                className="px-6 py-2 rounded-lg bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-500)] text-white font-semibold"
               >
                 View My Matches →
               </button>
-              <button type="button" className="px-6 py-2 rounded-lg border border-slate-700 text-slate-300">Take the Tour</button>
+              <button type="button" className="px-6 py-2 rounded-lg border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-text-primary)]">Take the Tour</button>
             </div>
           </div>
         )}
@@ -435,46 +435,46 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
     <div className="w-full max-w-xl max-h-[450px] mx-auto">
       {/* Header - compact single line */}
       <div className="flex items-center justify-between gap-3 mb-4 pr-10">
-        <div className="flex items-center gap-2 text-slate-200">
-          <span className="inline-block w-6 h-6 rounded-full bg-linear-to-tr from-blue-500 to-indigo-500" />
+        <div className="flex items-center gap-2 text-[var(--color-text-primary)]">
+          <span className="inline-block w-6 h-6 rounded-full bg-gradient-to-tr from-[var(--color-primary-500)] to-[var(--color-primary-600)]" />
           <span className="text-sm font-semibold">Lumos</span>
         </div>
         <div className="flex items-center gap-3 flex-1 min-w-0">
-          <span className="truncate text-xs sm:text-sm font-medium text-slate-200">Step 5 of 5: Upload Documents</span>
+          <span className="truncate text-xs sm:text-sm font-medium text-[var(--color-text-primary)]">Step 5 of 5: Upload Documents</span>
           <div className="flex items-center gap-2 ml-auto min-w-[120px]">
-            <div className="w-24 h-1 rounded-full bg-slate-700 overflow-hidden">
-              <div className="h-full w-full bg-linear-to-r from-blue-500 to-indigo-500" />
+            <div className="w-24 h-1 rounded-full bg-[var(--color-bg-secondary)] overflow-hidden">
+              <div className="h-full w-full bg-gradient-to-r from-[var(--color-primary-500)] to-[var(--color-primary-600)]" />
             </div>
-            <span className="text-xs text-slate-400">100%</span>
+            <span className="text-xs text-[var(--color-text-secondary)]">100%</span>
           </div>
         </div>
       </div>
 
       <form onSubmit={(e) => { e.preventDefault(); onComplete(); }} className="space-y-6">
         <div className="text-center">
-          <h2 className="text-xl font-bold">Almost done! Upload your documents</h2>
-          <p className="mt-1 text-slate-400 text-sm">(We'll extract info automatically with AI)</p>
+          <h2 className="text-xl font-bold text-[var(--color-text-primary)]">Almost done! Upload your documents</h2>
+          <p className="mt-1 text-[var(--color-text-secondary)] text-sm">(We'll extract info automatically with AI)</p>
         </div>
 
         {/* Resume */}
-        <section className="rounded-xl border border-slate-700 bg-slate-800/50 p-4">
-          <h3 className="text-sm font-semibold mb-3">📄 RESUME / CV</h3>
+        <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-primary)]/50 p-4">
+          <h3 className="text-sm font-semibold mb-3 text-[var(--color-text-primary)]">📄 RESUME / CV</h3>
           {renderDropZone(resumeState, (files) => handleDrop(files, "resume"))}
           {resumeState === "success" && resumeFile && (
             <div className="mt-3 text-sm">
               <div className="flex items-center justify-between">
-                <div>✅ {resumeFile.name} ({resumeFile.sizeLabel})</div>
+                <div className="text-[var(--color-text-primary)]">✅ {resumeFile.name} ({resumeFile.sizeLabel})</div>
                 <div className="flex items-center gap-2">
                   <button 
                     type="button" 
-                    className="text-slate-300 hover:text-white disabled:opacity-50"
+                    className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] disabled:opacity-50"
                     disabled={isSubmitting}
                   >
                     👁️ Preview
                   </button>
                   <button 
                     type="button" 
-                    className="text-slate-300 hover:text-white disabled:opacity-50"
+                    className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] disabled:opacity-50"
                     disabled={isSubmitting}
                   >
                     🔄 Replace
@@ -490,16 +490,16 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
                 </div>
               </div>
               <div className="mt-3">
-                <div className="text-sm font-medium">AI Extraction Status:</div>
+                <div className="text-sm font-medium text-[var(--color-text-primary)]">AI Extraction Status:</div>
                 {extract.inProgress ? (
                   <div className="mt-1">
-                    <div className="text-slate-300 text-sm">⏳ Processing... {extract.progress}%</div>
-                    <div className="mt-1 h-2 rounded-full bg-slate-800 overflow-hidden">
-                      <div className="h-full bg-linear-to-r from-blue-500 to-indigo-500" style={{ width: `${extract.progress}%` }} />
+                    <div className="text-[var(--color-text-secondary)] text-sm">⏳ Processing... {extract.progress}%</div>
+                    <div className="mt-1 h-2 rounded-full bg-[var(--color-bg-primary)] overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-[var(--color-primary-500)] to-[var(--color-primary-600)]" style={{ width: `${extract.progress}%` }} />
                     </div>
                   </div>
                 ) : (
-                  <div className="text-green-300">✅ {extract.completeMsg || "Complete!"}</div>
+                  <div className="text-[var(--color-primary-400)]">✅ {extract.completeMsg || "Complete!"}</div>
                 )}
               </div>
             </div>
@@ -510,13 +510,13 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
         </section>
 
         {/* Transcript */}
-        <section className="rounded-xl border border-slate-700 bg-slate-800/50 p-4">
-          <h3 className="text-sm font-semibold mb-3">📜 TRANSCRIPT (Optional)</h3>
+        <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-primary)]/50 p-4">
+          <h3 className="text-sm font-semibold mb-3 text-[var(--color-text-primary)]">📜 TRANSCRIPT (Optional)</h3>
           {renderDropZone(transcriptState, (files) => handleDrop(files, "transcript"), { compact: true })}
           {transcriptState === "success" && transcriptFile && (
             <div className="mt-3 text-sm">
               <div className="flex items-center justify-between">
-                <div>✅ {transcriptFile.name} ({transcriptFile.sizeLabel})</div>
+                <div className="text-[var(--color-text-primary)]">✅ {transcriptFile.name} ({transcriptFile.sizeLabel})</div>
                 <button 
                   type="button" 
                   className="text-rose-300 hover:text-rose-200 disabled:opacity-50" 
@@ -531,14 +531,14 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
           {transcriptState === "error" && transcriptError && (
             <div className="mt-2 text-sm text-rose-300">{transcriptError}</div>
           )}
-          <div className="mt-2 text-xs text-slate-400">💡 Helps verify GPA and coursework</div>
+          <div className="mt-2 text-xs text-[var(--color-text-secondary)]">💡 Helps verify GPA and coursework</div>
         </section>
 
         {/* Other documents */}
-        <section className="rounded-xl border border-slate-700 bg-slate-800/50 p-4">
+        <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-primary)]/50 p-4">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold">🎓 OTHER DOCUMENTS (Optional)</h3>
-            <label className="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200 hover:border-slate-600 transition text-sm cursor-pointer disabled:opacity-50">
+            <h3 className="text-sm font-semibold text-[var(--color-text-primary)]">🎓 OTHER DOCUMENTS (Optional)</h3>
+            <label className="px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-[var(--color-text-primary)] hover:border-[var(--color-text-secondary)] transition text-sm cursor-pointer disabled:opacity-50">
               + Add Document
               <input
                 type="file"
@@ -552,8 +552,8 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
           {otherDocs.length > 0 ? (
             <ul className="space-y-2 text-sm">
               {otherDocs.map((d) => (
-                <li key={d.id} className="flex items-center justify-between rounded-md border border-slate-700 bg-slate-900/50 px-3 py-2">
-                  <span>• {d.name} ({d.sizeLabel})</span>
+                <li key={d.id} className="flex items-center justify-between rounded-md border border-[var(--color-border)] bg-[var(--color-bg-secondary)]/50 px-3 py-2">
+                  <span className="text-[var(--color-text-primary)]">• {d.name} ({d.sizeLabel})</span>
                   <button 
                     type="button" 
                     className="text-rose-300 hover:text-rose-200 disabled:opacity-50" 
@@ -566,31 +566,31 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
               ))}
             </ul>
           ) : (
-            <div className="text-sm text-slate-400">Examples: Award certificates, recommendation letters, portfolios</div>
+            <div className="text-sm text-[var(--color-text-secondary)]">Examples: Award certificates, recommendation letters, portfolios</div>
           )}
         </section>
 
         {/* Extracted information */}
         {resumeState === "success" && (
-          <section className="rounded-xl border border-slate-700 bg-slate-800/50 p-4">
-            <h3 className="text-sm font-semibold mb-3">✨ EXTRACTED INFORMATION</h3>
+          <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-primary)]/50 p-4">
+            <h3 className="text-sm font-semibold mb-3 text-[var(--color-text-primary)]">✨ EXTRACTED INFORMATION</h3>
             {extract.inProgress ? (
-              <div className="text-sm text-slate-300">Extracting from your resume...</div>
+              <div className="text-sm text-[var(--color-text-secondary)]">Extracting from your resume...</div>
             ) : (
-              <div className="text-sm space-y-1">
+              <div className="text-sm space-y-1 text-[var(--color-text-primary)]">
                 <div>✓ Activities: 3 added to your profile</div>
                 <div>✓ Awards: 2 added to your profile</div>
                 <div>✓ Work Experience: 1 added to your profile</div>
                 <div className="mt-2">
                   <button 
                     type="button" 
-                    className="px-3 py-1.5 rounded-md border border-slate-700 text-slate-200 hover:border-slate-600 text-sm disabled:opacity-50"
+                    className="px-3 py-1.5 rounded-md border border-[var(--color-border)] text-[var(--color-text-primary)] hover:border-[var(--color-text-secondary)] text-sm disabled:opacity-50"
                     disabled={isSubmitting}
                   >
                     Review Extracted Data
                   </button>
                 </div>
-                <div className="text-xs text-slate-400 mt-1">Not accurate? You can edit later in your profile.</div>
+                <div className="text-xs text-[var(--color-text-secondary)] mt-1">Not accurate? You can edit later in your profile.</div>
               </div>
             )}
           </section>
@@ -601,7 +601,7 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
           <button
             type="button"
             onClick={onBack}
-            className="px-6 py-2 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-600 transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2 rounded-lg border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-text-primary)] transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isSubmitting}
           >
             <span className="material-symbols-outlined text-sm">arrow_back</span>
@@ -611,7 +611,7 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
             <button
               type="button"
               onClick={handleSkip}
-              className="px-4 py-2 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 rounded-lg border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-text-primary)] transition disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isSubmitting}
             >
               Skip Documents
@@ -619,7 +619,7 @@ export default function OnboardingStep5({ onBack, onSkip, onComplete }: Onboardi
             <button
               type="button"
               onClick={startProcessing}
-              className="px-6 py-2 rounded-lg bg-linear-to-r from-blue-600 to-indigo-500 text-white font-semibold hover:scale-[1.02] transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-2 rounded-lg bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-500)] text-white font-semibold hover:scale-[1.02] transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Processing...' : 'Complete Profile →'}

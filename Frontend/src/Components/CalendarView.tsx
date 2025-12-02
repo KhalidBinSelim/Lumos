@@ -9,7 +9,7 @@ const DEADLINES = [
   { id: 4, title: "NextGen Coding Grant", date: "2024-02-22", amount: 1000, status: "In Progress", urgent: false },
 ];
 
-export default function Calendar() {
+export default function CalendarView() {
   const [view, setView] = useState<"month" | "week" | "list">("month");
   
   const [currentDate, setCurrentDate] = useState(new Date(2024, 1, 1)); // Feb 2024 for mock

@@ -24,45 +24,45 @@ export default function HelpModal({ onClose }: HelpModalProps) {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-2xl max-h-[85vh] flex flex-col bg-slate-900 rounded-2xl border border-slate-700 shadow-2xl">
+      <div className="relative w-full max-w-2xl max-h-[85vh] flex flex-col bg-[var(--color-bg-secondary)] rounded-2xl border border-[var(--color-border)] shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-800">
-          <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-            <span className="material-symbols-outlined text-slate-400">
+        <div className="flex items-center justify-between p-6 border-b border-[var(--color-border)]">
+          <h2 className="text-2xl font-bold text-[var(--color-text-primary)] flex items-center gap-3">
+            <span className="material-symbols-outlined text-[var(--color-text-secondary)]">
               help
             </span>
             Help & Support
           </h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white transition"
+            className="p-2 rounded-full hover:bg-[var(--color-bg-primary)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition"
           >
             <span className="material-symbols-outlined">close</span>
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-slate-800">
+        <div className="flex border-b border-[var(--color-border)]">
           <button
             onClick={() => setActiveTab("faq")}
             className={`flex-1 py-4 text-sm font-medium transition relative ${
-              activeTab === "faq" ? "text-blue-400" : "text-slate-400 hover:text-slate-200"
+              activeTab === "faq" ? "text-[var(--color-primary-500)]" : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
             }`}
           >
             FAQs
             {activeTab === "faq" && (
-              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-500" />
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[var(--color-primary-500)]" />
             )}
           </button>
           <button
             onClick={() => setActiveTab("contact")}
             className={`flex-1 py-4 text-sm font-medium transition relative ${
-              activeTab === "contact" ? "text-blue-400" : "text-slate-400 hover:text-slate-200"
+              activeTab === "contact" ? "text-[var(--color-primary-500)]" : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
             }`}
           >
             Contact Support
             {activeTab === "contact" && (
-              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-500" />
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[var(--color-primary-500)]" />
             )}
           </button>
         </div>
@@ -74,19 +74,19 @@ export default function HelpModal({ onClose }: HelpModalProps) {
               {faqs.map((faq, idx) => (
                 <div
                   key={idx}
-                  className="p-4 rounded-xl bg-slate-800/40 border border-slate-700"
+                  className="p-4 rounded-xl bg-[var(--color-bg-primary)]/40 border border-[var(--color-border)]"
                 >
-                  <h4 className="font-semibold text-white mb-2">{faq.q}</h4>
-                  <p className="text-slate-400 text-sm leading-relaxed">
+                  <h4 className="font-semibold text-[var(--color-text-primary)] mb-2">{faq.q}</h4>
+                  <p className="text-[var(--color-text-secondary)] text-sm leading-relaxed">
                     {faq.a}
                   </p>
                 </div>
               ))}
               <div className="mt-8 text-center">
-                <p className="text-slate-400 mb-4">Still have questions?</p>
+                <p className="text-[var(--color-text-secondary)] mb-4">Still have questions?</p>
                 <button
                   onClick={() => setActiveTab("contact")}
-                  className="text-blue-400 hover:text-blue-300 font-medium"
+                  className="text-[var(--color-primary-500)] hover:text-[var(--color-primary-400)] font-medium"
                 >
                   Contact our support team &rarr;
                 </button>
@@ -94,15 +94,15 @@ export default function HelpModal({ onClose }: HelpModalProps) {
             </div>
           ) : (
             <div className="space-y-6">
-              <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-start gap-4">
-                <span className="material-symbols-outlined text-blue-400 text-2xl">
+              <div className="p-4 rounded-xl bg-[var(--color-primary-500)]/10 border border-[var(--color-primary-500)]/20 flex items-start gap-4">
+                <span className="material-symbols-outlined text-[var(--color-primary-500)] text-2xl">
                   support_agent
                 </span>
                 <div>
-                  <h4 className="font-semibold text-white mb-1">
+                  <h4 className="font-semibold text-[var(--color-text-primary)] mb-1">
                     We're here to help
                   </h4>
-                  <p className="text-slate-400 text-sm">
+                  <p className="text-[var(--color-text-secondary)] text-sm">
                     Our team typically responds within 24 hours.
                   </p>
                 </div>
@@ -110,10 +110,10 @@ export default function HelpModal({ onClose }: HelpModalProps) {
 
               <form className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                  <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">
                     Subject
                   </label>
-                  <select className="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-700 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition">
+                  <select className="w-full px-4 py-3 rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border)] text-[var(--color-text-primary)] focus:border-[var(--color-primary-500)] focus:ring-1 focus:ring-[var(--color-primary-500)] outline-none transition">
                     <option>General Inquiry</option>
                     <option>Technical Issue</option>
                     <option>Billing Question</option>
@@ -121,16 +121,16 @@ export default function HelpModal({ onClose }: HelpModalProps) {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                  <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">
                     Message
                   </label>
                   <textarea
                     rows={5}
-                    className="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-700 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition resize-none"
+                    className="w-full px-4 py-3 rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border)] text-[var(--color-text-primary)] focus:border-[var(--color-primary-500)] focus:ring-1 focus:ring-[var(--color-primary-500)] outline-none transition resize-none"
                     placeholder="Describe your issue..."
                   />
                 </div>
-                <button className="w-full py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-500 transition shadow-lg shadow-blue-600/20">
+                <button className="w-full py-3 rounded-lg bg-[var(--color-primary-600)] text-white font-medium hover:bg-[var(--color-primary-500)] transition shadow-lg shadow-[var(--color-primary-500)]/20">
                   Send Message
                 </button>
               </form>

@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
+import { useTheme } from "../contexts/ThemeContext";
 
 export default function Sidebar({
   onSubscriptionsClick,
@@ -10,6 +11,7 @@ export default function Sidebar({
   onHelpClick?: () => void;
 }) {
   const location = useLocation();
+  const { theme, toggleTheme } = useTheme();
 
   const mainNav = [
     { icon: "home", label: "Dashboard", path: "/home" },
@@ -26,7 +28,7 @@ export default function Sidebar({
   ];
 
   return (
-    <aside className="hidden md:flex flex-col w-64 bg-gradient-to-b from-slate-950/90 via-slate-900/90 to-black/80 border-r border-slate-800/80 backdrop-blur-md">
+    <aside className="hidden md:flex flex-col w-64 bg-[var(--color-bg-primary)]/60 backdrop-blur-md border-r border-[var(--color-border)] transition-colors duration-300">
       <div className="flex-1 px-6 py-8 overflow-y-auto">
         <nav className="space-y-2">
           {mainNav.map((item) => {
@@ -35,17 +37,17 @@ export default function Sidebar({
               <Link
                 key={item.label}
                 to={item.path}
-                className={`flex items-center gap-3 px-1 py-2 transition group relative ${isActive ? "text-blue-400" : "text-slate-400 hover:text-blue-400"}`}
+                className={`flex items-center gap-3 px-1 py-2 transition group relative ${isActive ? "text-[var(--color-primary-500)]" : "text-[var(--color-text-secondary)] hover:text-[var(--color-primary-500)]"}`}
               >
                 <span className={`material-symbols-outlined text-xl transition-transform ${isActive ? "" : "group-hover:scale-110"}`}>
                   {item.icon}
                 </span>
                 <span className="text-sm">{item.label}</span>
                 {isActive && (
-                  <span className="absolute left-0 h-[2px] w-full bg-gradient-to-r from-blue-500 to-indigo-500 bottom-0 rounded-full transition-all duration-300" />
+                  <span className="absolute left-0 h-[2px] w-full bg-gradient-to-r from-[var(--color-primary-500)] to-[var(--color-primary-600)] bottom-0 rounded-full transition-all duration-300" />
                 )}
                 {!isActive && (
-                  <span className="absolute left-0 h-[2px] w-0 bg-gradient-to-r from-blue-500 to-indigo-500 bottom-0 rounded-full transition-all duration-300 group-hover:w-full" />
+                  <span className="absolute left-0 h-[2px] w-0 bg-gradient-to-r from-[var(--color-primary-500)] to-[var(--color-primary-600)] bottom-0 rounded-full transition-all duration-300 group-hover:w-full" />
                 )}
               </Link>
             );
@@ -53,13 +55,13 @@ export default function Sidebar({
         </nav>
       </div>
 
-      <div className="border-t border-slate-800 px-6 py-4">
+      <div className="border-t border-[var(--color-border)] px-6 py-4">
         <nav className="space-y-2">
           {bottomNav.map((item) => (
             <button
               key={item.label}
               onClick={item.onClick}
-              className="flex items-center gap-3 px-1 py-2 text-slate-500 hover:text-blue-400 transition group w-full text-left"
+              className="flex items-center gap-3 px-1 py-2 text-[var(--color-text-secondary)] hover:text-[var(--color-primary-500)] transition group w-full text-left"
             >
               <span className="material-symbols-outlined text-lg">
                 {item.icon}
@@ -67,6 +69,19 @@ export default function Sidebar({
               <span className="text-sm">{item.label}</span>
             </button>
           ))}
+          
+          {/* Theme Toggle */}
+          <button
+            onClick={toggleTheme}
+            className="flex items-center gap-3 px-1 py-2 text-[var(--color-text-secondary)] hover:text-[var(--color-primary-500)] transition group w-full text-left"
+          >
+            <span className="material-symbols-outlined text-lg">
+              {theme === 'dark' ? 'light_mode' : 'dark_mode'}
+            </span>
+            <span className="text-sm">
+              {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+            </span>
+          </button>
         </nav>
       </div>
     </aside>

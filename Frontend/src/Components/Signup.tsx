@@ -105,11 +105,11 @@ export default function Signup({ onClose, onSignIn }: SignupProps) {
   };
 
   return (
-    <div className="relative flex flex-col gap-6 bg-slate-900/80 border border-slate-700 rounded-3xl p-8 shadow-[0_40px_120px_-30px_rgba(37,99,235,0.55)] max-w-lg w-full">
+    <div className="relative flex flex-col gap-6 bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-3xl p-8 shadow-2xl max-w-lg w-full">
       <button
         type="button"
         onClick={onClose}
-        className="absolute top-7 right-7 p-1.5 rounded-full bg-slate-800/60 border border-slate-700/60 text-slate-400 hover:text-slate-100 hover:bg-slate-700/60 transition"
+        className="absolute top-7 right-7 p-1.5 rounded-full bg-[var(--color-bg-primary)] border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-primary-500)] transition"
         aria-label="Close signup"
       >
         <span className="material-symbols-outlined text-sm">close</span>
@@ -118,18 +118,18 @@ export default function Signup({ onClose, onSignIn }: SignupProps) {
       <button
         type="button"
         onClick={onClose}
-        className="flex items-center gap-3 text-slate-200 hover:text-white w-fit transition"
+        className="flex items-center gap-3 text-[var(--color-text-primary)] hover:text-[var(--color-primary-500)] w-fit transition"
         aria-label="Back to landing page"
       >
-        <span className="inline-block w-6 h-6 rounded-full bg-linear-to-tr from-blue-500 to-indigo-500 shadow-lg" />
+        <span className="inline-block w-6 h-6 rounded-full bg-gradient-to-tr from-[var(--color-primary-600)] to-[var(--color-primary-500)] shadow-lg shadow-[var(--color-primary-500)]/20" />
         <span className="text-lg font-bold tracking-tight">Lumos</span>
       </button>
 
       <div className="space-y-2">
-        <h2 className="text-3xl font-bold text-white">
+        <h2 className="text-3xl font-bold text-[var(--color-text-primary)]">
           Create Your Free Account
         </h2>
-        <p className="text-slate-400 text-sm">
+        <p className="text-[var(--color-text-secondary)] text-sm">
           Unlock personalized scholarship matches, AI application help, and
           deadline tracking.
         </p>
@@ -138,7 +138,7 @@ export default function Signup({ onClose, onSignIn }: SignupProps) {
       <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-2">
           <label
-            className="text-sm font-medium text-slate-300"
+            className="text-sm font-medium text-[var(--color-text-secondary)]"
             htmlFor="signup-fullname"
           >
             Full Name
@@ -149,13 +149,13 @@ export default function Signup({ onClose, onSignIn }: SignupProps) {
             value={fullName}
             onChange={(event) => setFullName(event.target.value)}
             placeholder="Your Name"
-            className="w-full rounded-xl border border-slate-700 bg-slate-900/60 px-4 py-3 text-slate-100 placeholder:text-slate-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/40 transition"
+            className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-primary)] px-4 py-3 text-[var(--color-text-primary)] placeholder:text-[var(--color-text-secondary)] focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-500)]/40 transition"
           />
         </div>
 
         <div className="flex flex-col gap-2">
           <label
-            className="text-sm font-medium text-slate-300"
+            className="text-sm font-medium text-[var(--color-text-secondary)]"
             htmlFor="signup-email"
           >
             Email
@@ -166,14 +166,14 @@ export default function Signup({ onClose, onSignIn }: SignupProps) {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             placeholder="you@email.com"
-            className="w-full rounded-xl border border-slate-700 bg-slate-900/60 px-4 py-3 text-slate-100 placeholder:text-slate-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/40 transition"
+            className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-primary)] px-4 py-3 text-[var(--color-text-primary)] placeholder:text-[var(--color-text-secondary)] focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-500)]/40 transition"
             autoComplete="email"
           />
         </div>
 
         <div className="flex flex-col gap-2">
           <label
-            className="text-sm font-medium text-slate-300"
+            className="text-sm font-medium text-[var(--color-text-secondary)]"
             htmlFor="signup-password"
           >
             Password
@@ -185,39 +185,29 @@ export default function Signup({ onClose, onSignIn }: SignupProps) {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               placeholder="At least 8 characters"
-              className="w-full rounded-xl border border-slate-700 bg-slate-900/60 px-4 py-3 pr-11 text-slate-100 placeholder:text-slate-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/40 transition"
+              className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-primary)] px-4 py-3 pr-11 text-[var(--color-text-primary)] placeholder:text-[var(--color-text-secondary)] focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-500)]/40 transition"
               autoComplete="new-password"
             />
-            {/* <button
-              type="button"
-              onClick={() => setShowPassword((prev) => !prev)}
-              className="absolute inset-y-0 right-3 flex items-center justify-center text-slate-400 hover:text-slate-100 transition"
-              aria-label={showPassword ? "Hide password" : "Show password"}
-            >
-              <span className="material-symbols-outlined text-sm">
-                {showPassword ? "visibility_off" : "visibility"}
-              </span>
-            </button> */}
           </div>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-[var(--color-text-secondary)]">
             Use 8+ characters with a mix of letters, numbers, or symbols for a
             stronger password.
           </p>
         </div>
 
         <div>
-          <label className="flex items-start gap-3 text-sm text-slate-300">
+          <label className="flex items-start gap-3 text-sm text-[var(--color-text-secondary)]">
             <input
               type="checkbox"
               checked={agreeToTerms}
               onChange={(event) => setAgreeToTerms(event.target.checked)}
-              className="mt-3 h-4 w-4 rounded border-slate-600 bg-slate-900/60 text-blue-500 focus:ring-blue-500/60"
+              className="mt-3 h-4 w-4 rounded border-[var(--color-border)] bg-[var(--color-bg-primary)] text-[var(--color-primary-500)] focus:ring-[var(--color-primary-500)]/60"
             />
             <span>
               I agree to the{" "}
               <button
                 type="button"
-                className="text-blue-400 hover:text-blue-300 underline"
+                className="text-[var(--color-primary-500)] hover:text-[var(--color-primary-600)] underline"
                 onClick={() => console.info("View Terms of Service")}
               >
                 Terms of Service
@@ -225,7 +215,7 @@ export default function Signup({ onClose, onSignIn }: SignupProps) {
               and{" "}
               <button
                 type="button"
-                className="text-blue-400 hover:text-blue-300 underline"
+                className="text-[var(--color-primary-500)] hover:text-[var(--color-primary-600)] underline"
                 onClick={() => console.info("View Privacy Policy")}
               >
                 Privacy Policy
@@ -237,7 +227,7 @@ export default function Signup({ onClose, onSignIn }: SignupProps) {
         <button
           type="submit"
           disabled={!isFormValid || isSubmitting}
-          className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-500 px-6 py-3 text-white font-semibold shadow-lg shadow-blue-900/40 transition disabled:cursor-not-allowed disabled:opacity-50 hover:enabled:scale-[1.02]"
+          className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-500)] px-6 py-3 text-white font-semibold shadow-lg shadow-[var(--color-primary-500)]/20 transition disabled:cursor-not-allowed disabled:opacity-50 hover:enabled:scale-[1.02]"
         >
           {isSubmitting ? (
             <span className="inline-flex items-center gap-2">
@@ -253,17 +243,17 @@ export default function Signup({ onClose, onSignIn }: SignupProps) {
       </form>
 
       {feedbackMessage && (
-        <div className="rounded-xl border border-blue-700/40 bg-blue-900/10 px-4 py-3 text-sm text-blue-200">
+        <div className="rounded-xl border border-[var(--color-primary-500)]/40 bg-[var(--color-primary-500)]/10 px-4 py-3 text-sm text-[var(--color-primary-500)]">
           {feedbackMessage}
         </div>
       )}
 
-      <div className="text-sm text-slate-400 text-center">
+      <div className="text-sm text-[var(--color-text-secondary)] text-center">
         Already have an account?
         <button
           type="button"
           onClick={handleSignIn}
-          className="ml-1 text-blue-400 hover:text-blue-300 font-semibold"
+          className="ml-1 text-[var(--color-primary-500)] hover:text-[var(--color-primary-600)] font-semibold"
         >
           Sign In
         </button>

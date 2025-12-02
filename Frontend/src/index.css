@@ -6,13 +6,56 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  
+  /* Theme Variables - Green & Grey Redesign */
+  --color-primary-600: #06a300; /* Darker Green for hover */
+  --color-primary-500: #08CB00; /* Main Brand Green */
+  --color-primary-400: #3ddb36; /* Lighter Green */
+  --color-primary-100: #e6f9e6; /* Very light green tint */
+  
+  /* Secondary Accents - Using Greys and Teals for depth */
+  --color-secondary-600: #475569; /* Slate 600 */
+  --color-secondary-500: #64748b; /* Slate 500 */
+  
+  /* Re-mapping old variables to new palette to maintain layout structure but change look */
+  --color-indigo-600: #059669; /* Emerald 600 - replacing indigo with a deep green */
+  --color-sky-300: #a7f3d0; /* Emerald 200 */
+  --color-teal-500: #10b981; /* Emerald 500 */
+
+  --color-bg-primary: #0a0a0a; /* Deep Black/Grey for Dark Mode */
+  --color-bg-secondary: #171717; /* Dark Grey for Cards */
+  --color-text-primary: #f8fafc; /* Slate 50 */
+  --color-text-secondary: #94a3b8; /* Slate 400 */
+  --color-border: #262626; /* Neutral 800 */
+
+  /* Default colors using variables */
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+[data-theme='light'] {
+  --color-bg-primary: #ffffff; /* Pure White */
+  --color-bg-secondary: #f8fafc; /* Slate 50 - Very subtle grey */
+  --color-text-primary: #0f172a; /* Slate 900 */
+  --color-text-secondary: #64748b; /* Slate 500 */
+  --color-border: #e2e8f0; /* Slate 200 */
+  
+  /* Override defaults for light mode */
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+}
+
+[data-theme='dark'] {
+  --color-bg-primary: #0a0a0a;
+  --color-bg-secondary: #171717;
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #94a3b8;
+  --color-border: #262626;
 }
 
 /* Custom scrollbar hiding */
@@ -27,11 +70,11 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--color-primary-500);
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: var(--color-primary-600);
 }
 
 body {
@@ -40,6 +83,9 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  transition: background-color 0.3s, color 0.3s;
 }
 
 h1 {
@@ -54,27 +100,41 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: #646cff;
+  border-color: var(--color-primary-500);
 }
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+/* Animations */
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
   }
-  a:hover {
-    color: #747bff;
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
   }
-  button {
-    background-color: #f9f9f9;
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
   }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
 }
