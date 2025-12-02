@@ -1,22 +1,21 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Topbar from "./Topbar";
 import Sidebar from "./Sidebar";
 import { Link } from "react-router-dom";
+import { applicationsApi, type Application, type ApplicationStatus } from "../api/applications";
 
-// Types
-type ApplicationStatus = "In Progress" | "Submitted" | "Won" | "Rejected";
-
-interface Application {
-  id: number;
+// Frontend display format
+interface DisplayApplication {
+  id: string;
   title: string;
   amount: number;
-  deadline?: string; // For In Progress/Submitted
-  submittedDate?: string; // For Submitted
-  wonDate?: string; // For Won
-  notifiedDate?: string; // For Rejected
+  deadline?: string;
+  submittedDate?: string;
+  wonDate?: string;
+  notifiedDate?: string;
   decisionBy?: string;
   status: ApplicationStatus;
-  progress?: number;
+  progress: number;
   org: string;
   requirements?: { label: string; status: "completed" | "pending" | "missing" | "draft"; details?: string }[];
   confirmationNumber?: string;
@@ -26,8 +25,8 @@ interface Application {
   notes?: string;
 }
 
-// Mock Data
-const MOCK_APPLICATIONS: Application[] = [
+// Mock Data (fallback - will be replaced by API)
+const MOCK_APPLICATIONS: DisplayApplication[] = [
   {
     id: 1,
     title: "Tech Leaders Scholarship",
@@ -140,15 +139,134 @@ const MOCK_APPLICATIONS: Application[] = [
 ];
 
 export default function MyApplications() {
+  const [applications, setApplications] = useState<DisplayApplication[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [stats, setStats] = useState({
+    total: 0,
+    inProgress: 0,
+    submitted: 0,
+    won: 0,
+    rejected: 0,
+    wonAmount: 0,
+  });
   const [activeTab, setActiveTab] = useState<"All" | ApplicationStatus>("In Progress");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("Deadline");
-  const [showDeleteModal, setShowDeleteModal] = useState<number | null>(null); // ID of app to delete
-  const [openDropdown, setOpenDropdown] = useState<number | null>(null); // ID of app with open dropdown
+  const [showDeleteModal, setShowDeleteModal] = useState<string | null>(null); // ID of app to delete
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null); // ID of app with open dropdown
+
+  // Fetch applications and stats on mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Fetch applications
+        const statusFilter = activeTab !== "All" ? activeTab : undefined;
+        const appsResponse = await applicationsApi.getApplications({
+          status: statusFilter,
+          search: searchQuery || undefined,
+        });
+
+        // Fetch stats
+        const statsResponse = await applicationsApi.getStats();
+
+        // Map backend applications to display format
+        const mappedApps: DisplayApplication[] = appsResponse.data.applications.map((app) => {
+          const scholarship = app.scholarship || {};
+          const amount = scholarship.amount || 0;
+          
+          // Map requirements
+          const requirements = app.requirements?.map((req) => ({
+            label: req.label,
+            status: req.status,
+            details: req.details,
+          })) || [];
+
+          // Map next steps
+          const nextSteps = app.nextSteps?.map((step) => step.step) || [];
+
+          // Format award details
+          const awardDetails = app.awardDetails ? {
+            amount: app.awardDetails.amount || `$${amount.toLocaleString()}`,
+            disbursement: app.awardDetails.disbursement || "TBD",
+            expected: app.awardDetails.expectedDate || "TBD",
+          } : undefined;
+
+          // Determine dates based on status
+          let deadline: string | undefined;
+          let submittedDate: string | undefined;
+          let wonDate: string | undefined;
+          let notifiedDate: string | undefined;
+          let decisionBy: string | undefined;
+
+          if (app.status === "In Progress" || app.status === "Submitted") {
+            deadline = scholarship.deadline;
+          }
+          if (app.status === "Submitted") {
+            submittedDate = app.submittedAt;
+            decisionBy = app.decisionExpectedBy;
+          }
+          if (app.status === "Won") {
+            wonDate = app.wonAt;
+          }
+          if (app.status === "Rejected") {
+            notifiedDate = app.rejectedAt;
+          }
+
+          return {
+            id: app._id,
+            title: scholarship.title || "Unknown Scholarship",
+            amount,
+            deadline,
+            submittedDate,
+            wonDate,
+            notifiedDate,
+            decisionBy,
+            status: app.status,
+            progress: app.progress || 0,
+            org: scholarship.org || "Unknown Organization",
+            requirements,
+            confirmationNumber: app.confirmationNumber,
+            nextSteps,
+            awardDetails,
+            feedback: app.feedback,
+            notes: app.notes || (app.lastActivityAt ? `Last updated: ${new Date(app.lastActivityAt).toLocaleDateString()}` : undefined),
+          };
+        });
+
+        setApplications(mappedApps);
+
+        // Set stats from API
+        if (statsResponse.success && statsResponse.data) {
+          setStats(statsResponse.data);
+        } else {
+          // Fallback: calculate from applications
+          setStats({
+            total: mappedApps.length,
+            inProgress: mappedApps.filter(a => a.status === "In Progress").length,
+            submitted: mappedApps.filter(a => a.status === "Submitted").length,
+            won: mappedApps.filter(a => a.status === "Won").length,
+            rejected: mappedApps.filter(a => a.status === "Rejected").length,
+            wonAmount: mappedApps.filter(a => a.status === "Won").reduce((acc, curr) => acc + curr.amount, 0),
+          });
+        }
+      } catch (err: any) {
+        console.error("Error fetching applications:", err);
+        setError(err.message || "Failed to load applications. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [activeTab, searchQuery]);
 
   // Filter & Sort Logic
   const filteredApps = useMemo(() => {
-    let apps = MOCK_APPLICATIONS;
+    let apps = applications;
 
     if (activeTab !== "All") {
       apps = apps.filter(app => app.status === activeTab);
@@ -160,27 +278,18 @@ export default function MyApplications() {
     }
 
     return apps.sort((a, b) => {
-        // Simple mock sort logic
         if (sortOption === "Deadline") {
             return (new Date(a.deadline || a.decisionBy || "2099-12-31").getTime()) - (new Date(b.deadline || b.decisionBy || "2099-12-31").getTime());
         }
         if (sortOption === "Amount") {
             return b.amount - a.amount;
         }
+        if (sortOption === "Progress") {
+            return b.progress - a.progress;
+        }
         return 0;
     });
-  }, [activeTab, searchQuery, sortOption]);
-
-  const stats = useMemo(() => {
-    return {
-        total: MOCK_APPLICATIONS.length,
-        inProgress: MOCK_APPLICATIONS.filter(a => a.status === "In Progress").length,
-        submitted: MOCK_APPLICATIONS.filter(a => a.status === "Submitted").length,
-        won: MOCK_APPLICATIONS.filter(a => a.status === "Won").length,
-        rejected: MOCK_APPLICATIONS.filter(a => a.status === "Rejected").length,
-        wonAmount: MOCK_APPLICATIONS.filter(a => a.status === "Won").reduce((acc, curr) => acc + curr.amount, 0)
-    };
-  }, []);
+  }, [applications, activeTab, searchQuery, sortOption]);
 
   const getDaysLeft = (dateStr?: string) => {
       if (!dateStr) return 0;
@@ -188,9 +297,22 @@ export default function MyApplications() {
       return Math.ceil(diff / (1000 * 3600 * 24));
   };
 
-  const handleDelete = () => {
-      alert(`Deleted application ${showDeleteModal}`);
-      setShowDeleteModal(null);
+  const handleDelete = async () => {
+      if (!showDeleteModal) return;
+      try {
+          await applicationsApi.deleteApplication(showDeleteModal);
+          // Remove from local state
+          setApplications(prev => prev.filter(app => app.id !== showDeleteModal));
+          setShowDeleteModal(null);
+          // Refresh stats
+          const statsResponse = await applicationsApi.getStats();
+          if (statsResponse.success && statsResponse.data) {
+              setStats(statsResponse.data);
+          }
+      } catch (err: any) {
+          console.error("Error deleting application:", err);
+          alert(err.message || "Failed to delete application");
+      }
   };
 
   return (
@@ -213,6 +335,33 @@ export default function MyApplications() {
                     <h1 className="text-2xl font-bold text-white">My Applications</h1>
                     <p className="text-slate-400">Track and manage your scholarship applications</p>
                 </div>
+
+                {/* Loading State */}
+                {loading && (
+                    <div className="flex items-center justify-center py-20">
+                        <div className="text-center">
+                            <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                            <p className="text-slate-400">Loading applications...</p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Error State */}
+                {error && !loading && (
+                    <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-4">
+                        <p className="text-rose-400">{error}</p>
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="mt-2 text-sm text-rose-400 hover:text-rose-300 underline"
+                        >
+                            Retry
+                        </button>
+                    </div>
+                )}
+
+                {/* Content - only show if not loading */}
+                {!loading && !error && (
+                    <>
 
                 {/* Summary Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -285,10 +434,10 @@ export default function MyApplications() {
                                             <span className="text-emerald-400 font-medium">💰 ${app.amount.toLocaleString()}</span>
                                             <span className="text-slate-500">•</span>
                                             <span className="text-slate-300">
-                                                {app.status === "In Progress" && `📅 Due: ${new Date(app.deadline!).toLocaleDateString(undefined, {month:'short', day:'numeric'})} (${getDaysLeft(app.deadline)} days)`}
-                                                {app.status === "Submitted" && `📅 Submitted: ${new Date(app.submittedDate!).toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'})}`}
-                                                {app.status === "Won" && `🏆 Won: ${new Date(app.wonDate!).toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'})}`}
-                                                {app.status === "Rejected" && `❌ Notified: ${new Date(app.notifiedDate!).toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'})}`}
+                                                {app.status === "In Progress" && app.deadline && `📅 Due: ${new Date(app.deadline).toLocaleDateString(undefined, {month:'short', day:'numeric'})} (${getDaysLeft(app.deadline)} days)`}
+                                                {app.status === "Submitted" && app.submittedDate && `📅 Submitted: ${new Date(app.submittedDate).toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'})}`}
+                                                {app.status === "Won" && app.wonDate && `🏆 Won: ${new Date(app.wonDate).toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'})}`}
+                                                {app.status === "Rejected" && app.notifiedDate && `❌ Notified: ${new Date(app.notifiedDate).toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'})}`}
                                             </span>
                                         </div>
                                     </div>
@@ -363,16 +512,18 @@ export default function MyApplications() {
                                     </>
                                 )}
 
-                                {app.status === "Submitted" && (
+                                        {app.status === "Submitted" && (
                                     <>
                                         <div className="mb-4">
                                             <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-medium text-emerald-400 mb-3">
                                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                                                 Submitted - Under Review
                                             </div>
-                                            <div className="text-sm text-slate-300">
-                                                Decision by: <span className="text-white font-medium">{new Date(app.decisionBy!).toLocaleDateString()}</span>
-                                            </div>
+                                            {app.decisionBy && (
+                                                <div className="text-sm text-slate-300">
+                                                    Decision by: <span className="text-white font-medium">{new Date(app.decisionBy).toLocaleDateString()}</span>
+                                                </div>
+                                            )}
                                         </div>
 
                                         <div className="bg-slate-950/50 rounded-xl p-4 border border-slate-800 mb-4">
@@ -475,7 +626,20 @@ export default function MyApplications() {
                                     <div className="flex gap-3">
                                         {app.status === "In Progress" && (
                                             <>
-                                                <Link to="/details" className="text-sm font-medium text-slate-300 hover:text-white transition">View Details</Link>
+                                                <button 
+                                                    onClick={() => {
+                                                        // Store application ID for details page if needed
+                                                        localStorage.setItem("application_id", app.id);
+                                                        // Navigate to scholarship details
+                                                        if (app.id) {
+                                                            // You may want to fetch the scholarship ID from the application
+                                                            // For now, just show the application
+                                                        }
+                                                    }}
+                                                    className="text-sm font-medium text-slate-300 hover:text-white transition"
+                                                >
+                                                    View Details
+                                                </button>
                                                 <button className="text-sm font-bold text-blue-400 hover:text-blue-300 transition">Continue Application</button>
                                             </>
                                         )}
@@ -487,7 +651,14 @@ export default function MyApplications() {
                                         )}
                                         {app.status === "Won" && (
                                             <>
-                                                <Link to="/details" className="text-sm font-medium text-slate-300 hover:text-white transition">View Details</Link>
+                                                <button 
+                                                    onClick={() => {
+                                                        localStorage.setItem("application_id", app.id);
+                                                    }}
+                                                    className="text-sm font-medium text-slate-300 hover:text-white transition"
+                                                >
+                                                    View Details
+                                                </button>
                                                 <button className="text-sm font-bold text-emerald-400 hover:text-emerald-300 transition">Accept Award</button>
                                             </>
                                         )}
@@ -521,6 +692,8 @@ export default function MyApplications() {
                         </div>
                     )}
                 </div>
+                    </>
+                )}
             </div>
         </main>
 

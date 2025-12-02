@@ -63,6 +63,7 @@ export interface Scholarship {
   active?: boolean;
   // Computed fields
   matchScore?: number;
+  match?: number; // Backend may return either matchScore or match
   saved?: boolean;
   daysUntilDeadline?: number;
 }
