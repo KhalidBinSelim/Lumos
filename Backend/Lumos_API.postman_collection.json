@@ -1,0 +1,811 @@
+{
+  "info": {
+    "name": "Lumos API",
+    "description": "Complete API collection for Lumos Scholarship Platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        }
+      }
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.token) {",
+                  "        pm.collectionVariables.set('token', jsonData.data.token);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\",\n  \"fullName\": \"John Doe\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/register",
+              "host": ["{{base_url}}"],
+              "path": ["users", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.token) {",
+                  "        pm.collectionVariables.set('token', jsonData.data.token);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/login",
+              "host": ["{{base_url}}"],
+              "path": ["users", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/profile",
+              "host": ["{{base_url}}"],
+              "path": ["users", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Update Basic Info",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"dateOfBirth\": {\n    \"month\": \"05\",\n    \"day\": \"15\",\n    \"year\": \"2000\"\n  },\n  \"country\": \"US\",\n  \"state\": \"California\",\n  \"city\": \"Los Angeles\",\n  \"phone\": \"+1234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/profile/basic",
+              "host": ["{{base_url}}"],
+              "path": ["users", "profile", "basic"]
+            }
+          }
+        },
+        {
+          "name": "Update Academic Info",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"educationLevel\": \"College Student\",\n  \"schoolName\": \"University of California\",\n  \"gradeYear\": \"Junior\",\n  \"graduationYear\": \"2025\",\n  \"gpa\": \"3.8\",\n  \"gpaScale\": \"4.0\",\n  \"major\": \"Computer Science\",\n  \"minor\": \"Mathematics\",\n  \"sat\": \"1450\",\n  \"ielts\": \"7.5\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/profile/academic",
+              "host": ["{{base_url}}"],
+              "path": ["users", "profile", "academic"]
+            }
+          }
+        },
+        {
+          "name": "Update Activities",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"interests\": [\"Computer Science\", \"Robotics\", \"Volunteering\"],\n  \"activities\": [\n    {\n      \"name\": \"Debate Team\",\n      \"role\": \"Captain\",\n      \"years\": \"2 years\",\n      \"hoursPerWeek\": \"5\",\n      \"description\": \"Led team to state championships\"\n    }\n  ],\n  \"awards\": [\n    {\n      \"title\": \"National Merit Scholar Semifinalist\"\n    }\n  ],\n  \"jobs\": []\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/profile/activities",
+              "host": ["{{base_url}}"],
+              "path": ["users", "profile", "activities"]
+            }
+          }
+        },
+        {
+          "name": "Update Background Info",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gender\": \"Male\",\n  \"ethnicities\": [\"Asian / Pacific Islander\"],\n  \"firstGen\": \"Yes\",\n  \"citizenship\": \"U.S. Citizen\",\n  \"incomeRange\": \"$30k-$50k\",\n  \"military\": {\n    \"veteran\": false,\n    \"active\": false,\n    \"parentVeteran\": false,\n    \"parentActive\": false,\n    \"none\": true\n  },\n  \"disability\": \"No\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/profile/background",
+              "host": ["{{base_url}}"],
+              "path": ["users", "profile", "background"]
+            }
+          }
+        },
+        {
+          "name": "Upload Resume",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "resume",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/users/upload/resume",
+              "host": ["{{base_url}}"],
+              "path": ["users", "upload", "resume"]
+            }
+          }
+        },
+        {
+          "name": "Get Saved Scholarships",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/scholarships/saved",
+              "host": ["{{base_url}}"],
+              "path": ["users", "scholarships", "saved"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Scholarships",
+      "item": [
+        {
+          "name": "Get All Scholarships",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "disabled": true
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/scholarships?page=1&limit=10&categories=STEM&deadline=Next 30d",
+              "host": ["{{base_url}}"],
+              "path": ["scholarships"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "categories",
+                  "value": "STEM",
+                  "disabled": true
+                },
+                {
+                  "key": "deadline",
+                  "value": "Next 30d",
+                  "disabled": true
+                },
+                {
+                  "key": "highMatch",
+                  "value": "true",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Scholarships",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/scholarships/search?q=computer science&page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["scholarships", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "computer science"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Recommended",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/scholarships/recommended?limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["scholarships", "recommended"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Featured",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/scholarships/featured?limit=5",
+              "host": ["{{base_url}}"],
+              "path": ["scholarships", "featured"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Upcoming Deadlines",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/scholarships/deadlines?days=30&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["scholarships", "deadlines"],
+              "query": [
+                {
+                  "key": "days",
+                  "value": "30"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Filter Options",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/scholarships/filters",
+              "host": ["{{base_url}}"],
+              "path": ["scholarships", "filters"]
+            }
+          }
+        },
+        {
+          "name": "Create Scholarship (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Tech Leaders Scholarship\",\n  \"org\": \"Tech Foundation Inc.\",\n  \"website\": \"https://techfoundation.org/scholarship\",\n  \"description\": \"The Tech Leaders Scholarship recognizes outstanding students pursuing degrees in computer science who demonstrate leadership, academic excellence, and commitment to using technology for social good.\",\n  \"amount\": 5000,\n  \"amountDisplay\": \"$5,000\",\n  \"deadline\": \"2024-02-15T00:00:00.000Z\",\n  \"applicationOpens\": \"2023-12-01T00:00:00.000Z\",\n  \"awardNotification\": \"2024-03-30T00:00:00.000Z\",\n  \"renewable\": true,\n  \"renewalDetails\": \"Renewable up to 4 years with 3.5 GPA maintenance\",\n  \"region\": \"U.S. Residents Only\",\n  \"location\": \"National\",\n  \"tags\": [\"CS major\", \"3.8 GPA\", \"First-gen\"],\n  \"categories\": [\"STEM\", \"Leadership\"],\n  \"demographics\": [\"First-Gen\"],\n  \"eligibility\": [\n    \"Must be enrolled full-time in an accredited university\",\n    \"Pursuing B.S. in Computer Science or related field\",\n    \"Minimum GPA: 3.5\",\n    \"U.S. Citizen or Permanent Resident\"\n  ],\n  \"eligibilityLevel\": [\"College\"],\n  \"minGPA\": 3.5,\n  \"citizenshipRequired\": [\"U.S. Citizen\", \"Permanent Resident\"],\n  \"majorsRequired\": [\"Computer Science\", \"Software Engineering\", \"Information Technology\"],\n  \"requirements\": [\"Essay (500w)\", \"Transcript\", \"1 LOR\"],\n  \"essayRequired\": true,\n  \"essayPrompt\": \"Describe a specific way you plan to use technology to create positive social change in your community or the world. Include examples of leadership experiences that have prepared you for this goal.\",\n  \"essayWordCount\": {\n    \"min\": 500,\n    \"max\": 750\n  },\n  \"essayCriteria\": [\n    \"Clarity of vision and goals (30%)\",\n    \"Demonstrated leadership and initiative (25%)\",\n    \"Feasibility and impact of proposed project (25%)\",\n    \"Writing quality and authenticity (20%)\"\n  ],\n  \"transcriptRequired\": true,\n  \"lorRequired\": 1,\n  \"portfolioRequired\": false,\n  \"awardDetails\": [\n    \"Amount: $5,000 per academic year\",\n    \"Renewable: Up to 4 years (maintain 3.5 GPA)\",\n    \"Number of Awards: 20 recipients annually\",\n    \"Disbursement: Direct to institution in Fall semester\"\n  ],\n  \"awardsPerYear\": 20,\n  \"applicantsPerYear\": 500,\n  \"timeline\": [\n    {\n      \"date\": \"2023-12-01\",\n      \"label\": \"Application Opens\"\n    },\n    {\n      \"date\": \"2024-02-15\",\n      \"label\": \"Application Deadline - 11:59 PM EST\"\n    },\n    {\n      \"date\": \"2024-03-01\",\n      \"label\": \"Application Review Period\"\n    },\n    {\n      \"date\": \"2024-03-30\",\n      \"label\": \"Winners Announced (via email)\"\n    }\n  ],\n  \"competition\": {\n    \"acceptanceRate\": \"~4% (20/500)\",\n    \"similarProfile\": [\"15 first-gen CS students\", \"Average GPA: 3.75\", \"80% had leadership roles\"],\n    \"percentile\": 65\n  },\n  \"orgInfo\": {\n    \"type\": \"501(c)(3) Non-Profit\",\n    \"founded\": \"2010\",\n    \"totalAwarded\": \"$2.5M+\",\n    \"contact\": \"scholarships@techfoundation.org\",\n    \"phone\": \"(555) 123-4567\"\n  },\n  \"notes\": {\n    \"whyFit\": [\n      \"Computer Science major (Required)\",\n      \"3.8 GPA exceeds minimum 3.5 (Required)\",\n      \"First-generation student (Preferred)\"\n    ],\n    \"improve\": [\n      \"Add a research project (+5% match)\",\n      \"Obtain coding competition award (+3% match)\"\n    ]\n  },\n  \"featured\": true,\n  \"verified\": true,\n  \"active\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/scholarships",
+              "host": ["{{base_url}}"],
+              "path": ["scholarships"]
+            }
+          }
+        },
+        {
+          "name": "Get Scholarship by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/scholarships/:id",
+              "host": ["{{base_url}}"],
+              "path": ["scholarships", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "SCHOLARSHIP_ID_HERE"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Save Scholarship",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/scholarships/:id/save",
+              "host": ["{{base_url}}"],
+              "path": ["scholarships", ":id", "save"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "SCHOLARSHIP_ID_HERE"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Unsave Scholarship",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/scholarships/:id/save",
+              "host": ["{{base_url}}"],
+              "path": ["scholarships", ":id", "save"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "SCHOLARSHIP_ID_HERE"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Applications",
+      "item": [
+        {
+          "name": "Create Application",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scholarshipId\": \"SCHOLARSHIP_ID_HERE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/applications",
+              "host": ["{{base_url}}"],
+              "path": ["applications"]
+            }
+          }
+        },
+        {
+          "name": "Get All Applications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/applications?status=In Progress&page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["applications"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "In Progress",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Application Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/applications/stats",
+              "host": ["{{base_url}}"],
+              "path": ["applications", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Get Urgent Applications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/applications/urgent",
+              "host": ["{{base_url}}"],
+              "path": ["applications", "urgent"]
+            }
+          }
+        },
+        {
+          "name": "Get Application by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/applications/:id",
+              "host": ["{{base_url}}"],
+              "path": ["applications", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "APPLICATION_ID_HERE"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Requirement",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"completed\",\n  \"details\": \"Uploaded on 2024-01-15\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/applications/:id/requirements/:reqId",
+              "host": ["{{base_url}}"],
+              "path": ["applications", ":id", "requirements", ":reqId"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "APPLICATION_ID_HERE"
+                },
+                {
+                  "key": "reqId",
+                  "value": "REQUIREMENT_ID_HERE"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Save Essay Draft",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Growing up as a first-generation college student, I've witnessed firsthand how technology can bridge gaps in education and opportunity. My journey began not with a sleek laptop, but with a shared community center computer where I wrote my first line of code. That moment didn't just teach me syntax; it taught me possibility.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/applications/:id/essay",
+              "host": ["{{base_url}}"],
+              "path": ["applications", ":id", "essay"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "APPLICATION_ID_HERE"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Submit Application",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirmationNumber\": \"APP-2024-12345\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/applications/:id/submit",
+              "host": ["{{base_url}}"],
+              "path": ["applications", ":id", "submit"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "APPLICATION_ID_HERE"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Mark as Won",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"awardDetails\": {\n    \"amount\": \"$5,000 (one-time)\",\n    \"disbursement\": \"Direct to school\",\n    \"expected\": \"August 2024 (Fall semester)\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/applications/:id/won",
+              "host": ["{{base_url}}"],
+              "path": ["applications", ":id", "won"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "APPLICATION_ID_HERE"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Mark as Rejected",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"feedback\": \"Due to high volume of qualified applicants, we were unable to award all deserving students.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/applications/:id/rejected",
+              "host": ["{{base_url}}"],
+              "path": ["applications", ":id", "rejected"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "APPLICATION_ID_HERE"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Application",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/applications/:id",
+              "host": ["{{base_url}}"],
+              "path": ["applications", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "APPLICATION_ID_HERE"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+
