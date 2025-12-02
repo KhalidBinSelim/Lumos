@@ -1,4 +1,6 @@
 import { type FormEvent, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { authApi } from "../api";
 
 type SignupProps = {
   onClose: () => void;
@@ -13,6 +15,8 @@ export default function Signup({ onClose, onSignIn }: SignupProps) {
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+  
+  const navigate = useNavigate();
 
   const isFormValid = useMemo(() => {
     return (
@@ -31,17 +35,61 @@ export default function Signup({ onClose, onSignIn }: SignupProps) {
       setIsSubmitting(true);
       setFeedbackMessage(null);
 
-      // Placeholder for actual API call
-      await new Promise((resolve) => setTimeout(resolve, 900));
+      // Call real API
+      console.log('📝 Attempting registration with:', { 
+        email: email.trim(), 
+        fullName: fullName.trim() 
+      });
+      
+      const response = await authApi.register({
+        email: email.trim(),
+        password: password,
+        fullName: fullName.trim(),
+      });
+
+      console.log('✅ Registration successful! Response:', response);
+
+      // Store token and user data
+      if (response.data?.token) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        console.log('💾 Token and user data saved to localStorage');
+      } else {
+        console.warn('⚠️ No token in response:', response);
+      }
 
       setFeedbackMessage(
-        "Almost there! Check your email to verify your account."
+        "Account created successfully! Redirecting to onboarding..."
       );
-    } catch (error) {
-      console.error("Signup failed", error);
-      setFeedbackMessage(
-        "We ran into an issue creating your account. Please try again."
-      );
+
+      // Redirect to onboarding or home after 1 second
+      setTimeout(() => {
+        navigate("/phome"); // or navigate to onboarding if you have that route
+      }, 1000);
+    } catch (error: any) {
+      console.error("❌ Registration failed - Full error:", error);
+      console.error("Error details:", {
+        message: error?.message,
+        status: error?.status,
+        data: error?.data,
+        isNetworkError: error?.isNetworkError,
+      });
+      
+      let errorMessage = "We ran into an issue creating your account. Please try again.";
+      
+      if (error?.isNetworkError) {
+        errorMessage = "Cannot connect to server. Please make sure the backend is running.";
+      } else if (error?.message) {
+        errorMessage = error.message;
+      } else if (error?.data?.message) {
+        errorMessage = error.data.message;
+      } else if (error?.data?.errors && Array.isArray(error.data.errors)) {
+        // Handle validation errors from backend
+        const validationErrors = error.data.errors.map((err: any) => err.msg || err.message).join(', ');
+        errorMessage = validationErrors || errorMessage;
+      }
+      
+      setFeedbackMessage(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -132,7 +180,7 @@ export default function Signup({ onClose, onSignIn }: SignupProps) {
           <div className="relative">
             <input
               id="signup-password"
-              // type={showPassword ? "text" : "password"}
+              type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               placeholder="At least 8 characters"

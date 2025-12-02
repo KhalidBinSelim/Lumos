@@ -1,8 +1,9 @@
 import { type FormEvent, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { authApi } from "../api";
 
 type LoginProps = {
-  onClose: () => void;
+  onClose?: () => void;
   onSignUp?: () => void;
 };
 
@@ -26,8 +27,24 @@ export default function Login({ onClose, onSignUp }: LoginProps) {
       setIsSubmitting(true);
       setFeedbackMessage(null);
 
-      // Simulate async API call
-      await new Promise((resolve) => setTimeout(resolve, 900));
+      // Call real API
+      console.log('🔐 Attempting login with:', { email: email.trim() });
+
+      const response = await authApi.login({
+        email: email.trim(),
+        password: password,
+      });
+
+      console.log('✅ Login successful! Response:', response);
+
+      // Store token and user data
+      if (response.data?.token) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        console.log('💾 Token and user data saved to localStorage');
+      } else {
+        console.warn('⚠️ No token in response:', response);
+      }
 
       setFeedbackMessage("Welcome back! Redirecting to your dashboard...");
 
@@ -35,9 +52,26 @@ export default function Login({ onClose, onSignUp }: LoginProps) {
       setTimeout(() => {
         navigate("/phome");
       }, 1000);
-    } catch (error) {
-      console.error("Login failed", error);
-      setFeedbackMessage("Invalid email or password. Please try again.");
+    } catch (error: any) {
+      console.error("❌ Login failed - Full error:", error);
+      console.error("Error details:", {
+        message: error?.message,
+        status: error?.status,
+        data: error?.data,
+        isNetworkError: error?.isNetworkError,
+      });
+
+      let errorMessage = "Invalid email or password. Please try again.";
+
+      if (error?.isNetworkError) {
+        errorMessage = "Cannot connect to server. Please make sure the backend is running.";
+      } else if (error?.message) {
+        errorMessage = error.message;
+      } else if (error?.data?.message) {
+        errorMessage = error.data.message;
+      }
+
+      setFeedbackMessage(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -55,11 +89,19 @@ export default function Login({ onClose, onSignUp }: LoginProps) {
     console.info("Redirect to forgot password");
   };
 
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      navigate("/");
+    }
+  };
+
   return (
     <div className="relative flex flex-col gap-6 bg-slate-900/80 border border-slate-700 rounded-3xl p-8 shadow-[0_40px_120px_-30px_rgba(37,99,235,0.55)] max-w-lg w-full">
       <button
         type="button"
-        onClick={onClose}
+        onClick={handleClose}
         className="absolute top-7 right-7 p-1.5 rounded-full bg-slate-800/60 border border-slate-700/60 text-slate-400 hover:text-slate-100 hover:bg-slate-700/60 transition"
         aria-label="Close login"
       >
@@ -68,7 +110,7 @@ export default function Login({ onClose, onSignUp }: LoginProps) {
 
       <button
         type="button"
-        onClick={onClose}
+        onClick={handleClose}
         className="flex items-center gap-3 text-slate-200 hover:text-white w-fit transition"
         aria-label="Back to landing page"
       >
