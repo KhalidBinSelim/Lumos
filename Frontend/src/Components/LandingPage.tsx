@@ -9,6 +9,9 @@ import Signup from "./Signup";
 import Login from "./Login";
 import DemoModal from "./DemoModal";
 import InfoModal, { type InfoModalContent } from "./InfoModal";
+import Subscriptions from "./Subscriptions";
+import CheckoutPage from "./CheckoutPage";
+import PaymentSuccess from "./PaymentSuccess";
 
 export default function LandingPage() {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
@@ -30,6 +33,12 @@ export default function LandingPage() {
     icon: "",
     content: null,
   });
+
+  // Subscription modal states
+  const [showSubscriptionsModal, setShowSubscriptionsModal] = useState(false);
+  const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+  const [showPaymentSuccessModal, setShowPaymentSuccessModal] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<"free" | "monthly" | "semiannual">("monthly");
 
   const handleInfoClick = (
     e: React.MouseEvent,
@@ -316,6 +325,47 @@ export default function LandingPage() {
             />
           </div>
         </div>
+      )}
+
+      {/* Subscription Modals */}
+      {showSubscriptionsModal && (
+        <Subscriptions
+          onClose={() => setShowSubscriptionsModal(false)}
+          onUpgrade={(planType) => {
+            setSelectedPlan(planType);
+            setShowSubscriptionsModal(false);
+            setShowCheckoutModal(true);
+          }}
+        />
+      )}
+
+      {showCheckoutModal && (
+        <CheckoutPage
+          planType={selectedPlan}
+          onClose={() => setShowCheckoutModal(false)}
+          onSuccess={() => {
+            setShowCheckoutModal(false);
+            setShowPaymentSuccessModal(true);
+          }}
+        />
+      )}
+
+      {showPaymentSuccessModal && (
+        <PaymentSuccess
+          onClose={() => setShowPaymentSuccessModal(false)}
+          onGoToDashboard={() => {
+            setShowPaymentSuccessModal(false);
+            // Navigate to dashboard - for now just close
+          }}
+          onManageSubscription={() => {
+            setShowPaymentSuccessModal(false);
+            setShowSubscriptionsModal(true);
+          }}
+          onShowLogin={() => {
+            setShowPaymentSuccessModal(false);
+            setShowLoginModal(true);
+          }}
+        />
       )}
 
       {/* Header */}
@@ -908,6 +958,165 @@ export default function LandingPage() {
                     </span>
                   ))}
                 </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Pricing */}
+        <section className="py-16 bg-slate-900/50">
+          <div className="w-full px-6">
+            <h2 className="text-3xl font-bold text-center mb-4 text-white">
+              Simple, Transparent Pricing
+            </h2>
+            <p className="text-slate-400 text-center mb-12 max-w-2xl mx-auto">
+              Choose the plan that fits your journey. Start for free and upgrade
+              when you're ready to accelerate your scholarship search.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+              {/* Free Plan */}
+              <div className="bg-slate-800/40 rounded-2xl p-8 border border-slate-700 flex flex-col hover:border-blue-500/30 transition relative overflow-hidden group">
+                <div className="mb-6 text-center flex flex-col items-center">
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    Lumos Free
+                  </h3>
+                  <div className="flex items-baseline gap-1 justify-center">
+                    <span className="text-4xl font-bold text-white">$0</span>
+                    <span className="text-slate-400">/month</span>
+                  </div>
+                  <p className="text-slate-400 text-sm mt-4">
+                    Perfect for getting started with your scholarship search.
+                  </p>
+                </div>
+                <ul className="space-y-4 mb-8 flex-1">
+                  <li className="flex items-start gap-3 text-slate-300 text-sm">
+                    <span className="material-symbols-outlined text-blue-400 text-lg shrink-0">
+                      check_circle
+                    </span>
+                    Basic Scholarship Matching
+                  </li>
+                  <li className="flex items-start gap-3 text-slate-300 text-sm">
+                    <span className="material-symbols-outlined text-blue-400 text-lg shrink-0">
+                      check_circle
+                    </span>
+                    Profile Building
+                  </li>
+                  <li className="flex items-start gap-3 text-slate-300 text-sm">
+                    <span className="material-symbols-outlined text-blue-400 text-lg shrink-0">
+                      check_circle
+                    </span>
+                    Deadline Tracking
+                  </li>
+                </ul>
+                <button
+                  onClick={() => setShowLoginModal(true)}
+                  className="w-full py-3 rounded-lg border border-slate-600 text-white font-medium hover:bg-slate-800 transition"
+                >
+                  Get Started
+                </button>
+              </div>
+
+              {/* Monthly Plan */}
+              <div className="bg-slate-800/60 rounded-2xl p-8 border border-blue-500/30 flex flex-col hover:border-blue-500/60 transition relative overflow-hidden shadow-lg shadow-blue-900/10">
+                <div className="mb-6 text-center flex flex-col items-center">
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    Lumos Premium
+                  </h3>
+                  <div className="flex items-baseline gap-1 justify-center">
+                    <span className="text-4xl font-bold text-white">
+                      $14.99
+                    </span>
+                    <span className="text-slate-400">/month</span>
+                  </div>
+                  <p className="text-slate-400 text-sm mt-4">
+                    Supercharge your applications with AI tools.
+                  </p>
+                </div>
+                <ul className="space-y-4 mb-8 flex-1">
+                  <li className="flex items-start gap-3 text-slate-300 text-sm">
+                    <span className="material-symbols-outlined text-blue-400 text-lg shrink-0">
+                      check_circle
+                    </span>
+                    Everything in Free
+                  </li>
+                  <li className="flex items-start gap-3 text-slate-300 text-sm">
+                    <span className="material-symbols-outlined text-blue-400 text-lg shrink-0">
+                      check_circle
+                    </span>
+                    AI Essay Copilot
+                  </li>
+                  <li className="flex items-start gap-3 text-slate-300 text-sm">
+                    <span className="material-symbols-outlined text-blue-400 text-lg shrink-0">
+                      check_circle
+                    </span>
+                    Unlimited Matches
+                  </li>
+                  <li className="flex items-start gap-3 text-slate-300 text-sm">
+                    <span className="material-symbols-outlined text-blue-400 text-lg shrink-0">
+                      check_circle
+                    </span>
+                    Priority Support
+                  </li>
+                </ul>
+                <button 
+                  onClick={() => {
+                    setSelectedPlan("monthly");
+                    setShowCheckoutModal(true);
+                  }}
+                  className="w-full py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-500 transition shadow-lg shadow-blue-600/20"
+                >
+                  Subscribe Monthly
+                </button>
+              </div>
+
+              {/* 6-Month Plan */}
+              <div className="bg-linear-to-b from-slate-800/80 to-slate-900/80 rounded-2xl p-8 border border-indigo-500/40 flex flex-col hover:border-indigo-500/70 transition relative overflow-hidden shadow-xl shadow-indigo-900/20">
+                <div className="absolute top-0 right-0 bg-indigo-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
+                  BEST VALUE
+                </div>
+                <div className="mb-6 text-center flex flex-col items-center">
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    Lumos Premium
+                  </h3>
+                  <div className="flex items-baseline gap-1 justify-center">
+                    <span className="text-4xl font-bold text-white">
+                      $59.99
+                    </span>
+                    <span className="text-slate-400">/6 months</span>
+                  </div>
+                  <p className="text-indigo-200 text-sm mt-4">
+                    Save ~33% with semi-annual billing.
+                  </p>
+                </div>
+                <ul className="space-y-4 mb-8 flex-1">
+                  <li className="flex items-start gap-3 text-slate-300 text-sm">
+                    <span className="material-symbols-outlined text-indigo-400 text-lg shrink-0">
+                      check_circle
+                    </span>
+                    All Premium Features
+                  </li>
+                  <li className="flex items-start gap-3 text-slate-300 text-sm">
+                    <span className="material-symbols-outlined text-indigo-400 text-lg shrink-0">
+                      check_circle
+                    </span>
+                    Exclusive Webinars
+                  </li>
+                  <li className="flex items-start gap-3 text-slate-300 text-sm">
+                    <span className="material-symbols-outlined text-indigo-400 text-lg shrink-0">
+                      check_circle
+                    </span>
+                    Early Access to New Tools
+                  </li>
+                </ul>
+                <button 
+                  onClick={() => {
+                    setSelectedPlan("semiannual");
+                    setShowCheckoutModal(true);
+                  }}
+                  className="w-full py-3 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-500 transition shadow-lg shadow-indigo-600/20"
+                >
+                  Subscribe 6-Month
+                </button>
               </div>
             </div>
           </div>
