@@ -14,7 +14,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login onClose={() => {}} />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/home" element={<Home />} />
         <Route path="/details" element={<ScholarshipDetails />} />
         <Route path="/phome" element={<PrimaryHome />} />
@@ -22,6 +22,7 @@ function App() {
         <Route path="/applications" element={<MyApplications />} />
         <Route path="/essay-copilot" element={<EssayCopilot />} />
         <Route path="/calendar" element={<Calendar />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </Router>
   );
