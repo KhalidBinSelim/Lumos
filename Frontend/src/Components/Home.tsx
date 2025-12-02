@@ -1,12 +1,30 @@
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
+import { useState } from "react";
+import Subscriptions from "./Subscriptions";
+import CheckoutPage from "./CheckoutPage";
+import PaymentSuccess from "./PaymentSuccess";
+import SettingsModal from "./SettingsModal";
+import HelpModal from "./HelpModal";
 
 export default function Home() {
+  const [showSubscriptionsModal, setShowSubscriptionsModal] = useState(false);
+  const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+  const [showPaymentSuccessModal, setShowPaymentSuccessModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<"free" | "monthly" | "semiannual">("monthly");
+
+
   return (
     <div className="flex flex-col h-screen w-screen bg-gradient-to-b from-slate-950 via-[#08122f] to-black text-slate-100 overflow-hidden">
       <Topbar />
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
+        <Sidebar
+          onSubscriptionsClick={() => setShowSubscriptionsModal(true)}
+          onSettingsClick={() => setShowSettingsModal(true)}
+          onHelpClick={() => setShowHelpModal(true)}
+        />
 
         <main className="flex-1 overflow-y-auto relative p-8">
           {/* background glow */}
@@ -218,6 +236,54 @@ export default function Home() {
           </div>
         </main>
       </div>
+
+      {/* Subscription Modals */}
+      {showSubscriptionsModal && (
+        <Subscriptions
+          onClose={() => setShowSubscriptionsModal(false)}
+          onUpgrade={(planType) => {
+            setSelectedPlan(planType);
+            setShowSubscriptionsModal(false);
+            setShowCheckoutModal(true);
+          }}
+        />
+      )}
+
+      {showCheckoutModal && (
+        <CheckoutPage
+          planType={selectedPlan}
+          onClose={() => setShowCheckoutModal(false)}
+          onSuccess={() => {
+            setShowCheckoutModal(false);
+            setShowPaymentSuccessModal(true);
+          }}
+        />
+      )}
+
+      {showPaymentSuccessModal && (
+        <PaymentSuccess
+          onClose={() => setShowPaymentSuccessModal(false)}
+          onGoToDashboard={() => {
+            setShowPaymentSuccessModal(false);
+          }}
+          onManageSubscription={() => {
+            setShowPaymentSuccessModal(false);
+            setShowSubscriptionsModal(true);
+          }}
+          onShowLogin={() => {
+            // Already logged in
+            setShowPaymentSuccessModal(false);
+          }}
+        />
+      )}
+
+      {showSettingsModal && (
+        <SettingsModal onClose={() => setShowSettingsModal(false)} />
+      )}
+
+      {showHelpModal && (
+        <HelpModal onClose={() => setShowHelpModal(false)} />
+      )}
     </div>
   );
 }
