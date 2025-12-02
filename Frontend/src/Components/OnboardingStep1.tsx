@@ -209,6 +209,9 @@ export default function OnboardingStep1({
             <option value="US">United States</option>
             <option value="CA">Canada</option>
             <option value="BD">Bangladesh</option>
+            <option value="IN">India</option>
+            <option value="PK">Pakistan</option>
+            <option value="SA">Saudi Arabia</option>
           </select>
         </div>
 
