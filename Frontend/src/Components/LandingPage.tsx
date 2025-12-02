@@ -7,7 +7,8 @@ import OnboardingStep4 from "./OnboardingStep4";
 import OnboardingStep5 from "./OnboardingStep5";
 import Signup from "./Signup";
 import Login from "./Login";
-// import Login from "./Login";
+import DemoModal from "./DemoModal";
+import InfoModal, { type InfoModalContent } from "./InfoModal";
 
 export default function LandingPage() {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
@@ -22,6 +23,24 @@ export default function LandingPage() {
     useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showDemoModal, setShowDemoModal] = useState(false);
+  const [showInfoModal, setShowInfoModal] = useState(false);
+  const [infoModalContent, setInfoModalContent] = useState<InfoModalContent>({
+    title: "",
+    icon: "",
+    content: null,
+  });
+
+  const handleInfoClick = (
+    e: React.MouseEvent,
+    title: string,
+    icon: string,
+    content: React.ReactNode
+  ) => {
+    e.preventDefault();
+    setInfoModalContent({ title, icon, content });
+    setShowInfoModal(true);
+  };
 
   return (
     <div className="min-h-screen text-slate-100 bg-linear-to-b from-slate-900 via-[#071029] to-black">
@@ -156,16 +175,29 @@ export default function LandingPage() {
         </div>
       )}
 
+      {/* Demo Modal */}
+      {showDemoModal && (
+        <DemoModal onClose={() => setShowDemoModal(false)} />
+      )}
+
+      {/* Info Modal */}
+      {showInfoModal && (
+        <InfoModal
+          data={infoModalContent}
+          onClose={() => setShowInfoModal(false)}
+        />
+      )}
+
       {/* Onboarding Step 1 Modal */}
       {showOnboardingModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80">
           <div className="relative max-w-xl w-full max-h-[85vh] overflow-y-auto bg-slate-900 rounded-2xl border border-slate-700 shadow-2xl p-8">
             <button
               onClick={() => setShowOnboardingModal(false)}
-              className="absolute top-3 right-3 p-1.5 rounded-full bg-slate-800/60 border border-slate-700/60 text-slate-400 hover:text-slate-100 hover:bg-slate-700/60 shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
+              className="absolute top-3 right-3 p-1 rounded-full bg-slate-800/60 border border-slate-700/60 text-slate-400 hover:text-slate-100 hover:bg-slate-700/60 shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
               aria-label="Close"
             >
-              <span className="material-symbols-outlined text-lg">close</span>
+              <span className="material-symbols-outlined text-base">close</span>
             </button>
             <OnboardingStep1
               onBack={() => {
@@ -187,10 +219,10 @@ export default function LandingPage() {
           <div className="relative max-w-xl w-full max-h-[85vh] overflow-y-auto bg-slate-900 rounded-2xl border border-slate-700 shadow-2xl p-8">
             <button
               onClick={() => setShowOnboardingStep2Modal(false)}
-              className="absolute top-3 right-3 p-1.5 rounded-full bg-slate-800/60 border border-slate-700/60 text-slate-400 hover:text-slate-100 hover:bg-slate-700/60 shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
+              className="absolute top-3 right-3 p-1 rounded-full bg-slate-800/60 border border-slate-700/60 text-slate-400 hover:text-slate-100 hover:bg-slate-700/60 shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
               aria-label="Close"
             >
-              <span className="material-symbols-outlined text-lg">close</span>
+              <span className="material-symbols-outlined text-base">close</span>
             </button>
             <OnboardingStep2
               onBack={() => {
@@ -212,10 +244,10 @@ export default function LandingPage() {
           <div className="relative max-w-xl w-full max-h-[85vh] overflow-y-auto bg-slate-900 rounded-2xl border border-slate-700 shadow-2xl p-8">
             <button
               onClick={() => setShowOnboardingStep3Modal(false)}
-              className="absolute top-3 right-3 p-1.5 rounded-full bg-slate-800/60 border border-slate-700/60 text-slate-400 hover:text-slate-100 hover:bg-slate-700/60 shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
+              className="absolute top-3 right-3 p-1 rounded-full bg-slate-800/60 border border-slate-700/60 text-slate-400 hover:text-slate-100 hover:bg-slate-700/60 shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
               aria-label="Close"
             >
-              <span className="material-symbols-outlined text-lg">close</span>
+              <span className="material-symbols-outlined text-base">close</span>
             </button>
             <OnboardingStep3
               onBack={() => {
@@ -237,10 +269,10 @@ export default function LandingPage() {
           <div className="relative max-w-xl w-full max-h-[85vh] overflow-y-auto bg-slate-900 rounded-2xl border border-slate-700 shadow-2xl p-8">
             <button
               onClick={() => setShowOnboardingStep4Modal(false)}
-              className="absolute top-3 right-3 p-1.5 rounded-full bg-slate-800/60 border border-slate-700/60 text-slate-400 hover:text-slate-100 hover:bg-slate-700/60 shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
+              className="absolute top-3 right-3 p-1 rounded-full bg-slate-800/60 border border-slate-700/60 text-slate-400 hover:text-slate-100 hover:bg-slate-700/60 shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
               aria-label="Close"
             >
-              <span className="material-symbols-outlined text-lg">close</span>
+              <span className="material-symbols-outlined text-base">close</span>
             </button>
             <OnboardingStep4
               onBack={() => {
@@ -265,10 +297,10 @@ export default function LandingPage() {
           <div className="relative max-w-xl w-full max-h-[85vh] overflow-y-auto bg-slate-900 rounded-2xl border border-slate-700 shadow-2xl p-8">
             <button
               onClick={() => setShowOnboardingStep5Modal(false)}
-              className="absolute top-3 right-3 p-1.5 rounded-full bg-slate-800/60 border border-slate-700/60 text-slate-400 hover:text-slate-100 hover:bg-slate-700/60 shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
+              className="absolute top-3 right-3 p-1 rounded-full bg-slate-800/60 border border-slate-700/60 text-slate-400 hover:text-slate-100 hover:bg-slate-700/60 shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
               aria-label="Close"
             >
-              <span className="material-symbols-outlined text-lg">close</span>
+              <span className="material-symbols-outlined text-base">close</span>
             </button>
             <OnboardingStep5
               onBack={() => {
@@ -354,6 +386,10 @@ export default function LandingPage() {
 
                 <a
                   href="#demo"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowDemoModal(true);
+                  }}
                   className="inline-flex items-center gap-2 px-5 py-3 rounded-full border border-slate-700 text-slate-200 hover:border-blue-500 transition"
                 >
                   <span className="material-symbols-outlined">play_circle</span>
@@ -428,7 +464,7 @@ export default function LandingPage() {
         </section>
 
         {/* Problem & Solution */}
-        <section className="py-16">
+        <section id="how" className="py-16">
           <div className="w-full px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
               {/* Problem */}
@@ -479,48 +515,41 @@ export default function LandingPage() {
                 <div className="space-y-4">
                   <div className="p-4 rounded-lg bg-slate-800/40 border border-slate-800">
                     <div className="flex items-start gap-3">
-                      <span className="material-symbols-outlined text-green-400">
+                      <span className="material-symbols-outlined text-green-400 shrink-0 mt-1">
                         auto_awesome
                       </span>
-                      <div>
-                        <h3 className="font-semibold text-white">
+                      <p className="text-slate-300 text-sm">
+                        <span className="font-semibold text-white text-base">
                           AI-Powered Eligibility Reasoning
-                        </h3>
-                        <p className="text-slate-300 text-sm mt-1">
-                          Explains matches and flags missing criteria with
-                          clarity
-                        </p>
-                      </div>
+                        </span>{" "}
+                        explains matches and flags missing criteria with clarity
+                      </p>
                     </div>
                   </div>
                   <div className="p-4 rounded-lg bg-slate-800/40 border border-slate-800">
                     <div className="flex items-start gap-3">
-                      <span className="material-symbols-outlined text-green-400">
+                      <span className="material-symbols-outlined text-green-400 shrink-0 mt-1">
                         psychology
                       </span>
-                      <div>
-                        <h3 className="font-semibold text-white">
+                      <p className="text-slate-300 text-sm">
+                        <span className="font-semibold text-white text-base">
                           Learning-to-Rank Engine
-                        </h3>
-                        <p className="text-slate-300 text-sm mt-1">
-                          Optimizes recommendations based on award likelihood
-                        </p>
-                      </div>
+                        </span>{" "}
+                        optimizes recommendations based on award likelihood
+                      </p>
                     </div>
                   </div>
                   <div className="p-4 rounded-lg bg-slate-800/40 border border-slate-800">
                     <div className="flex items-start gap-3">
-                      <span className="material-symbols-outlined text-green-400">
+                      <span className="material-symbols-outlined text-green-400 shrink-0 mt-1">
                         verified
                       </span>
-                      <div>
-                        <h3 className="font-semibold text-white">
+                      <p className="text-slate-300 text-sm">
+                        <span className="font-semibold text-white text-base">
                           Trust & Freshness Layer
-                        </h3>
-                        <p className="text-slate-300 text-sm mt-1">
-                          Ensures only verified, current opportunities are shown
-                        </p>
-                      </div>
+                        </span>{" "}
+                        Ensures only verified, current opportunities are shown
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -537,7 +566,7 @@ export default function LandingPage() {
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <article className="p-6 rounded-xl bg-slate-800/50 border border-slate-800 hover:shadow-xl transition">
+              <article className="p-6 rounded-xl bg-slate-800/50 border border-slate-800 hover:shadow-xl transition flex flex-col items-center text-center">
                 <div className="text-4xl text-blue-400">
                   <span className="material-symbols-outlined">search</span>
                 </div>
@@ -548,7 +577,7 @@ export default function LandingPage() {
                 </p>
               </article>
 
-              <article className="p-6 rounded-xl bg-slate-800/50 border border-slate-800 hover:shadow-xl transition">
+              <article className="p-6 rounded-xl bg-slate-800/50 border border-slate-800 hover:shadow-xl transition flex flex-col items-center text-center">
                 <div className="text-4xl text-blue-400">
                   <span className="material-symbols-outlined">edit</span>
                 </div>
@@ -559,7 +588,7 @@ export default function LandingPage() {
                 </p>
               </article>
 
-              <article className="p-6 rounded-xl bg-slate-800/50 border border-slate-800 hover:shadow-xl transition">
+              <article className="p-6 rounded-xl bg-slate-800/50 border border-slate-800 hover:shadow-xl transition flex flex-col items-center text-center">
                 <div className="text-4xl text-blue-400">
                   <span className="material-symbols-outlined">smart_toy</span>
                 </div>
@@ -570,7 +599,7 @@ export default function LandingPage() {
                 </p>
               </article>
 
-              <article className="p-6 rounded-xl bg-slate-800/50 border border-slate-800 hover:shadow-xl transition">
+              <article className="p-6 rounded-xl bg-slate-800/50 border border-slate-800 hover:shadow-xl transition flex flex-col items-center text-center">
                 <div className="text-4xl text-blue-400">
                   <span className="material-symbols-outlined">leaderboard</span>
                 </div>
@@ -591,25 +620,25 @@ export default function LandingPage() {
               Proven Impact
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="p-6 rounded-xl bg-slate-800/40 border border-slate-800">
+              <div className="p-6 rounded-xl bg-slate-800/40 border border-slate-800 flex flex-col items-center text-center">
                 <div className="text-3xl font-bold text-blue-400">15-25%</div>
                 <p className="mt-2 text-slate-300">
                   Increase in scholarships awarded per active user
                 </p>
               </div>
-              <div className="p-6 rounded-xl bg-slate-800/40 border border-slate-800">
+              <div className="p-6 rounded-xl bg-slate-800/40 border border-slate-800 flex flex-col items-center text-center">
                 <div className="text-3xl font-bold text-blue-400">30-40%</div>
                 <p className="mt-2 text-slate-300">
                   Reduction in time spent per application
                 </p>
               </div>
-              <div className="p-6 rounded-xl bg-slate-800/40 border border-slate-800">
+              <div className="p-6 rounded-xl bg-slate-800/40 border border-slate-800 flex flex-col items-center text-center">
                 <div className="text-3xl font-bold text-blue-400">20-30%</div>
                 <p className="mt-2 text-slate-300">
                   Improvement in on-time submissions
                 </p>
               </div>
-              <div className="p-6 rounded-xl bg-slate-800/40 border border-slate-800">
+              <div className="p-6 rounded-xl bg-slate-800/40 border border-slate-800 flex flex-col items-center text-center">
                 <div className="text-3xl font-bold text-blue-400">235M+</div>
                 <p className="mt-2 text-slate-300">
                   Students in our global target market
@@ -626,27 +655,27 @@ export default function LandingPage() {
               Powered by Advanced Technology
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <div className="p-6 rounded-xl bg-slate-800/40 border border-slate-800">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="material-symbols-outlined text-blue-400">
+              <div className="p-6 rounded-xl bg-slate-800/40 border border-slate-800 flex flex-col items-center text-center">
+                <div className="flex flex-col items-center gap-2 mb-4">
+                  <span className="material-symbols-outlined text-blue-400 text-4xl">
                     code
                   </span>
                   <h3 className="text-lg font-semibold">Modern Stack</h3>
                 </div>
                 <ul className="space-y-2 text-slate-300">
-                  <li className="flex items-center gap-2">
+                  <li className="flex items-center gap-2 justify-center">
                     <span className="material-symbols-outlined text-green-400 text-sm">
                       check_circle
                     </span>
                     React & Next.js Frontend
                   </li>
-                  <li className="flex items-center gap-2">
+                  <li className="flex items-center gap-2 justify-center">
                     <span className="material-symbols-outlined text-green-400 text-sm">
                       check_circle
                     </span>
                     FastAPI Backend
                   </li>
-                  <li className="flex items-center gap-2">
+                  <li className="flex items-center gap-2 justify-center">
                     <span className="material-symbols-outlined text-green-400 text-sm">
                       check_circle
                     </span>
@@ -654,27 +683,27 @@ export default function LandingPage() {
                   </li>
                 </ul>
               </div>
-              <div className="p-6 rounded-xl bg-slate-800/40 border border-slate-800">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="material-symbols-outlined text-blue-400">
+              <div className="p-6 rounded-xl bg-slate-800/40 border border-slate-800 flex flex-col items-center text-center">
+                <div className="flex flex-col items-center gap-2 mb-4">
+                  <span className="material-symbols-outlined text-blue-400 text-4xl">
                     smart_toy
                   </span>
                   <h3 className="text-lg font-semibold">AI & ML Tools</h3>
                 </div>
                 <ul className="space-y-2 text-slate-300">
-                  <li className="flex items-center gap-2">
+                  <li className="flex items-center gap-2 justify-center">
                     <span className="material-symbols-outlined text-green-400 text-sm">
                       check_circle
                     </span>
                     GPT-4 & Claude 3.5
                   </li>
-                  <li className="flex items-center gap-2">
+                  <li className="flex items-center gap-2 justify-center">
                     <span className="material-symbols-outlined text-green-400 text-sm">
                       check_circle
                     </span>
                     Vector Search & Ranking
                   </li>
-                  <li className="flex items-center gap-2">
+                  <li className="flex items-center gap-2 justify-center">
                     <span className="material-symbols-outlined text-green-400 text-sm">
                       check_circle
                     </span>
@@ -682,27 +711,27 @@ export default function LandingPage() {
                   </li>
                 </ul>
               </div>
-              <div className="p-6 rounded-xl bg-slate-800/40 border border-slate-800">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="material-symbols-outlined text-blue-400">
+              <div className="p-6 rounded-xl bg-slate-800/40 border border-slate-800 flex flex-col items-center text-center">
+                <div className="flex flex-col items-center gap-2 mb-4">
+                  <span className="material-symbols-outlined text-blue-400 text-4xl">
                     security
                   </span>
                   <h3 className="text-lg font-semibold">Security & Scale</h3>
                 </div>
                 <ul className="space-y-2 text-slate-300">
-                  <li className="flex items-center gap-2">
+                  <li className="flex items-center gap-2 justify-center">
                     <span className="material-symbols-outlined text-green-400 text-sm">
                       check_circle
                     </span>
                     Global CDN Delivery
                   </li>
-                  <li className="flex items-center gap-2">
+                  <li className="flex items-center gap-2 justify-center">
                     <span className="material-symbols-outlined text-green-400 text-sm">
                       check_circle
                     </span>
                     Real-time Analytics
                   </li>
-                  <li className="flex items-center gap-2">
+                  <li className="flex items-center gap-2 justify-center">
                     <span className="material-symbols-outlined text-green-400 text-sm">
                       check_circle
                     </span>
@@ -715,15 +744,15 @@ export default function LandingPage() {
         </section>
 
         {/* Target Users */}
-        <section className="py-16 bg-slate-900/30">
+        <section id="about" className="py-16 bg-slate-900/30">
           <div className="w-full px-6">
             <h2 className="text-3xl font-bold text-center mb-12">
               Who We Help
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="p-6 rounded-xl bg-slate-800/40 border border-slate-800">
-                <div className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-blue-400">
+              <div className="p-6 rounded-xl bg-slate-800/40 border border-slate-800 flex flex-col items-center text-center">
+                <div className="flex flex-col items-center gap-3">
+                  <span className="material-symbols-outlined text-blue-400 text-4xl">
                     school
                   </span>
                   <div>
@@ -736,9 +765,9 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
-              <div className="p-6 rounded-xl bg-slate-800/40 border border-slate-800">
-                <div className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-blue-400">
+              <div className="p-6 rounded-xl bg-slate-800/40 border border-slate-800 flex flex-col items-center text-center">
+                <div className="flex flex-col items-center gap-3">
+                  <span className="material-symbols-outlined text-blue-400 text-4xl">
                     diversity_3
                   </span>
                   <div>
@@ -753,9 +782,9 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
-              <div className="p-6 rounded-xl bg-slate-800/40 border border-slate-800">
-                <div className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-blue-400">
+              <div className="p-6 rounded-xl bg-slate-800/40 border border-slate-800 flex flex-col items-center text-center">
+                <div className="flex flex-col items-center gap-3">
+                  <span className="material-symbols-outlined text-blue-400 text-4xl">
                     support_agent
                   </span>
                   <div>
@@ -769,9 +798,9 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
-              <div className="p-6 rounded-xl bg-slate-800/40 border border-slate-800">
-                <div className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-blue-400">
+              <div className="p-6 rounded-xl bg-slate-800/40 border border-slate-800 flex flex-col items-center text-center">
+                <div className="flex flex-col items-center gap-3">
+                  <span className="material-symbols-outlined text-blue-400 text-4xl">
                     language
                   </span>
                   <div>
@@ -798,8 +827,8 @@ export default function LandingPage() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {/* Testimonial 1 */}
-              <div className="bg-slate-800/40 rounded-xl p-6 border border-slate-800 hover:border-blue-500/30 transition">
-                <div className="flex items-center gap-4 mb-4">
+              <div className="bg-slate-800/40 rounded-xl p-6 border border-slate-800 hover:border-blue-500/30 transition flex flex-col items-center text-center">
+                <div className="flex flex-col items-center gap-2 mb-4">
                   <div className="w-12 h-12 rounded-full bg-linear-to-tr from-blue-500/80 to-indigo-500/80 flex items-center justify-center text-xl font-bold text-white">
                     SJ
                   </div>
@@ -813,7 +842,7 @@ export default function LandingPage() {
                   copilot saved me weeks of work and made my applications
                   stronger."
                 </blockquote>
-                <div className="mt-4 flex items-center gap-1 text-blue-400">
+                <div className="mt-4 flex items-center justify-center gap-1 text-blue-400">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <span
                       key={star}
@@ -826,8 +855,8 @@ export default function LandingPage() {
               </div>
 
               {/* Testimonial 2 */}
-              <div className="bg-slate-800/40 rounded-xl p-6 border border-slate-800 hover:border-blue-500/30 transition">
-                <div className="flex items-center gap-4 mb-4">
+              <div className="bg-slate-800/40 rounded-xl p-6 border border-slate-800 hover:border-blue-500/30 transition flex flex-col items-center text-center">
+                <div className="flex flex-col items-center gap-2 mb-4">
                   <div className="w-12 h-12 rounded-full bg-linear-to-tr from-blue-500/80 to-indigo-500/80 flex items-center justify-center text-xl font-bold text-white">
                     MP
                   </div>
@@ -841,7 +870,7 @@ export default function LandingPage() {
                   knew existed and explained exactly why I qualified. Already
                   won 3 awards!"
                 </blockquote>
-                <div className="mt-4 flex items-center gap-1 text-blue-400">
+                <div className="mt-4 flex items-center justify-center gap-1 text-blue-400">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <span
                       key={star}
@@ -854,8 +883,8 @@ export default function LandingPage() {
               </div>
 
               {/* Testimonial 3 */}
-              <div className="bg-slate-800/40 rounded-xl p-6 border border-slate-800 hover:border-blue-500/30 transition">
-                <div className="flex items-center gap-4 mb-4">
+              <div className="bg-slate-800/40 rounded-xl p-6 border border-slate-800 hover:border-blue-500/30 transition flex flex-col items-center text-center">
+                <div className="flex flex-col items-center gap-2 mb-4">
                   <div className="w-12 h-12 rounded-full bg-linear-to-tr from-blue-500/80 to-indigo-500/80 flex items-center justify-center text-xl font-bold text-white">
                     AR
                   </div>
@@ -869,7 +898,7 @@ export default function LandingPage() {
                   changers. I've applied to twice as many scholarships in half
                   the time."
                 </blockquote>
-                <div className="mt-4 flex items-center gap-1 text-blue-400">
+                <div className="mt-4 flex items-center justify-center gap-1 text-blue-400">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <span
                       key={star}
@@ -908,6 +937,10 @@ export default function LandingPage() {
                 </a>
                 <a
                   href="#demo"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowDemoModal(true);
+                  }}
                   className="px-6 py-3 rounded-full border border-slate-700 text-slate-200"
                 >
                   Watch demo
@@ -931,13 +964,81 @@ export default function LandingPage() {
             <a href="#about" className="text-slate-300 hover:text-blue-400">
               About
             </a>
-            <a href="#privacy" className="text-slate-300 hover:text-blue-400">
+            <a
+              href="#privacy"
+              onClick={(e) =>
+                handleInfoClick(
+                  e,
+                  "Privacy Policy",
+                  "lock",
+                  <>
+                    <p>
+                      At Lumos, we take your privacy seriously. We only collect
+                      information necessary to provide you with scholarship
+                      matches and improve our services.
+                    </p>
+                    <p>
+                      We do not sell your personal data to third parties. Your
+                      academic and demographic information is encrypted and stored
+                      securely.
+                    </p>
+                    <p className="text-sm text-slate-400 mt-4">
+                      Last updated: December 2025
+                    </p>
+                  </>
+                )
+              }
+              className="text-slate-300 hover:text-blue-400"
+            >
               Privacy
             </a>
-            <a href="#terms" className="text-slate-300 hover:text-blue-400">
+            <a
+              href="#terms"
+              onClick={(e) =>
+                handleInfoClick(
+                  e,
+                  "Terms of Service",
+                  "gavel",
+                  <>
+                    <p>
+                      By using Lumos, you agree to our terms of service. Our
+                      platform is designed to assist students in finding and
+                      applying for scholarships.
+                    </p>
+                    <p>
+                      While we strive for accuracy, scholarship details are subject
+                      to change by the providers. We are not responsible for
+                      third-party decisions.
+                    </p>
+                  </>
+                )
+              }
+              className="text-slate-300 hover:text-blue-400"
+            >
               Terms
             </a>
-            <a href="#blog" className="text-slate-300 hover:text-blue-400">
+            <a
+              href="#blog"
+              onClick={(e) =>
+                handleInfoClick(
+                  e,
+                  "Lumos Blog",
+                  "rss_feed",
+                  <>
+                    <p>
+                      Welcome to the Lumos Blog! Here we share tips on writing
+                      winning essays, interview strategies, and success stories
+                      from our community.
+                    </p>
+                    <p>
+                      Check back soon for our latest guide: "Top 10 STEM
+                      Scholarships for 2026".
+                    </p>
+                  </>
+                )
+              }
+              className="text-slate-300 hover:text-blue-400"
+            >
               Blog
             </a>
           </nav>
