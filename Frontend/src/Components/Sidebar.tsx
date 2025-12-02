@@ -17,6 +17,7 @@ export default function Sidebar({
   ];
 
   const bottomNav = [
+    {icon: "price_check", label: "Subscription", onClick: onSubscriptionsClick},
     { icon: "settings", label: "Settings", onClick: onSettingsClick },
     { icon: "help", label: "Help", onClick: onHelpClick },
   ];
@@ -39,7 +40,7 @@ export default function Sidebar({
             </a>
           ))}
           
-          {/* Subscriptions button */}
+          {/* Subscriptions button
           <button
             onClick={onSubscriptionsClick}
             className="flex items-center gap-3 px-1 py-2 text-slate-400 hover:text-blue-400 transition group relative"
@@ -49,7 +50,7 @@ export default function Sidebar({
             </span>
             <span className="text-sm">Subscriptions</span>
             <span className="absolute left-0 h-[2px] w-0 bg-gradient-to-r from-blue-500 to-indigo-500 bottom-0 rounded-full transition-all duration-300 group-hover:w-full" />
-          </button>
+          </button> */}
         </nav>
       </div>
 
