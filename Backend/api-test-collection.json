@@ -1,0 +1,432 @@
+{
+  "info": {
+    "name": "Lumos API - Application & Essay",
+    "description": "API collection for testing Application and Essay endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "your-jwt-token-here",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "6789abcd1234567890abcdef",
+      "type": "string"
+    },
+    {
+      "key": "scholarshipId",
+      "value": "6789abcd1234567890abc001",
+      "type": "string"
+    },
+    {
+      "key": "applicationId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "essayId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{authToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Application",
+      "item": [
+        {
+          "name": "Create Application",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scholarshipId\": \"{{scholarshipId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/applications",
+              "host": ["{{baseUrl}}"],
+              "path": ["applications"]
+            },
+            "description": "Create a new application for a scholarship"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "Created",
+              "code": 201,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Application created successfully\",\n  \"data\": {\n    \"_id\": \"6789abcd1234567890abc100\",\n    \"userId\": \"6789abcd1234567890abcdef\",\n    \"scholarshipId\": \"6789abcd1234567890abc001\",\n    \"essayId\": null,\n    \"state\": \"working\",\n    \"submittedAt\": null,\n    \"createdAt\": \"2024-01-28T10:30:00.000Z\",\n    \"updatedAt\": \"2024-01-28T10:30:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Applications (User)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/applications?state=working&page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["applications"],
+              "query": [
+                { "key": "state", "value": "working", "description": "Filter: working | submitted" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            },
+            "description": "Get all applications for current user with optional filters"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"_id\": \"6789abcd1234567890abc100\",\n      \"userId\": \"6789abcd1234567890abcdef\",\n      \"scholarshipId\": {\n        \"_id\": \"6789abcd1234567890abc001\",\n        \"title\": \"Tech Leaders Scholarship\",\n        \"amount\": 5000,\n        \"deadline\": \"2024-02-15T00:00:00.000Z\"\n      },\n      \"essayId\": null,\n      \"state\": \"working\",\n      \"submittedAt\": null,\n      \"createdAt\": \"2024-01-28T10:30:00.000Z\",\n      \"updatedAt\": \"2024-01-28T10:30:00.000Z\"\n    }\n  ],\n  \"pagination\": {\n    \"total\": 1,\n    \"page\": 1,\n    \"limit\": 10,\n    \"pages\": 1\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Applications by Scholarship",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/applications/scholarship/{{scholarshipId}}?state=submitted",
+              "host": ["{{baseUrl}}"],
+              "path": ["applications", "scholarship", "{{scholarshipId}}"],
+              "query": [
+                { "key": "state", "value": "submitted", "description": "Optional filter" }
+              ]
+            },
+            "description": "Get all applications for a specific scholarship"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"data\": [],\n  \"pagination\": {\n    \"total\": 0,\n    \"page\": 1,\n    \"limit\": 20,\n    \"pages\": 0\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Check Application Exists",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/applications/check/{{scholarshipId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["applications", "check", "{{scholarshipId}}"]
+            },
+            "description": "Check if user already has an application for a scholarship"
+          },
+          "response": [
+            {
+              "name": "Success - Exists",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"exists\": true,\n    \"application\": {\n      \"_id\": \"6789abcd1234567890abc100\",\n      \"userId\": \"6789abcd1234567890abcdef\",\n      \"scholarshipId\": {\n        \"_id\": \"6789abcd1234567890abc001\",\n        \"title\": \"Tech Leaders Scholarship\"\n      },\n      \"state\": \"working\"\n    }\n  }\n}"
+            },
+            {
+              "name": "Success - Not Exists",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"exists\": false,\n    \"application\": null\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Application Stats",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/applications/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["applications", "stats"]
+            },
+            "description": "Get application statistics for current user"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"total\": 5,\n    \"working\": 3,\n    \"submitted\": 2\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Application by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/applications/{{applicationId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["applications", "{{applicationId}}"]
+            },
+            "description": "Get a specific application by ID"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"_id\": \"6789abcd1234567890abc100\",\n    \"userId\": \"6789abcd1234567890abcdef\",\n    \"scholarshipId\": {\n      \"_id\": \"6789abcd1234567890abc001\",\n      \"title\": \"Tech Leaders Scholarship\",\n      \"amount\": 5000,\n      \"deadline\": \"2024-02-15T00:00:00.000Z\",\n      \"org\": \"Tech Foundation\"\n    },\n    \"essayId\": {\n      \"_id\": \"6789abcd1234567890abc200\",\n      \"text\": \"My essay about leadership...\",\n      \"lastEditedAt\": \"2024-01-28T14:30:00.000Z\",\n      \"wordCount\": 450\n    },\n    \"state\": \"working\",\n    \"submittedAt\": null,\n    \"createdAt\": \"2024-01-28T10:30:00.000Z\",\n    \"updatedAt\": \"2024-01-28T14:30:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Application State",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"state\": \"submitted\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/applications/{{applicationId}}/state",
+              "host": ["{{baseUrl}}"],
+              "path": ["applications", "{{applicationId}}", "state"]
+            },
+            "description": "Update application state (working -> submitted)"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Application submitted successfully\",\n  \"data\": {\n    \"_id\": \"6789abcd1234567890abc100\",\n    \"state\": \"submitted\",\n    \"submittedAt\": \"2024-01-28T15:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Submit Application (Shortcut)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/applications/{{applicationId}}/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["applications", "{{applicationId}}", "submit"]
+            },
+            "description": "Quick endpoint to submit an application"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Application submitted successfully\",\n  \"data\": {\n    \"_id\": \"6789abcd1234567890abc100\",\n    \"state\": \"submitted\",\n    \"submittedAt\": \"2024-01-28T15:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Link Essay to Application",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"essayId\": \"{{essayId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/applications/{{applicationId}}/essay",
+              "host": ["{{baseUrl}}"],
+              "path": ["applications", "{{applicationId}}", "essay"]
+            },
+            "description": "Link an existing essay to an application"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Essay linked successfully\",\n  \"data\": {\n    \"_id\": \"6789abcd1234567890abc100\",\n    \"essayId\": \"6789abcd1234567890abc200\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Application",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/applications/{{applicationId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["applications", "{{applicationId}}"]
+            },
+            "description": "Delete an application"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Application deleted successfully\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Essay",
+      "item": [
+        {
+          "name": "Create Essay",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"applicationId\": \"{{applicationId}}\",\n  \"text\": \"As a passionate technologist and community leader, I have always believed in the power of innovation to transform lives. My journey began in a small town where access to technology was limited, yet my curiosity knew no bounds.\\n\\nThroughout my academic career, I have demonstrated exceptional leadership skills by founding the Computer Science Club at my high school, mentoring over 50 students in programming, and organizing hackathons that brought together students from diverse backgrounds.\\n\\nThis scholarship would enable me to continue pursuing my dreams of becoming a software engineer who creates accessible technology solutions for underserved communities. I am committed to giving back and inspiring the next generation of tech leaders.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/essays",
+              "host": ["{{baseUrl}}"],
+              "path": ["essays"]
+            },
+            "description": "Create a new essay for an application"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "Created",
+              "code": 201,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Essay created successfully\",\n  \"data\": {\n    \"_id\": \"6789abcd1234567890abc200\",\n    \"applicationId\": \"6789abcd1234567890abc100\",\n    \"text\": \"As a passionate technologist and community leader...\",\n    \"lastEditedAt\": \"2024-01-28T11:00:00.000Z\",\n    \"wordCount\": 156,\n    \"createdAt\": \"2024-01-28T11:00:00.000Z\",\n    \"updatedAt\": \"2024-01-28T11:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Essay by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/essays/{{essayId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["essays", "{{essayId}}"]
+            },
+            "description": "Get a specific essay by ID"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"_id\": \"6789abcd1234567890abc200\",\n    \"applicationId\": {\n      \"_id\": \"6789abcd1234567890abc100\",\n      \"userId\": \"6789abcd1234567890abcdef\",\n      \"scholarshipId\": \"6789abcd1234567890abc001\",\n      \"state\": \"working\"\n    },\n    \"text\": \"As a passionate technologist and community leader, I have always believed in the power of innovation to transform lives...\",\n    \"lastEditedAt\": \"2024-01-28T14:30:00.000Z\",\n    \"wordCount\": 156,\n    \"createdAt\": \"2024-01-28T11:00:00.000Z\",\n    \"updatedAt\": \"2024-01-28T14:30:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Essay by Application ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/essays/application/{{applicationId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["essays", "application", "{{applicationId}}"]
+            },
+            "description": "Get essay associated with an application"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"_id\": \"6789abcd1234567890abc200\",\n    \"applicationId\": \"6789abcd1234567890abc100\",\n    \"text\": \"As a passionate technologist and community leader...\",\n    \"lastEditedAt\": \"2024-01-28T14:30:00.000Z\",\n    \"wordCount\": 156,\n    \"createdAt\": \"2024-01-28T11:00:00.000Z\",\n    \"updatedAt\": \"2024-01-28T14:30:00.000Z\"\n  }\n}"
+            },
+            {
+              "name": "Success - No Essay",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Essay",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"As a passionate technologist and community leader, I have always believed in the power of innovation to transform lives. My journey began in a small town where access to technology was limited, yet my curiosity knew no bounds.\\n\\nThroughout my academic career at Jefferson High School, I have demonstrated exceptional leadership skills by founding the Computer Science Club, growing membership from 5 to 75 students, and mentoring over 50 students in programming fundamentals. I organized three annual hackathons that brought together students from diverse socioeconomic backgrounds, many of whom had never written a line of code before.\\n\\nMy most impactful project was developing an app that connects elderly community members with volunteer tech helpers. This initiative has helped over 200 seniors in our community navigate digital services for healthcare, banking, and staying connected with family.\\n\\nThis scholarship would enable me to pursue my degree in Computer Science at Stanford University, where I plan to specialize in Human-Computer Interaction. My goal is to create accessible technology solutions that bridge the digital divide for underserved communities.\\n\\nI am deeply committed to giving back and inspiring the next generation of diverse tech leaders. With this scholarship, I will continue my mission to democratize technology education and create meaningful impact through innovation.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/essays/{{essayId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["essays", "{{essayId}}"]
+            },
+            "description": "Update essay text content"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Essay updated successfully\",\n  \"data\": {\n    \"_id\": \"6789abcd1234567890abc200\",\n    \"applicationId\": \"6789abcd1234567890abc100\",\n    \"text\": \"As a passionate technologist and community leader...\",\n    \"lastEditedAt\": \"2024-01-28T16:45:00.000Z\",\n    \"wordCount\": 298,\n    \"createdAt\": \"2024-01-28T11:00:00.000Z\",\n    \"updatedAt\": \"2024-01-28T16:45:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Essay",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/essays/{{essayId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["essays", "{{essayId}}"]
+            },
+            "description": "Delete an essay"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Essay deleted successfully\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
