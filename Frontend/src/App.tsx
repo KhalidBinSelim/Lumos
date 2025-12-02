@@ -9,6 +9,7 @@ import Login from "./Components/Login";
 import MyApplications from "./Components/MyApplications";
 import EssayCopilot from "./Components/EssayCopilot";
 import Calendar from "./Components/Calendar";
+import Saved from "./Components/Saved";
 
 function App() {
   return (
@@ -22,6 +23,8 @@ function App() {
         <Route path="/applications" element={<MyApplications />} />
         <Route path="/essay-copilot" element={<EssayCopilot />} />
         <Route path="/calendar" element={<Calendar />} />
+        <Route path="/saved" element={<Saved />} />
+        <Route path="/dashboard" element={<Home />} />
         <Route path="/login" element={<Login />} />
       </Routes>
     </Router>

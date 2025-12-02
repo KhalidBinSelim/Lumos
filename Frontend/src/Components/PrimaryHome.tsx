@@ -6,6 +6,9 @@ import OnboardingStep2 from "./OnboardingStep2";
 import OnboardingStep3 from "./OnboardingStep3";
 import OnboardingStep4 from "./OnboardingStep4";
 import OnboardingStep5 from "./OnboardingStep5";
+import SettingsModal from "./SettingsModal";
+import HelpModal from "./HelpModal";
+import SubscriptionModal from "./SubscriptionModal";
 
 export default function Welcome() {
   // const [showWelcomeModal, setShowWelcomeModal] = useState(false);
@@ -18,6 +21,11 @@ export default function Welcome() {
     useState(false);
   const [showOnboardingStep5Modal, setShowOnboardingStep5Modal] =
     useState(false);
+  
+  // Modal states
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
   // const [showSignupModal, setShowSignupModal] = useState(false);
   // const [showLoginModal, setShowLoginModal] = useState(false);
 
@@ -25,7 +33,11 @@ export default function Welcome() {
     <div className="flex flex-col h-screen w-screen bg-gradient-to-b from-slate-950 via-[#08122f] to-black text-slate-100 overflow-hidden">
       <Topbar />
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
+        <Sidebar 
+          onSubscriptionsClick={() => setShowSubscriptionModal(true)}
+          onSettingsClick={() => setShowSettingsModal(true)}
+          onHelpClick={() => setShowHelpModal(true)}
+        />
 
         <main className="flex-1 overflow-y-auto relative p-8">
           {/* Background glows */}
@@ -224,6 +236,11 @@ export default function Welcome() {
           </div>
         </main>
       </div>
+      
+      {/* Modals */}
+      {showSubscriptionModal && <SubscriptionModal onClose={() => setShowSubscriptionModal(false)} />}
+      {showSettingsModal && <SettingsModal onClose={() => setShowSettingsModal(false)} />}
+      {showHelpModal && <HelpModal onClose={() => setShowHelpModal(false)} />}
     </div>
   );
 }

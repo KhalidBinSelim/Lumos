@@ -1,6 +1,9 @@
 import React, { useState, useMemo } from "react";
 import Topbar from "./Topbar";
 import Sidebar from "./Sidebar";
+import SettingsModal from "./SettingsModal";
+import HelpModal from "./HelpModal";
+import SubscriptionModal from "./SubscriptionModal";
 import { Link } from "react-router-dom";
 
 // Types
@@ -145,6 +148,11 @@ export default function MyApplications() {
   const [sortOption, setSortOption] = useState("Deadline");
   const [showDeleteModal, setShowDeleteModal] = useState<number | null>(null); // ID of app to delete
   const [openDropdown, setOpenDropdown] = useState<number | null>(null); // ID of app with open dropdown
+  
+  // Modal states
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
 
   // Filter & Sort Logic
   const filteredApps = useMemo(() => {
@@ -197,7 +205,11 @@ export default function MyApplications() {
     <div className="flex flex-col h-screen w-screen bg-gradient-to-b from-slate-950 via-[#08122f] to-black text-slate-100 overflow-hidden font-sans">
       <Topbar />
       <div className="flex flex-1 overflow-hidden relative">
-        <Sidebar />
+        <Sidebar 
+          onSubscriptionsClick={() => setShowSubscriptionModal(true)}
+          onSettingsClick={() => setShowSettingsModal(true)}
+          onHelpClick={() => setShowHelpModal(true)}
+        />
 
         <main className="flex-1 overflow-y-auto relative p-4 sm:p-6" onClick={() => setOpenDropdown(null)}>
             {/* Background Glow */}
@@ -556,6 +568,11 @@ export default function MyApplications() {
                 </div>
             </div>
         )}
+        
+        {/* Modals */}
+        {showSubscriptionModal && <SubscriptionModal onClose={() => setShowSubscriptionModal(false)} />}
+        {showSettingsModal && <SettingsModal onClose={() => setShowSettingsModal(false)} />}
+        {showHelpModal && <HelpModal onClose={() => setShowHelpModal(false)} />}
       </div>
     </div>
   );

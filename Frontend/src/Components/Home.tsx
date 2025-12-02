@@ -1,12 +1,25 @@
+import { useState } from "react";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
+import SettingsModal from "./SettingsModal";
+import HelpModal from "./HelpModal";
+import SubscriptionModal from "./SubscriptionModal";
 
 export default function Home() {
+  // Modal states
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
+  
   return (
     <div className="flex flex-col h-screen w-screen bg-gradient-to-b from-slate-950 via-[#08122f] to-black text-slate-100 overflow-hidden">
       <Topbar />
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
+        <Sidebar 
+          onSubscriptionsClick={() => setShowSubscriptionModal(true)}
+          onSettingsClick={() => setShowSettingsModal(true)}
+          onHelpClick={() => setShowHelpModal(true)}
+        />
 
         <main className="flex-1 overflow-y-auto relative p-8">
           {/* background glow */}
@@ -218,6 +231,11 @@ export default function Home() {
           </div>
         </main>
       </div>
+      
+      {/* Modals */}
+      {showSubscriptionModal && <SubscriptionModal onClose={() => setShowSubscriptionModal(false)} />}
+      {showSettingsModal && <SettingsModal onClose={() => setShowSettingsModal(false)} />}
+      {showHelpModal && <HelpModal onClose={() => setShowHelpModal(false)} />}
     </div>
   );
 }
