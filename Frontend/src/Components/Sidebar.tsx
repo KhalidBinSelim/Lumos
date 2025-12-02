@@ -12,7 +12,7 @@ export default function Sidebar({
   const location = useLocation();
 
   const mainNav = [
-    { icon: "home", label: "Dashboard", path: "/dashboard" },
+    { icon: "home", label: "Dashboard", path: "/home" },
     { icon: "search", label: "Discover", path: "/discovery" },
     { icon: "edit_note", label: "Applications", path: "/applications" },
     { icon: "star", label: "Saved", path: "/saved" },

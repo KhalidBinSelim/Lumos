@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from 'axios';
 
 interface OnboardingFormData {
   firstName: string;
@@ -35,6 +36,7 @@ export default function OnboardingStep1({
       "Sylhet",
     ],
   };
+  
   const [formData, setFormData] = useState<OnboardingFormData>({
     firstName: "",
     lastName: "",
@@ -49,14 +51,58 @@ export default function OnboardingStep1({
     phone: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onNext(formData);
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      // Get JWT token from localStorage
+      const token = localStorage.getItem("token");
+      
+      if (!token) {
+        setError('Authentication required. Please log in again.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      const response = await axios.put(
+        'http://localhost:5000/api/users/profile/basic',
+        formData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      console.log('Profile updated successfully:', response.data);
+      
+      // Only proceed to next step if API call is successful
+      onNext(formData);
+    } catch (error: any) {
+      console.error('API Error:', error);
+      
+      // Better error handling
+      if (error.response?.status === 401) {
+        setError('Session expired. Please log in again.');
+      } else if (error.response?.data?.message) {
+        setError(error.response.data.message);
+      } else {
+        setError('Failed to save information. Please try again.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="w-full max-w-xl max-h-[450px] mx-auto">
-      {/* Header - compact single line (leave right edge free for close button) */}
+      {/* Header */}
       <div className="flex items-center justify-between gap-3 mb-4 pr-10">
         <div className="flex items-center gap-2 text-slate-200">
           <span className="inline-block w-6 h-6 rounded-full bg-linear-to-tr from-blue-500 to-indigo-500" />
@@ -80,6 +126,13 @@ export default function OnboardingStep1({
           Tell us about yourself
         </h2>
 
+        {/* Error message */}
+        {error && (
+          <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/50 text-red-400 text-sm">
+            {error}
+          </div>
+        )}
+
         {/* Name fields */}
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -95,6 +148,7 @@ export default function OnboardingStep1({
               className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
               required
               placeholder="Enter your first name"
+              disabled={isSubmitting}
             />
           </div>
           <div>
@@ -110,6 +164,7 @@ export default function OnboardingStep1({
               className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
               required
               placeholder="Enter your last name"
+              disabled={isSubmitting}
             />
           </div>
         </div>
@@ -135,6 +190,7 @@ export default function OnboardingStep1({
               }
               className="px-2 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
               required
+              disabled={isSubmitting}
             >
               <option value="">Month</option>
               {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
@@ -155,6 +211,7 @@ export default function OnboardingStep1({
               }
               className="px-2 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
               required
+              disabled={isSubmitting}
             >
               <option value="">Day</option>
               {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
@@ -178,6 +235,7 @@ export default function OnboardingStep1({
               }
               className="px-2 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
               required
+              disabled={isSubmitting}
             >
               <option value="">Year</option>
               {Array.from(
@@ -204,6 +262,7 @@ export default function OnboardingStep1({
             required
             aria-label="Country"
             title="Country"
+            disabled={isSubmitting}
           >
             <option value="">Select Country</option>
             <option value="US">United States</option>
@@ -229,6 +288,7 @@ export default function OnboardingStep1({
             }
             className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
             required
+            disabled={isSubmitting}
           >
             <option value="">Select State</option>
             {(stateOptionsByCountry[formData.country] || []).map(
@@ -251,6 +311,7 @@ export default function OnboardingStep1({
             required
             placeholder="Enter your city"
             title="City"
+            disabled={isSubmitting}
           />
         </div>
 
@@ -264,6 +325,7 @@ export default function OnboardingStep1({
               className="w-20 px-2 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
               aria-label="Country code"
               title="Country code"
+              disabled={isSubmitting}
             >
               <option value="+880">+880</option>
             </select>
@@ -275,6 +337,7 @@ export default function OnboardingStep1({
               }
               className="flex-1 px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
               placeholder="(___) ___-____"
+              disabled={isSubmitting}
             />
           </div>
         </div>
@@ -284,7 +347,8 @@ export default function OnboardingStep1({
           <button
             type="button"
             onClick={onBack}
-            className="px-6 py-2 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-600 transition flex items-center gap-1"
+            className="px-6 py-2 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-600 transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isSubmitting}
           >
             <span className="material-symbols-outlined text-sm">
               arrow_back
@@ -293,9 +357,10 @@ export default function OnboardingStep1({
           </button>
           <button
             type="submit"
-            className="px-6 py-2 rounded-lg bg-linear-to-r from-blue-600 to-indigo-500 text-white font-semibold hover:scale-[1.02] transition flex items-center gap-1"
+            className="px-6 py-2 rounded-lg bg-linear-to-r from-blue-600 to-indigo-500 text-white font-semibold hover:scale-[1.02] transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isSubmitting}
           >
-            Save & Continue
+            {isSubmitting ? 'Saving...' : 'Save & Continue'}
             <span className="material-symbols-outlined text-sm">
               arrow_forward
             </span>

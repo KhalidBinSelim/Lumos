@@ -1,16 +1,6 @@
 import { useState } from "react";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
-import SettingsModal from "./SettingsModal";
-import HelpModal from "./HelpModal";
-import SubscriptionModal from "./SubscriptionModal";
-
-export default function Home() {
-  // Modal states
-  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
-  const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [showHelpModal, setShowHelpModal] = useState(false);
-  
 import Subscriptions from "./Subscriptions";
 import CheckoutPage from "./CheckoutPage";
 import PaymentSuccess from "./PaymentSuccess";
@@ -246,7 +236,6 @@ export default function Home() {
         </main>
       </div>
 
-
       {/* Subscription Modals */}
       {showSubscriptionsModal && (
         <Subscriptions
@@ -293,7 +282,6 @@ export default function Home() {
       {showHelpModal && (
         <HelpModal onClose={() => setShowHelpModal(false)} />
       )}
-
     </div>
   );
 }

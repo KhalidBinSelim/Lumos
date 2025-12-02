@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import axios from 'axios';
 
 type Activity = {
   id: string;
@@ -68,6 +69,9 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
 
   const [jobs, setJobs] = useState<Job[]>([]);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const interestOptions = useMemo(
     () => [
       "Computer Science",
@@ -94,18 +98,69 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
     []
   );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onNext({ interests: selectedInterests, activities, awards, jobs });
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      // Get JWT token from localStorage
+      const token = localStorage.getItem("token");
+      
+      if (!token) {
+        setError('Authentication required. Please log in again.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Prepare data without UI-specific fields (id, expanded)
+      const apiData = {
+        interests: selectedInterests,
+        activities: activities.map(({ id, expanded, ...rest }) => rest),
+        awards: awards.map(({ id, ...rest }) => rest),
+        jobs: jobs.map(({ id, ...rest }) => rest),
+      };
+
+      const response = await axios.put(
+        'http://localhost:5000/api/users/profile/activities',
+        apiData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      console.log('Activities profile updated successfully:', response.data);
+      
+      // Only proceed to next step if API call is successful
+      onNext({ interests: selectedInterests, activities, awards, jobs });
+    } catch (error: any) {
+      console.error('API Error:', error);
+      
+      // Better error handling
+      if (error.response?.status === 401) {
+        setError('Session expired. Please log in again.');
+      } else if (error.response?.data?.message) {
+        setError(error.response.data.message);
+      } else {
+        setError('Failed to save activities information. Please try again.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const toggleInterest = (interest: string) => {
+    if (isSubmitting) return;
     setSelectedInterests((prev) =>
       prev.includes(interest) ? prev.filter((i) => i !== interest) : [...prev, interest]
     );
   };
 
   const addCustomInterest = () => {
+    if (isSubmitting) return;
     const name = prompt("Add a new interest");
     if (!name) return;
     if (!interests.includes(name)) setInterests((prev) => [...prev, name]);
@@ -113,6 +168,7 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
   };
 
   const addActivity = () => {
+    if (isSubmitting) return;
     setActivities((prev) => [
       ...prev,
       {
@@ -128,24 +184,29 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
   };
 
   const updateActivity = (id: string, patch: Partial<Activity>) => {
+    if (isSubmitting) return;
     setActivities((prev) => prev.map((a) => (a.id === id ? { ...a, ...patch } : a)));
   };
 
   const deleteActivity = (id: string) => {
+    if (isSubmitting) return;
     setActivities((prev) => prev.filter((a) => a.id !== id));
   };
 
   const addAward = () => {
+    if (isSubmitting) return;
     const title = prompt("Add award title");
     if (!title) return;
     setAwards((prev) => [...prev, { id: crypto.randomUUID(), title }]);
   };
 
   const deleteAward = (id: string) => {
+    if (isSubmitting) return;
     setAwards((prev) => prev.filter((a) => a.id !== id));
   };
 
   const addJob = () => {
+    if (isSubmitting) return;
     setJobs((prev) => [
       ...prev,
       { id: crypto.randomUUID(), title: "", organization: "", duration: "", description: "" },
@@ -153,10 +214,12 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
   };
 
   const updateJob = (id: string, patch: Partial<Job>) => {
+    if (isSubmitting) return;
     setJobs((prev) => prev.map((j) => (j.id === id ? { ...j, ...patch } : j)));
   };
 
   const deleteJob = (id: string) => {
+    if (isSubmitting) return;
     setJobs((prev) => prev.filter((j) => j.id !== id));
   };
 
@@ -187,6 +250,13 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
           <p className="mt-1 text-slate-400 text-sm">This helps us find scholarships tailored to you</p>
         </div>
 
+        {/* Error message */}
+        {error && (
+          <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/50 text-red-400 text-sm">
+            {error}
+          </div>
+        )}
+
         {/* Interests */}
         <section className="rounded-xl border border-slate-700 bg-slate-800/50 p-4">
           <div className="flex items-center justify-between mb-3">
@@ -195,7 +265,8 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
               <button
                 type="button"
                 onClick={() => setShowInterestMenu((s) => !s)}
-                className="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200 hover:border-slate-600 transition text-sm"
+                className="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200 hover:border-slate-600 transition text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isSubmitting}
               >
                 + Add Interest
               </button>
@@ -235,7 +306,12 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
             {selectedInterests.map((i) => (
               <span key={i} className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-700/60 border border-slate-600 text-sm">
                 {i}
-                <button type="button" onClick={() => toggleInterest(i)} className="text-slate-300 hover:text-white">
+                <button 
+                  type="button" 
+                  onClick={() => toggleInterest(i)} 
+                  className="text-slate-300 hover:text-white disabled:opacity-50"
+                  disabled={isSubmitting}
+                >
                   ×
                 </button>
               </span>
@@ -251,7 +327,8 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
             <button
               type="button"
               onClick={addActivity}
-              className="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200 hover:border-slate-600 transition text-sm"
+              className="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200 hover:border-slate-600 transition text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isSubmitting}
             >
               + Add Activity
             </button>
@@ -268,14 +345,16 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
                     <button
                       type="button"
                       onClick={() => updateActivity(a.id, { expanded: !a.expanded })}
-                      className="text-sm text-slate-300 hover:text-white"
+                      className="text-sm text-slate-300 hover:text-white disabled:opacity-50"
+                      disabled={isSubmitting}
                     >
                       {a.expanded ? "Collapse ▲" : "Expand ▼"}
                     </button>
                     <button
                       type="button"
                       onClick={() => deleteActivity(a.id)}
-                      className="text-sm text-rose-300 hover:text-rose-200"
+                      className="text-sm text-rose-300 hover:text-rose-200 disabled:opacity-50"
+                      disabled={isSubmitting}
                     >
                       × Delete
                     </button>
@@ -291,6 +370,7 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
                         onChange={(e) => updateActivity(a.id, { name: e.target.value })}
                         className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
                         placeholder="e.g., Debate Team"
+                        disabled={isSubmitting}
                       />
                     </div>
                     <div>
@@ -301,6 +381,7 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
                         onChange={(e) => updateActivity(a.id, { role: e.target.value })}
                         className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
                         placeholder="e.g., Captain"
+                        disabled={isSubmitting}
                       />
                     </div>
                     <div>
@@ -311,6 +392,7 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
                         onChange={(e) => updateActivity(a.id, { years: e.target.value })}
                         className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
                         placeholder="e.g., 2 years"
+                        disabled={isSubmitting}
                       />
                     </div>
                     <div>
@@ -321,6 +403,7 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
                         onChange={(e) => updateActivity(a.id, { hoursPerWeek: e.target.value })}
                         className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
                         placeholder="e.g., 5"
+                        disabled={isSubmitting}
                       />
                     </div>
                     <div className="sm:col-span-2">
@@ -330,6 +413,7 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
                         onChange={(e) => updateActivity(a.id, { description: e.target.value })}
                         className="w-full min-h-[80px] px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
                         placeholder="What did you accomplish?"
+                        disabled={isSubmitting}
                       />
                     </div>
                   </div>
@@ -346,7 +430,8 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
             <button
               type="button"
               onClick={addAward}
-              className="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200 hover:border-slate-600 transition text-sm"
+              className="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200 hover:border-slate-600 transition text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isSubmitting}
             >
               + Add Award
             </button>
@@ -355,7 +440,12 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
             {awards.map((a) => (
               <li key={a.id} className="flex items-center justify-between rounded-md border border-slate-700 bg-slate-900/50 px-3 py-2">
                 <span className="text-sm">• {a.title}</span>
-                <button type="button" onClick={() => deleteAward(a.id)} className="text-sm text-rose-300 hover:text-rose-200">
+                <button 
+                  type="button" 
+                  onClick={() => deleteAward(a.id)} 
+                  className="text-sm text-rose-300 hover:text-rose-200 disabled:opacity-50"
+                  disabled={isSubmitting}
+                >
                   × Delete
                 </button>
               </li>
@@ -370,7 +460,8 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
             <button
               type="button"
               onClick={addJob}
-              className="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200 hover:border-slate-600 transition text-sm"
+              className="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200 hover:border-slate-600 transition text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isSubmitting}
             >
               + Add Job
             </button>
@@ -387,6 +478,7 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
                       onChange={(e) => updateJob(j.id, { title: e.target.value })}
                       className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
                       placeholder="e.g., Tutor"
+                      disabled={isSubmitting}
                     />
                   </div>
                   <div>
@@ -397,6 +489,7 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
                       onChange={(e) => updateJob(j.id, { organization: e.target.value })}
                       className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
                       placeholder="e.g., Local Community Center"
+                      disabled={isSubmitting}
                     />
                   </div>
                   <div>
@@ -407,6 +500,7 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
                       onChange={(e) => updateJob(j.id, { duration: e.target.value })}
                       className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
                       placeholder="e.g., Jun 2023 - Aug 2024"
+                      disabled={isSubmitting}
                     />
                   </div>
                   <div className="sm:col-span-2">
@@ -416,11 +510,17 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
                       onChange={(e) => updateJob(j.id, { description: e.target.value })}
                       className="w-full min-h-[80px] px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
                       placeholder="What did you do and achieve?"
+                      disabled={isSubmitting}
                     />
                   </div>
                 </div>
                 <div className="mt-2 flex justify-end">
-                  <button type="button" onClick={() => deleteJob(j.id)} className="text-sm text-rose-300 hover:text-rose-200">
+                  <button 
+                    type="button" 
+                    onClick={() => deleteJob(j.id)} 
+                    className="text-sm text-rose-300 hover:text-rose-200 disabled:opacity-50"
+                    disabled={isSubmitting}
+                  >
                     × Delete
                   </button>
                 </div>
@@ -434,16 +534,18 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
           <button
             type="button"
             onClick={onBack}
-            className="px-6 py-2 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-600 transition flex items-center gap-1"
+            className="px-6 py-2 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-600 transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isSubmitting}
           >
             <span className="material-symbols-outlined text-sm">arrow_back</span>
             Back
           </button>
           <button
             type="submit"
-            className="px-6 py-2 rounded-lg bg-linear-to-r from-blue-600 to-indigo-500 text-white font-semibold hover:scale-[1.02] transition flex items-center gap-1"
+            className="px-6 py-2 rounded-lg bg-linear-to-r from-blue-600 to-indigo-500 text-white font-semibold hover:scale-[1.02] transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isSubmitting}
           >
-            Save & Continue
+            {isSubmitting ? 'Saving...' : 'Save & Continue'}
             <span className="material-symbols-outlined text-sm">arrow_forward</span>
           </button>
         </div>
@@ -451,5 +553,3 @@ export default function OnboardingStep3({ onBack, onNext }: OnboardingStep3Props
     </div>
   );
 }
-
-

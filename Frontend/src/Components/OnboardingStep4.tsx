@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from 'axios';
 
 interface BackgroundFormData {
   gender: string;
@@ -39,7 +40,11 @@ export default function OnboardingStep4({ onBack, onSkip, onNext }: OnboardingSt
     disabilityDetails: "",
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const toggleEthnicity = (v: string) => {
+    if (isSubmitting) return;
     setFormData((prev) => ({
       ...prev,
       ethnicities: prev.ethnicities.includes(v)
@@ -49,15 +54,118 @@ export default function OnboardingStep4({ onBack, onSkip, onNext }: OnboardingSt
   };
 
   const setMilitary = (key: keyof BackgroundFormData["military"], value: boolean) => {
+    if (isSubmitting) return;
     setFormData((prev) => ({
       ...prev,
-      military: { ...prev.military, [key]: value, ...(key === "none" && value ? { veteran: false, active: false, parentVeteran: false, parentActive: false } : {}) },
+      military: { 
+        ...prev.military, 
+        [key]: value, 
+        ...(key === "none" && value ? { veteran: false, active: false, parentVeteran: false, parentActive: false } : {}) 
+      },
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onNext(formData);
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      // Get JWT token from localStorage
+      const token = localStorage.getItem("token");
+      
+      if (!token) {
+        setError('Authentication required. Please log in again.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      const response = await axios.put(
+        'http://localhost:5000/api/users/profile/background',
+        formData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      console.log('Background profile updated successfully:', response.data);
+      
+      // Only proceed to next step if API call is successful
+      onNext(formData);
+    } catch (error: any) {
+      console.error('API Error:', error);
+      
+      // Better error handling
+      if (error.response?.status === 401) {
+        setError('Session expired. Please log in again.');
+      } else if (error.response?.data?.message) {
+        setError(error.response.data.message);
+      } else {
+        setError('Failed to save background information. Please try again.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSkip = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      // Get JWT token from localStorage
+      const token = localStorage.getItem("token");
+      
+      if (!token) {
+        setError('Authentication required. Please log in again.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Send empty/default data when skipping
+      const emptyData = {
+        gender: "",
+        ethnicities: [],
+        ethnicityOther: "",
+        firstGen: "" as const,
+        citizenship: "" as const,
+        citizenshipOther: "",
+        incomeRange: "",
+        military: { veteran: false, active: false, parentVeteran: false, parentActive: false, none: true },
+        disability: "" as const,
+        disabilityDetails: "",
+      };
+
+      await axios.put(
+        'http://localhost:5000/api/users/profile/background',
+        emptyData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      console.log('Background step skipped');
+      onSkip();
+    } catch (error: any) {
+      console.error('API Error:', error);
+      
+      if (error.response?.status === 401) {
+        setError('Session expired. Please log in again.');
+      } else {
+        // If skip fails, just proceed anyway
+        console.warn('Skip API call failed, proceeding anyway');
+        onSkip();
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -91,6 +199,13 @@ export default function OnboardingStep4({ onBack, onSkip, onNext }: OnboardingSt
           </ul>
         </section>
 
+        {/* Error message */}
+        {error && (
+          <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/50 text-red-400 text-sm">
+            {error}
+          </div>
+        )}
+
         {/* Gender */}
         <div>
           <label className="block text-sm font-medium mb-1.5">Gender Identity</label>
@@ -100,6 +215,7 @@ export default function OnboardingStep4({ onBack, onSkip, onNext }: OnboardingSt
             onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
             className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
             placeholder="Select or enter custom"
+            disabled={isSubmitting}
           />
           <datalist id="gender-options">
             <option value="Male" />
@@ -127,6 +243,7 @@ export default function OnboardingStep4({ onBack, onSkip, onNext }: OnboardingSt
                   type="checkbox"
                   checked={formData.ethnicities.includes(opt)}
                   onChange={() => toggleEthnicity(opt)}
+                  disabled={isSubmitting}
                 />
                 <span>{opt}</span>
               </label>
@@ -137,6 +254,7 @@ export default function OnboardingStep4({ onBack, onSkip, onNext }: OnboardingSt
               type="checkbox"
               checked={formData.ethnicities.includes("Other")}
               onChange={() => toggleEthnicity("Other")}
+              disabled={isSubmitting}
             />
             <div className="grid grid-cols-[auto,1fr] items-center gap-2">
               <span>Other:</span>
@@ -146,6 +264,7 @@ export default function OnboardingStep4({ onBack, onSkip, onNext }: OnboardingSt
                 onChange={(e) => setFormData({ ...formData, ethnicityOther: e.target.value })}
                 className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
                 placeholder="Describe"
+                disabled={isSubmitting}
               />
             </div>
           </div>
@@ -155,6 +274,7 @@ export default function OnboardingStep4({ onBack, onSkip, onNext }: OnboardingSt
                 type="checkbox"
                 checked={formData.ethnicities.includes("Prefer not to say")}
                 onChange={() => toggleEthnicity("Prefer not to say")}
+                disabled={isSubmitting}
               />
               <span>Prefer not to say</span>
             </label>
@@ -175,7 +295,8 @@ export default function OnboardingStep4({ onBack, onSkip, onNext }: OnboardingSt
                   formData.firstGen === opt
                     ? "border-blue-500 bg-blue-500/10 text-white"
                     : "border-slate-700 bg-slate-800/60 text-slate-200 hover:border-slate-600"
-                }`}
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+                disabled={isSubmitting}
               >
                 {opt}
               </button>
@@ -200,6 +321,7 @@ export default function OnboardingStep4({ onBack, onSkip, onNext }: OnboardingSt
                   name="citizenship"
                   checked={formData.citizenship === opt}
                   onChange={() => setFormData({ ...formData, citizenship: opt as BackgroundFormData["citizenship"] })}
+                  disabled={isSubmitting}
                 />
                 <span>{opt}</span>
               </label>
@@ -212,6 +334,7 @@ export default function OnboardingStep4({ onBack, onSkip, onNext }: OnboardingSt
               onChange={(e) => setFormData({ ...formData, citizenshipOther: e.target.value })}
               className="mt-2 w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
               placeholder="Please specify"
+              disabled={isSubmitting}
             />
           )}
         </div>
@@ -224,6 +347,7 @@ export default function OnboardingStep4({ onBack, onSkip, onNext }: OnboardingSt
             onChange={(e) => setFormData({ ...formData, incomeRange: e.target.value })}
             className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
             title="Family Income Range"
+            disabled={isSubmitting}
           >
             <option value="">Select range</option>
             <option value="Under $30k">Under $30k</option>
@@ -240,23 +364,48 @@ export default function OnboardingStep4({ onBack, onSkip, onNext }: OnboardingSt
           <label className="block text-sm font-medium mb-1.5">Military Affiliation</label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
             <label className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
-              <input type="checkbox" checked={formData.military.veteran} onChange={(e) => setMilitary("veteran", e.target.checked)} />
+              <input 
+                type="checkbox" 
+                checked={formData.military.veteran} 
+                onChange={(e) => setMilitary("veteran", e.target.checked)} 
+                disabled={isSubmitting}
+              />
               <span>I am a veteran</span>
             </label>
             <label className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
-              <input type="checkbox" checked={formData.military.active} onChange={(e) => setMilitary("active", e.target.checked)} />
+              <input 
+                type="checkbox" 
+                checked={formData.military.active} 
+                onChange={(e) => setMilitary("active", e.target.checked)} 
+                disabled={isSubmitting}
+              />
               <span>I am active military</span>
             </label>
             <label className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
-              <input type="checkbox" checked={formData.military.parentVeteran} onChange={(e) => setMilitary("parentVeteran", e.target.checked)} />
+              <input 
+                type="checkbox" 
+                checked={formData.military.parentVeteran} 
+                onChange={(e) => setMilitary("parentVeteran", e.target.checked)} 
+                disabled={isSubmitting}
+              />
               <span>Parent/Guardian is veteran</span>
             </label>
             <label className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
-              <input type="checkbox" checked={formData.military.parentActive} onChange={(e) => setMilitary("parentActive", e.target.checked)} />
+              <input 
+                type="checkbox" 
+                checked={formData.military.parentActive} 
+                onChange={(e) => setMilitary("parentActive", e.target.checked)} 
+                disabled={isSubmitting}
+              />
               <span>Parent/Guardian is active military</span>
             </label>
             <label className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700 sm:col-span-2">
-              <input type="checkbox" checked={formData.military.none} onChange={(e) => setMilitary("none", e.target.checked)} />
+              <input 
+                type="checkbox" 
+                checked={formData.military.none} 
+                onChange={(e) => setMilitary("none", e.target.checked)} 
+                disabled={isSubmitting}
+              />
               <span>None</span>
             </label>
           </div>
@@ -275,7 +424,8 @@ export default function OnboardingStep4({ onBack, onSkip, onNext }: OnboardingSt
                   formData.disability === opt
                     ? "border-blue-500 bg-blue-500/10 text-white"
                     : "border-slate-700 bg-slate-800/60 text-slate-200 hover:border-slate-600"
-                }`}
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+                disabled={isSubmitting}
               >
                 {opt}
               </button>
@@ -288,6 +438,7 @@ export default function OnboardingStep4({ onBack, onSkip, onNext }: OnboardingSt
               onChange={(e) => setFormData({ ...formData, disabilityDetails: e.target.value })}
               className="mt-2 w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
               placeholder="Optional details"
+              disabled={isSubmitting}
             />
           )}
         </div>
@@ -297,7 +448,8 @@ export default function OnboardingStep4({ onBack, onSkip, onNext }: OnboardingSt
           <button
             type="button"
             onClick={onBack}
-            className="px-6 py-2 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-600 transition flex items-center gap-1"
+            className="px-6 py-2 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-600 transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isSubmitting}
           >
             <span className="material-symbols-outlined text-sm">arrow_back</span>
             Back
@@ -305,16 +457,18 @@ export default function OnboardingStep4({ onBack, onSkip, onNext }: OnboardingSt
           <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={onSkip}
-              className="px-4 py-2 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-600 transition"
+              onClick={handleSkip}
+              className="px-4 py-2 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isSubmitting}
             >
               Skip This Step
             </button>
             <button
               type="submit"
-              className="px-6 py-2 rounded-lg bg-linear-to-r from-blue-600 to-indigo-500 text-white font-semibold hover:scale-[1.02] transition flex items-center gap-1"
+              className="px-6 py-2 rounded-lg bg-linear-to-r from-blue-600 to-indigo-500 text-white font-semibold hover:scale-[1.02] transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isSubmitting}
             >
-              Save & Continue
+              {isSubmitting ? 'Saving...' : 'Save & Continue'}
               <span className="material-symbols-outlined text-sm">arrow_forward</span>
             </button>
           </div>
@@ -323,5 +477,3 @@ export default function OnboardingStep4({ onBack, onSkip, onNext }: OnboardingSt
     </div>
   );
 }
-
-

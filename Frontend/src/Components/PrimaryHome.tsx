@@ -12,8 +12,6 @@ import SubscriptionModal from "./SubscriptionModal";
 import Subscriptions from "./Subscriptions";
 import CheckoutPage from "./CheckoutPage";
 import PaymentSuccess from "./PaymentSuccess";
-import SettingsModal from "./SettingsModal";
-import HelpModal from "./HelpModal";
 
 export default function Welcome() {
   // const [showWelcomeModal, setShowWelcomeModal] = useState(false);
@@ -38,9 +36,10 @@ export default function Welcome() {
   const [showSubscriptionsModal, setShowSubscriptionsModal] = useState(false);
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [showPaymentSuccessModal, setShowPaymentSuccessModal] = useState(false);
-  const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [showHelpModal, setShowHelpModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<"free" | "monthly" | "semiannual">("monthly");
+  const user = localStorage.getItem("user");
+  const userObject = JSON.parse(user || "{}");
+  console.log(userObject.firstName, userObject.email);
 
   return (
     <div className="flex flex-col h-screen w-screen bg-gradient-to-b from-slate-950 via-[#08122f] to-black text-slate-100 overflow-hidden">

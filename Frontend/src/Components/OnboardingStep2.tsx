@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from 'axios';
 
 interface AcademicFormData {
   educationLevel:
@@ -44,6 +45,9 @@ export default function OnboardingStep2({
     classSize: "",
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const levelOptions: AcademicFormData["educationLevel"][] = [
     "High School",
     "College Student",
@@ -67,9 +71,50 @@ export default function OnboardingStep2({
     (_, i) => `${new Date().getFullYear() - 2 + i}`
   );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onNext(formData);
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      // Get JWT token from localStorage
+      const token = localStorage.getItem("token");
+      
+      if (!token) {
+        setError('Authentication required. Please log in again.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      const response = await axios.put(
+        'http://localhost:5000/api/users/profile/academic',
+        formData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      console.log('Academic profile updated successfully:', response.data);
+      
+      // Only proceed to next step if API call is successful
+      onNext(formData);
+    } catch (error: any) {
+      console.error('API Error:', error);
+      
+      // Better error handling
+      if (error.response?.status === 401) {
+        setError('Session expired. Please log in again.');
+      } else if (error.response?.data?.message) {
+        setError(error.response.data.message);
+      } else {
+        setError('Failed to save academic information. Please try again.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -98,6 +143,13 @@ export default function OnboardingStep2({
           Your Academic Profile
         </h2>
 
+        {/* Error message */}
+        {error && (
+          <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/50 text-red-400 text-sm">
+            {error}
+          </div>
+        )}
+
         {/* Education Level - radio cards */}
         <div>
           <label className="block text-sm font-medium mb-2">
@@ -113,11 +165,13 @@ export default function OnboardingStep2({
                   onClick={() =>
                     setFormData({ ...formData, educationLevel: level })
                   }
+                  disabled={isSubmitting}
                   className={
                     `text-left px-4 py-3 rounded-xl border transition ` +
                     (selected
                       ? "border-blue-500 bg-blue-500/10 text-white shadow-[0_0_0_3px_rgba(59,130,246,0.15)]"
-                      : "border-slate-700 bg-slate-800/60 text-slate-200 hover:border-slate-600")
+                      : "border-slate-700 bg-slate-800/60 text-slate-200 hover:border-slate-600") +
+                    (isSubmitting ? " opacity-50 cursor-not-allowed" : "")
                   }
                 >
                   <div className="flex items-center justify-between">
@@ -152,6 +206,7 @@ export default function OnboardingStep2({
             className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
             placeholder="Enter your school name"
             required
+            disabled={isSubmitting}
           />
         </div>
 
@@ -168,6 +223,7 @@ export default function OnboardingStep2({
             className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
             required
             title="Grade/Year"
+            disabled={isSubmitting}
           >
             <option value="">Select</option>
             {gradeYearOptions.map((opt) => (
@@ -191,6 +247,7 @@ export default function OnboardingStep2({
             className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
             required
             title="Expected Graduation Year"
+            disabled={isSubmitting}
           >
             <option value="">Select year</option>
             {graduationYears.map((y) => (
@@ -216,6 +273,7 @@ export default function OnboardingStep2({
               }
               className="flex-1 px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
               placeholder="e.g., 3.7"
+              disabled={isSubmitting}
             />
             <select
               value={formData.gpaScale}
@@ -227,6 +285,7 @@ export default function OnboardingStep2({
               }
               className="w-28 px-2 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
               title="GPA Scale"
+              disabled={isSubmitting}
             >
               {(["4.0", "5.0", "100", "Other"] as const).map((scale) => (
                 <option key={scale} value={scale}>
@@ -251,6 +310,7 @@ export default function OnboardingStep2({
             className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
             placeholder="Start typing to search..."
             required
+            disabled={isSubmitting}
           />
         </div>
 
@@ -267,6 +327,7 @@ export default function OnboardingStep2({
             }
             className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
             placeholder="Start typing to search..."
+            disabled={isSubmitting}
           />
         </div>
 
@@ -285,6 +346,7 @@ export default function OnboardingStep2({
                 }
                 className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
                 placeholder="e.g., 1450"
+                disabled={isSubmitting}
               />
               <span className="text-sm text-slate-400">/ 1600</span>
             </div>
@@ -305,6 +367,7 @@ export default function OnboardingStep2({
                 }
                 className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
                 placeholder="e.g., 7.5"
+                disabled={isSubmitting}
               />
               <span className="text-sm text-slate-400">/ 9</span>
             </div>
@@ -325,6 +388,7 @@ export default function OnboardingStep2({
               }
               className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
               placeholder="Rank"
+              disabled={isSubmitting}
             />
             <input
               type="number"
@@ -334,6 +398,7 @@ export default function OnboardingStep2({
               }
               className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
               placeholder="Class size"
+              disabled={isSubmitting}
             />
           </div>
           <div className="mt-1 text-sm text-slate-400">
@@ -347,7 +412,8 @@ export default function OnboardingStep2({
           <button
             type="button"
             onClick={onBack}
-            className="px-6 py-2 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-600 transition flex items-center gap-1"
+            className="px-6 py-2 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-600 transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isSubmitting}
           >
             <span className="material-symbols-outlined text-sm">
               arrow_back
@@ -356,9 +422,10 @@ export default function OnboardingStep2({
           </button>
           <button
             type="submit"
-            className="px-6 py-2 rounded-lg bg-linear-to-r from-blue-600 to-indigo-500 text-white font-semibold hover:scale-[1.02] transition flex items-center gap-1"
+            className="px-6 py-2 rounded-lg bg-linear-to-r from-blue-600 to-indigo-500 text-white font-semibold hover:scale-[1.02] transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isSubmitting}
           >
-            Save & Continue
+            {isSubmitting ? 'Saving...' : 'Save & Continue'}
             <span className="material-symbols-outlined text-sm">
               arrow_forward
             </span>

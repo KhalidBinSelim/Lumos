@@ -6,117 +6,12 @@ import SettingsModal from "./SettingsModal";
 import HelpModal from "./HelpModal";
 import SubscriptionModal from "./SubscriptionModal";
 import { Link } from "react-router-dom";
-
-type TimelineItem = { date: string; label: string };
-type Scholarship = {
-    title: string;
-    org: string;
-    website: string;
-    amount: string;
-    deadline: string; // ISO string
-    renewable: boolean;
-    region: string;
-    applicantsPerYear: number;
-    awardsPerYear: number;
-    match: number;
-    notes: {
-        whyFit: string[];
-        improve: string[];
-    };
-    eligibility: string[];
-    awardDetails: string[];
-    essayPrompt: string;
-    essayCriteria: string[];
-    timeline: TimelineItem[];
-    competition: {
-        acceptanceRate: string;
-        similarProfile: string[];
-        percentile: number;
-    };
-    orgInfo: {
-        type: string;
-        founded: string;
-        totalAwarded: string;
-        contact: string;
-        phone: string;
-    };
-};
-
-const scholarshipData = (): Scholarship => ({
-    title: "Tech Leaders Scholarship",
-    org: "Tech Foundation Inc.",
-    website: "https://techfoundation.org/scholarship",
-    amount: "$5,000",
-    deadline: "2024-02-15T23:59:00Z",
-    renewable: true,
-    region: "U.S. Residents Only",
-    applicantsPerYear: 500,
-    awardsPerYear: 20,
-    match: 89,
-    notes: {
-        whyFit: [
-            "Computer Science major (Required)",
-            "3.8 GPA exceeds minimum 3.5 (Required)",
-            "First-generation student (Preferred)",
-            "Leadership experience in tech club (Preferred)",
-            "Volunteering: 50+ hours (Bonus)",
-        ],
-        improve: [
-            "Add a research project (+5% match)",
-            "Obtain coding competition award (+3% match)",
-        ],
-    },
-    eligibility: [
-        "Must be enrolled full-time in an accredited university",
-        "Pursuing B.S. in Computer Science or related field",
-        "Minimum GPA: 3.5",
-        "U.S. Citizen or Permanent Resident",
-        "Demonstrate leadership in technology initiatives",
-        "First-generation college student (preferred)",
-        "Active in community service (preferred)",
-    ],
-    awardDetails: [
-        "Amount: $5,000 per academic year",
-        "Renewable: Up to 4 years (maintain 3.5 GPA)",
-        "Number of Awards: 20 recipients annually",
-        "Disbursement: Direct to institution in Fall semester",
-        "Award Notification: March 30, 2024",
-    ],
-    essayPrompt:
-        'Describe a specific way you plan to use technology to create positive social change in your community or the world. Include examples of leadership experiences that have prepared you for this goal.',
-    essayCriteria: [
-        "Clarity of vision and goals (30%)",
-        "Demonstrated leadership and initiative (25%)",
-        "Feasibility and impact of proposed project (25%)",
-        "Writing quality and authenticity (20%)",
-    ],
-    timeline: [
-        { date: "2023-12-01", label: "Application Opens" },
-        { date: "2024-02-15", label: "Application Deadline - 11:59 PM EST" },
-        { date: "2024-03-01", label: "Application Review Period" },
-        { date: "2024-03-30", label: "Winners Announced (via email)" },
-        { date: "2024-08-15", label: "Award Disbursement (Fall semester)" },
-    ],
-    competition: {
-        acceptanceRate: "~4% (20/500)",
-        similarProfile: [
-            "15 first-gen CS students",
-            "Average GPA: 3.75",
-            "80% had leadership roles",
-        ],
-        percentile: 65,
-    },
-    orgInfo: {
-        type: "501(c)(3) Non-Profit",
-        founded: "2010",
-        totalAwarded: "$2.5M+",
-        contact: "scholarships@techfoundation.org",
-        phone: "(555) 123-4567",
-    },
-});
+import { scholarshipsApi, type Scholarship } from "../api/scholarships";
 
 export default function ScholarshipDetails(): React.ReactElement {
-    const scholarship = useMemo(scholarshipData, []);
+    const [scholarship, setScholarship] = useState<Scholarship | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<
         "overview" | "requirements" | "essay" | "timeline"
     >("overview");
@@ -139,8 +34,44 @@ export default function ScholarshipDetails(): React.ReactElement {
     const [showSettingsModal, setShowSettingsModal] = useState(false);
     const [showHelpModal, setShowHelpModal] = useState(false);
 
+    // Fetch scholarship data on mount
+    useEffect(() => {
+        const fetchScholarship = async () => {
+            const scholarshipId = localStorage.getItem("scholarship_id");
+            console.log("Scholarship ID:", scholarshipId);
+            if (!scholarshipId) {
+                setError("No scholarship selected. Please go back and select a scholarship.");
+                setLoading(false);
+                return;
+            }
+
+            try {
+                setLoading(true);
+                setError(null);
+                const response = await scholarshipsApi.getScholarshipById(scholarshipId);
+                if (response.success && response.data) {
+                    setScholarship(response.data);
+                    // Initialize saved state from API response
+                    setSaved(response.data.saved || false);
+                } else {
+                    setError("Failed to load scholarship details.");
+                }
+            } catch (err: any) {
+                console.error("Error fetching scholarship:", err);
+                setError(err.message || "Failed to load scholarship. Please try again.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchScholarship();
+    }, []);
+
     // Deadline computation
     const deadlineInfo = useMemo(() => {
+        if (!scholarship?.deadline) {
+            return { dateObj: new Date(), daysLeft: 0, isPast: false, formatted: "N/A" };
+        }
         const d = new Date(scholarship.deadline);
         const now = new Date();
         const ms = d.getTime() - now.getTime();
@@ -151,17 +82,21 @@ export default function ScholarshipDetails(): React.ReactElement {
             year: "numeric",
         }).format(d);
         return { dateObj: d, daysLeft, isPast: ms < 0, formatted };
-    }, [scholarship.deadline]);
+    }, [scholarship?.deadline]);
 
-    // match pct clamp
-    const matchPct = Math.max(0, Math.min(100, scholarship.match));
+    // Format amount for display
+    const formattedAmount = scholarship?.amountDisplay || (scholarship?.amount ? `$${scholarship.amount.toLocaleString()}` : "N/A");
+
+    // match pct clamp - backend may return either 'match' or 'matchScore'
+    const matchScore = scholarship?.matchScore ?? scholarship?.match ?? 0;
+    const matchPct = Math.max(0, Math.min(100, matchScore));
 
     // match color class
-    const matchGradient = scholarship.match >= 85
+    const matchGradient = matchScore >= 85
         ? "from-blue-400 to-indigo-400"
-        : scholarship.match >= 70
+        : matchScore >= 70
             ? "from-green-400 to-emerald-400"
-            : scholarship.match >= 50
+            : matchScore >= 50
                 ? "from-orange-400 to-amber-300"
                 : "from-rose-400 to-pink-400";
 
@@ -184,6 +119,7 @@ export default function ScholarshipDetails(): React.ReactElement {
 
     // download ICS
     function downloadICS() {
+        if (!scholarship) return;
         try {
             const title = scholarship.title.replace(/[,]/g, "");
             const description = `Application Deadline for ${scholarship.title} (${scholarship.org})`;
@@ -220,18 +156,62 @@ export default function ScholarshipDetails(): React.ReactElement {
 
     // share fallback
     function handleShare() {
+        if (!scholarship) return;
         if (navigator.share) {
             navigator.share({
                 title: scholarship.title,
-                url: scholarship.website,
+                url: scholarship.website || window.location.href,
             }).catch(() => { });
         } else {
             // fallback: copy url
-            navigator.clipboard?.writeText(scholarship.website).then(
+            navigator.clipboard?.writeText(scholarship.website || window.location.href).then(
                 () => alert("Link copied to clipboard"),
                 () => alert("Share not supported")
             );
         }
+    }
+
+    // Loading state
+    if (loading) {
+        return (
+            <div className="flex flex-col h-screen w-screen bg-gradient-to-b from-slate-950 via-[#08122f] to-black text-slate-100 overflow-hidden font-sans">
+                <Topbar />
+                <div className="flex flex-1 overflow-hidden relative">
+                    <Sidebar />
+                    <main className="flex-1 flex items-center justify-center">
+                        <div className="text-center">
+                            <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                            <p className="text-slate-400">Loading scholarship details...</p>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        );
+    }
+
+    // Error state
+    if (error || !scholarship) {
+        return (
+            <div className="flex flex-col h-screen w-screen bg-gradient-to-b from-slate-950 via-[#08122f] to-black text-slate-100 overflow-hidden font-sans">
+                <Topbar />
+                <div className="flex flex-1 overflow-hidden relative">
+                    <Sidebar />
+                    <main className="flex-1 flex items-center justify-center">
+                        <div className="text-center max-w-md p-6">
+                            <div className="text-5xl mb-4">⚠️</div>
+                            <h2 className="text-xl font-bold text-white mb-2">Unable to Load Scholarship</h2>
+                            <p className="text-slate-400 mb-6">{error || "Scholarship not found."}</p>
+                            <Link
+                                to="/home"
+                                className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-xl transition inline-block"
+                            >
+                                Back to Home
+                            </Link>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -257,9 +237,11 @@ export default function ScholarshipDetails(): React.ReactElement {
                             <div>
                                 <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">{scholarship.title}</h1>
                                 <p className="text-slate-400 mt-1 text-lg">{scholarship.org}</p>
-                                <a href={scholarship.website} target="_blank" rel="noreferrer" className="text-blue-400 hover:text-blue-300 text-sm flex items-center gap-1 mt-1">
-                                    🔗 {scholarship.website.replace(/^https?:\/\//, "")}
-                                </a>
+                                {scholarship.website && (
+                                    <a href={scholarship.website} target="_blank" rel="noreferrer" className="text-blue-400 hover:text-blue-300 text-sm flex items-center gap-1 mt-1">
+                                        🔗 {scholarship.website.replace(/^https?:\/\//, "")}
+                                    </a>
+                                )}
                             </div>
                             <div className="flex items-center gap-3">
                                 <button
@@ -286,7 +268,7 @@ export default function ScholarshipDetails(): React.ReactElement {
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                                 <div>
                                     <div className="text-sm text-slate-400 mb-1">💰 Amount</div>
-                                    <div className="text-xl font-bold text-white">{scholarship.amount}</div>
+                                    <div className="text-xl font-bold text-white">{formattedAmount}</div>
                                 </div>
                                 <div>
                                     <div className="text-sm text-slate-400 mb-1">📅 Deadline</div>
@@ -298,12 +280,12 @@ export default function ScholarshipDetails(): React.ReactElement {
                                 </div>
                                 <div>
                                     <div className="text-sm text-slate-400 mb-1">🌍 Location</div>
-                                    <div className="text-lg font-medium text-slate-200">U.S. Only</div>
+                                    <div className="text-lg font-medium text-slate-200">{scholarship.region || scholarship.location || "National"}</div>
                                 </div>
                             </div>
                             <div className="mt-4 pt-4 border-t border-slate-800 flex flex-wrap gap-6 text-sm text-slate-400">
-                                <span>👥 ~{scholarship.applicantsPerYear} applicants/year</span>
-                                <span>🏆 {scholarship.awardsPerYear} awards given</span>
+                                {scholarship.applicantsPerYear && <span>👥 ~{scholarship.applicantsPerYear} applicants/year</span>}
+                                {scholarship.awardsPerYear && <span>🏆 {scholarship.awardsPerYear} awards given</span>}
                             </div>
                         </div>
 
@@ -312,9 +294,11 @@ export default function ScholarshipDetails(): React.ReactElement {
                             <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-2">
                                     <span className="text-yellow-400">⭐</span>
-                                    <span className="font-bold text-white">YOUR MATCH: {scholarship.match}%</span>
+                                    <span className="font-bold text-white">YOUR MATCH: {matchScore}%</span>
                                 </div>
-                                <span className="text-emerald-400 font-medium">High</span>
+                                <span className={`font-medium ${matchScore >= 80 ? "text-emerald-400" : matchScore >= 60 ? "text-amber-400" : "text-slate-400"}`}>
+                                    {matchScore >= 80 ? "High" : matchScore >= 60 ? "Medium" : "Low"}
+                                </span>
                             </div>
                             <div className="h-4 bg-slate-800 rounded-full overflow-hidden">
                                 <div
@@ -322,38 +306,46 @@ export default function ScholarshipDetails(): React.ReactElement {
                                     style={{ width: `${matchPct}%` }}
                                 />
                             </div>
-                            <p className="text-slate-400 text-sm mt-2">🎯 You're in the top 15% of potential applicants</p>
+                            <p className="text-slate-400 text-sm mt-2">🎯 Based on your profile match with scholarship requirements</p>
                         </div>
 
-                        {/* Why You're a Great Fit */}
-                        <div className="rounded-2xl border border-slate-700 bg-slate-900/40 p-6">
-                            <h3 className="text-lg font-semibold text-white mb-4">✅ WHY YOU'RE A GREAT FIT</h3>
-                            <div className="space-y-3">
-                                {scholarship.notes.whyFit.map((item, i) => (
-                                    <div key={i} className="flex items-start gap-3">
-                                        <span className="text-emerald-400 mt-0.5">✓</span>
-                                        <span className="text-slate-300">{item}</span>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className="mt-6 pt-6 border-t border-slate-800">
-                                <h4 className="text-sm font-semibold text-amber-400 mb-3 flex items-center gap-2">
-                                    ⚠️ IMPROVE YOUR MATCH:
-                                </h4>
-                                <div className="space-y-2">
-                                    {scholarship.notes.improve.map((item, i) => (
-                                        <div key={i} className="flex items-start gap-3">
-                                            <span className="text-amber-400/60 mt-1">•</span>
-                                            <span className="text-slate-300">{item}</span>
+                        {/* Why You're a Great Fit - only show if notes exist */}
+                        {scholarship.notes && (scholarship.notes.whyFit?.length || scholarship.notes.improve?.length) ? (
+                            <div className="rounded-2xl border border-slate-700 bg-slate-900/40 p-6">
+                                {scholarship.notes.whyFit && scholarship.notes.whyFit.length > 0 && (
+                                    <>
+                                        <h3 className="text-lg font-semibold text-white mb-4">✅ WHY YOU'RE A GREAT FIT</h3>
+                                        <div className="space-y-3">
+                                            {scholarship.notes.whyFit.map((item, i) => (
+                                                <div key={i} className="flex items-start gap-3">
+                                                    <span className="text-emerald-400 mt-0.5">✓</span>
+                                                    <span className="text-slate-300">{item}</span>
+                                                </div>
+                                            ))}
                                         </div>
-                                    ))}
-                                </div>
-                                <button className="mt-4 text-sm text-blue-400 hover:text-blue-300 font-medium">
-                                    [Add to Profile]
-                                </button>
+                                    </>
+                                )}
+
+                                {scholarship.notes.improve && scholarship.notes.improve.length > 0 && (
+                                    <div className={scholarship.notes.whyFit?.length ? "mt-6 pt-6 border-t border-slate-800" : ""}>
+                                        <h4 className="text-sm font-semibold text-amber-400 mb-3 flex items-center gap-2">
+                                            ⚠️ IMPROVE YOUR MATCH:
+                                        </h4>
+                                        <div className="space-y-2">
+                                            {scholarship.notes.improve.map((item, i) => (
+                                                <div key={i} className="flex items-start gap-3">
+                                                    <span className="text-amber-400/60 mt-1">•</span>
+                                                    <span className="text-slate-300">{item}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <button className="mt-4 text-sm text-blue-400 hover:text-blue-300 font-medium">
+                                            [Add to Profile]
+                                        </button>
+                                    </div>
+                                )}
                             </div>
-                        </div>
+                        ) : null}
 
                         {/* Tabs */}
                         <div className="space-y-6">
@@ -368,8 +360,8 @@ export default function ScholarshipDetails(): React.ReactElement {
                                         key={t.id}
                                         onClick={() => setActiveTab(t.id as any)}
                                         className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition ${activeTab === t.id
-                                                ? "bg-slate-100 text-slate-900"
-                                                : "bg-slate-800/50 text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                                            ? "bg-slate-100 text-slate-900"
+                                            : "bg-slate-800/50 text-slate-400 hover:bg-slate-800 hover:text-slate-200"
                                             }`}
                                     >
                                         {t.label}
@@ -384,106 +376,124 @@ export default function ScholarshipDetails(): React.ReactElement {
                                             <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">About This Scholarship</h3>
                                             <div className="prose prose-invert max-w-none">
                                                 <p className="text-slate-300 leading-relaxed">
-                                                    The Tech Leaders Scholarship recognizes outstanding students pursuing degrees in computer science who demonstrate leadership, academic excellence, and commitment to using technology for social good.
+                                                    {scholarship.description || `The ${scholarship.title} is offered by ${scholarship.org} to support students in achieving their educational goals.`}
                                                 </p>
-                                                <p className="text-slate-300 leading-relaxed mt-4">
-                                                    Established in 2015 by Tech Foundation Inc., this scholarship has awarded over $500,000 to 100+ students.
-                                                </p>
-                                                <button className="text-blue-400 hover:text-blue-300 text-sm font-medium mt-2">
-                                                    [Read More ▼]
-                                                </button>
                                             </div>
                                         </section>
 
-                                        <section>
-                                            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Eligibility Criteria</h3>
-                                            <ul className="space-y-2">
-                                                {scholarship.eligibility.map((e, i) => (
-                                                    <li key={i} className="flex items-start gap-3 text-slate-300">
-                                                        <span className="text-blue-500 mt-1">✓</span>
-                                                        {e}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </section>
+                                        {scholarship.eligibility && scholarship.eligibility.length > 0 && (
+                                            <section>
+                                                <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Eligibility Criteria</h3>
+                                                <ul className="space-y-2">
+                                                    {scholarship.eligibility.map((e, i) => (
+                                                        <li key={i} className="flex items-start gap-3 text-slate-300">
+                                                            <span className="text-blue-500 mt-1">✓</span>
+                                                            {e}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </section>
+                                        )}
 
-                                        <section>
-                                            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Award Details</h3>
-                                            <ul className="space-y-2">
-                                                {scholarship.awardDetails.map((a, i) => (
-                                                    <li key={i} className="flex items-start gap-3 text-slate-300">
-                                                        <span className="text-blue-500 mt-1">•</span>
-                                                        {a}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </section>
+                                        {scholarship.awardDetails && scholarship.awardDetails.length > 0 && (
+                                            <section>
+                                                <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Award Details</h3>
+                                                <ul className="space-y-2">
+                                                    {scholarship.awardDetails.map((a, i) => (
+                                                        <li key={i} className="flex items-start gap-3 text-slate-300">
+                                                            <span className="text-blue-500 mt-1">•</span>
+                                                            {a}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </section>
+                                        )}
 
-                                        <section>
-                                            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Competition Analysis</h3>
-                                            <div className="rounded-2xl bg-slate-900/50 border border-slate-800 p-6">
-                                                <div className="mb-4">
-                                                    <div className="flex justify-between text-sm mb-2">
-                                                        <span className="text-slate-300">Acceptance Rate: {scholarship.competition.acceptanceRate}</span>
-                                                        <span className="text-rose-400 font-medium">Highly Competitive</span>
+                                        {scholarship.competition && (
+                                            <section>
+                                                <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Competition Analysis</h3>
+                                                <div className="rounded-2xl bg-slate-900/50 border border-slate-800 p-6">
+                                                    {scholarship.competition.acceptanceRate && (
+                                                        <div className="mb-4">
+                                                            <div className="flex justify-between text-sm mb-2">
+                                                                <span className="text-slate-300">Acceptance Rate: {scholarship.competition.acceptanceRate}</span>
+                                                                <span className="text-rose-400 font-medium">Highly Competitive</span>
+                                                            </div>
+                                                            <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                                                                <div className="h-full bg-rose-500 w-[4%]" />
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {scholarship.competition.similarProfile && scholarship.competition.similarProfile.length > 0 && (
+                                                        <div className="space-y-3">
+                                                            <p className="text-sm font-medium text-slate-300">Similar profiles that won:</p>
+                                                            <ul className="space-y-1 ml-4">
+                                                                {scholarship.competition.similarProfile.map((p, i) => (
+                                                                    <li key={i} className="text-sm text-slate-400 list-disc">{p}</li>
+                                                                ))}
+                                                            </ul>
+                                                        </div>
+                                                    )}
+
+                                                    {scholarship.competition.percentile && (
+                                                        <div className="mt-4 pt-4 border-t border-slate-800 flex items-center gap-3">
+                                                            <span className="text-yellow-400">💡</span>
+                                                            <p className="text-sm text-slate-300">
+                                                                Your profile is stronger than <span className="font-bold text-white">{scholarship.competition.percentile}%</span> of past winners
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </section>
+                                        )}
+
+                                        {scholarship.orgInfo && (
+                                            <section>
+                                                <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Organization Info</h3>
+                                                <div className="grid sm:grid-cols-2 gap-4 text-sm">
+                                                    <div>
+                                                        <div className="text-slate-500">Organization</div>
+                                                        <div className="text-slate-200 font-medium">{scholarship.org}</div>
                                                     </div>
-                                                    <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                                                        <div className="h-full bg-rose-500 w-[4%]" />
+                                                    {scholarship.orgInfo.type && (
+                                                        <div>
+                                                            <div className="text-slate-500">Type</div>
+                                                            <div className="text-slate-200 font-medium">{scholarship.orgInfo.type}</div>
+                                                        </div>
+                                                    )}
+                                                    {scholarship.orgInfo.founded && (
+                                                        <div>
+                                                            <div className="text-slate-500">Founded</div>
+                                                            <div className="text-slate-200 font-medium">{scholarship.orgInfo.founded}</div>
+                                                        </div>
+                                                    )}
+                                                    {scholarship.orgInfo.totalAwarded && (
+                                                        <div>
+                                                            <div className="text-slate-500">Total Scholarships Awarded</div>
+                                                            <div className="text-slate-200 font-medium">{scholarship.orgInfo.totalAwarded}</div>
+                                                        </div>
+                                                    )}
+                                                    {scholarship.orgInfo.contact && (
+                                                        <div>
+                                                            <div className="text-slate-500">Contact</div>
+                                                            <div className="text-slate-200 font-medium">{scholarship.orgInfo.contact}</div>
+                                                        </div>
+                                                    )}
+                                                    {scholarship.orgInfo.phone && (
+                                                        <div>
+                                                            <div className="text-slate-500">Phone</div>
+                                                            <div className="text-slate-200 font-medium">{scholarship.orgInfo.phone}</div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                {scholarship.verified && (
+                                                    <div className="mt-6 flex items-center gap-2 text-xs text-slate-500">
+                                                        <span>🔒 Verified by Lumos</span>
                                                     </div>
-                                                </div>
-
-                                                <div className="space-y-3">
-                                                    <p className="text-sm font-medium text-slate-300">Similar to your profile won in 2023:</p>
-                                                    <ul className="space-y-1 ml-4">
-                                                        {scholarship.competition.similarProfile.map((p, i) => (
-                                                            <li key={i} className="text-sm text-slate-400 list-disc">{p}</li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-
-                                                <div className="mt-4 pt-4 border-t border-slate-800 flex items-center gap-3">
-                                                    <span className="text-yellow-400">💡</span>
-                                                    <p className="text-sm text-slate-300">
-                                                        Your profile is stronger than <span className="font-bold text-white">{scholarship.competition.percentile}%</span> of past winners
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </section>
-
-                                        <section>
-                                            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Organization Info</h3>
-                                            <div className="grid sm:grid-cols-2 gap-4 text-sm">
-                                                <div>
-                                                    <div className="text-slate-500">Organization</div>
-                                                    <div className="text-slate-200 font-medium">{scholarship.org}</div>
-                                                </div>
-                                                <div>
-                                                    <div className="text-slate-500">Type</div>
-                                                    <div className="text-slate-200 font-medium">{scholarship.orgInfo.type}</div>
-                                                </div>
-                                                <div>
-                                                    <div className="text-slate-500">Founded</div>
-                                                    <div className="text-slate-200 font-medium">{scholarship.orgInfo.founded}</div>
-                                                </div>
-                                                <div>
-                                                    <div className="text-slate-500">Total Scholarships Awarded</div>
-                                                    <div className="text-slate-200 font-medium">{scholarship.orgInfo.totalAwarded}</div>
-                                                </div>
-                                                <div>
-                                                    <div className="text-slate-500">Contact</div>
-                                                    <div className="text-slate-200 font-medium">{scholarship.orgInfo.contact}</div>
-                                                </div>
-                                                <div>
-                                                    <div className="text-slate-500">Phone</div>
-                                                    <div className="text-slate-200 font-medium">{scholarship.orgInfo.phone}</div>
-                                                </div>
-                                            </div>
-                                            <div className="mt-6 flex items-center gap-2 text-xs text-slate-500">
-                                                <span>🔒 Verified by ScholarScope</span>
-                                                <span>•</span>
-                                                <span>Last updated: Jan 10, 2024</span>
-                                            </div>
-                                        </section>
+                                                )}
+                                            </section>
+                                        )}
                                     </div>
                                 )}
 
@@ -561,24 +571,39 @@ export default function ScholarshipDetails(): React.ReactElement {
                                             <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
                                                 <div className="flex items-center gap-2 mb-4">
                                                     <span className="text-xl">📝</span>
-                                                    <h4 className="font-semibold text-white">Personal Statement (500-750 words)</h4>
+                                                    <h4 className="font-semibold text-white">
+                                                        Personal Statement
+                                                        {scholarship.essayWordCount && (scholarship.essayWordCount.min || scholarship.essayWordCount.max) && (
+                                                            <span className="font-normal text-slate-400 ml-2">
+                                                                ({scholarship.essayWordCount.min || 0}-{scholarship.essayWordCount.max || '?'} words)
+                                                            </span>
+                                                        )}
+                                                    </h4>
                                                 </div>
-                                                <div className="bg-slate-800/50 rounded-xl p-4 mb-6">
-                                                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2">Prompt</span>
-                                                    <p className="text-slate-200 italic">"{scholarship.essayPrompt}"</p>
-                                                </div>
+                                                {scholarship.essayPrompt ? (
+                                                    <div className="bg-slate-800/50 rounded-xl p-4 mb-6">
+                                                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2">Prompt</span>
+                                                        <p className="text-slate-200 italic">"{scholarship.essayPrompt}"</p>
+                                                    </div>
+                                                ) : (
+                                                    <div className="bg-slate-800/50 rounded-xl p-4 mb-6">
+                                                        <p className="text-slate-400">Essay prompt will be provided upon application.</p>
+                                                    </div>
+                                                )}
 
-                                                <div>
-                                                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2">Evaluation Criteria</span>
-                                                    <ul className="space-y-2">
-                                                        {scholarship.essayCriteria.map((c, i) => (
-                                                            <li key={i} className="flex items-start gap-2 text-slate-300 text-sm">
-                                                                <span className="text-blue-500">•</span>
-                                                                {c}
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
+                                                {scholarship.essayCriteria && scholarship.essayCriteria.length > 0 && (
+                                                    <div>
+                                                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2">Evaluation Criteria</span>
+                                                        <ul className="space-y-2">
+                                                            {scholarship.essayCriteria.map((c, i) => (
+                                                                <li key={i} className="flex items-start gap-2 text-slate-300 text-sm">
+                                                                    <span className="text-blue-500">•</span>
+                                                                    {c}
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                )}
                                             </div>
                                         </section>
 
@@ -637,30 +662,51 @@ export default function ScholarshipDetails(): React.ReactElement {
                                         <section>
                                             <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Key Dates</h3>
                                             <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 space-y-6">
-                                                {scholarship.timeline.map((t, i) => {
-                                                    const date = new Date(t.date);
-                                                    const isPast = date < new Date();
-                                                    return (
-                                                        <div key={i} className="flex gap-4">
-                                                            <div className="flex-shrink-0 w-12 text-center">
-                                                                <div className="text-xs text-slate-500 uppercase font-bold">{date.toLocaleString('default', { month: 'short' })}</div>
-                                                                <div className="text-xl font-bold text-white">{date.getDate()}</div>
+                                                {scholarship.timeline && scholarship.timeline.length > 0 ? (
+                                                    scholarship.timeline.map((t, i) => {
+                                                        const date = new Date(t.date);
+                                                        const isPast = date < new Date();
+                                                        return (
+                                                            <div key={i} className="flex gap-4">
+                                                                <div className="flex-shrink-0 w-12 text-center">
+                                                                    <div className="text-xs text-slate-500 uppercase font-bold">{date.toLocaleString('default', { month: 'short' })}</div>
+                                                                    <div className="text-xl font-bold text-white">{date.getDate()}</div>
+                                                                </div>
+                                                                <div className="flex-1 pb-6 border-l border-slate-800 pl-6 relative last:pb-0 last:border-l-0">
+                                                                    <div className={`absolute left-[-5px] top-1 w-2.5 h-2.5 rounded-full ${isPast ? "bg-emerald-500" : "bg-slate-600"}`} />
+                                                                    <h4 className="font-medium text-white">{t.label}</h4>
+                                                                    <p className="text-sm text-slate-400 mt-0.5">
+                                                                        {isPast ? "✅ Completed" : `⏰ ${Math.ceil((date.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days away`}
+                                                                    </p>
+                                                                    {!isPast && i === 1 && (
+                                                                        <button onClick={downloadICS} className="text-blue-400 hover:text-blue-300 text-sm font-medium mt-2">
+                                                                            [Add to Calendar]
+                                                                        </button>
+                                                                    )}
+                                                                </div>
                                                             </div>
-                                                            <div className="flex-1 pb-6 border-l border-slate-800 pl-6 relative last:pb-0 last:border-l-0">
-                                                                <div className={`absolute left-[-5px] top-1 w-2.5 h-2.5 rounded-full ${isPast ? "bg-emerald-500" : "bg-slate-600"}`} />
-                                                                <h4 className="font-medium text-white">{t.label}</h4>
-                                                                <p className="text-sm text-slate-400 mt-0.5">
-                                                                    {isPast ? "✅ Completed" : `⏰ ${Math.ceil((date.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days away`}
-                                                                </p>
-                                                                {!isPast && i === 1 && (
-                                                                    <button onClick={downloadICS} className="text-blue-400 hover:text-blue-300 text-sm font-medium mt-2">
-                                                                        [Add to Calendar]
-                                                                    </button>
-                                                                )}
-                                                            </div>
+                                                        );
+                                                    })
+                                                ) : (
+                                                    <div className="flex gap-4">
+                                                        <div className="flex-shrink-0 w-12 text-center">
+                                                            <div className="text-xs text-slate-500 uppercase font-bold">{deadlineInfo.dateObj.toLocaleString('default', { month: 'short' })}</div>
+                                                            <div className="text-xl font-bold text-white">{deadlineInfo.dateObj.getDate()}</div>
                                                         </div>
-                                                    );
-                                                })}
+                                                        <div className="flex-1 pb-6 pl-6 relative">
+                                                            <div className={`absolute left-[-5px] top-1 w-2.5 h-2.5 rounded-full ${deadlineInfo.isPast ? "bg-emerald-500" : "bg-slate-600"}`} />
+                                                            <h4 className="font-medium text-white">Application Deadline</h4>
+                                                            <p className="text-sm text-slate-400 mt-0.5">
+                                                                {deadlineInfo.isPast ? "✅ Completed" : `⏰ ${deadlineInfo.daysLeft} days away`}
+                                                            </p>
+                                                            {!deadlineInfo.isPast && (
+                                                                <button onClick={downloadICS} className="text-blue-400 hover:text-blue-300 text-sm font-medium mt-2">
+                                                                    [Add to Calendar]
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
                                         </section>
 
@@ -741,7 +787,7 @@ export default function ScholarshipDetails(): React.ReactElement {
                                 )}
                             </div>
                         </div>
-                    {/* Action Buttons */}
+                        {/* Action Buttons */}
                         <div className="flex flex-col sm:flex-row items-center justify-end gap-4 mt-8 pt-8 border-t border-slate-800">
                             <button
                                 onClick={() => setSaved((v) => !v)}
