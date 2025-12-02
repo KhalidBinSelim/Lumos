@@ -1,7 +1,12 @@
+import { useState } from "react";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 
 export default function Home() {
+  const user = localStorage.getItem("user");
+  const userObject = JSON.parse(user || "{}");
+  const [showWelcome, setShowWelcome] = useState(true);
+
   return (
     <div className="flex flex-col h-screen w-screen bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] overflow-hidden transition-colors duration-300">
       <Topbar />
@@ -18,21 +23,26 @@ export default function Home() {
           {/* content container */}
           <div className="relative z-10 space-y-8">
             {/* Welcome / header card */}
-            <section className="rounded-3xl p-8 border border-[var(--color-border)] bg-[var(--color-bg-secondary)]/60 shadow-[0_0_40px_-10px_var(--color-primary-500)/20] backdrop-blur-md">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
-                  <h1 className="text-xl font-bold text-[var(--color-text-primary)] tracking-tight">
-                    Welcome back, Khalid!
-                  </h1>
-                  <p className="text-[var(--color-text-secondary)] text-sm text-left">
-                    Last login: Today at 9:32 AM
-                  </p>
+            {showWelcome && (
+              <section className="rounded-3xl p-8 border border-[var(--color-border)] bg-[var(--color-bg-secondary)]/60 shadow-[0_0_40px_-10px_var(--color-primary-500)/20] backdrop-blur-md">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <div>
+                    <h1 className="text-xl font-bold text-[var(--color-text-primary)] tracking-tight">
+                      Welcome back!
+                    </h1>
+                    <p className="text-[var(--color-text-secondary)] text-sm text-left">
+                      Last login: Today at 9:32 AM
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowWelcome(false)}
+                    className="px-4 py-2.5 rounded-full bg-gradient-to-r from-[var(--color-primary-500)] to-[var(--color-primary-600)] text-white text-sm font-semibold hover:scale-[1.03] hover:shadow-[0_0_20px_-5px_var(--color-primary-500)/60] transition"
+                  >
+                    ✕ Dismiss
+                  </button>
                 </div>
-                <button className="px-4 py-2.5 rounded-full bg-gradient-to-r from-[var(--color-primary-500)] to-[var(--color-primary-600)] text-white text-sm font-semibold hover:scale-[1.03] hover:shadow-[0_0_20px_-5px_var(--color-primary-500)/60] transition">
-                  ✕ Dismiss
-                </button>
-              </div>
-            </section>
+              </section>
+            )}
 
             {/* Stats */}
             <section className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
