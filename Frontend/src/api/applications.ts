@@ -23,31 +23,80 @@ export interface Application {
     title: string;
     org: string;
     amount: number;
+    amountDisplay?: string;
     deadline: string;
     requirements?: string[];
   };
   status: ApplicationStatus;
   progress: number;
-  startedAt: string;
+  requirements: Array<{
+    _id?: string;
+    label: string;
+    status: 'completed' | 'pending' | 'missing' | 'draft';
+    details?: string;
+    dueDate?: string;
+    completedAt?: string;
+  }>;
+  essay?: {
+    prompt?: string;
+    drafts?: Array<{
+      content: string;
+      wordCount: number;
+      version: number;
+      lastUpdated: string;
+    }>;
+    currentDraft?: number;
+    wordLimit?: {
+      min: number;
+      max: number;
+    };
+  };
+  documents?: Array<{
+    _id: string;
+    name: string;
+    type: string;
+    url: string;
+    uploadedAt: string;
+  }>;
   submittedAt?: string;
-  decisionAt?: string;
-  requirements: ApplicationRequirement[];
-  essayDrafts: EssayDraft[];
+  confirmationNumber?: string;
+  wonAt?: string;
+  rejectedAt?: string;
+  decisionExpectedBy?: string;
+  awardDetails?: {
+    amount?: string;
+    disbursement?: string;
+    expectedDate?: string;
+  };
+  feedback?: string;
+  nextSteps?: Array<{
+    step: string;
+    completed: boolean;
+    dueDate?: string;
+  }>;
   notes?: string;
+  timeline?: Array<{
+    action: string;
+    timestamp: string;
+    details?: string;
+  }>;
+  lastActivityAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
   // Computed fields
   daysUntilDeadline?: number;
 }
 
 export interface ApplicationsResponse {
   success: boolean;
-  data: Application[];
-  stats?: {
-    total: number;
-    inProgress: number;
-    submitted: number;
-    won: number;
-    rejected: number;
-    wonAmount: number;
+  data: {
+    applications: Application[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      pages: number;
+    };
   };
 }
 
@@ -76,9 +125,14 @@ export const applicationsApi = {
   /**
    * Get all applications for current user
    */
-  getApplications: async (status?: ApplicationStatus): Promise<ApplicationsResponse> => {
-    const params = status ? `?status=${encodeURIComponent(status)}` : '';
-    const response = await api.get<ApplicationsResponse>(`/applications${params}`);
+  getApplications: async (filters?: { status?: ApplicationStatus; search?: string; page?: number; limit?: number }): Promise<ApplicationsResponse> => {
+    const params = new URLSearchParams();
+    if (filters?.status) params.append('status', filters.status);
+    if (filters?.search) params.append('search', filters.search);
+    if (filters?.page) params.append('page', String(filters.page));
+    if (filters?.limit) params.append('limit', String(filters.limit));
+    const queryString = params.toString();
+    const response = await api.get<ApplicationsResponse>(`/applications${queryString ? `?${queryString}` : ''}`);
     return response.data;
   },
 
