@@ -1,0 +1,10 @@
+fastapi
+uvicorn>=0.34.0
+pydantic
+pymongo
+nest-asyncio
+pyngrok
+google-genai>=1.11.0
+google-adk==0.3.0
+deprecated
+

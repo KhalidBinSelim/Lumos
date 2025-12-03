@@ -1,15 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Plus, CheckCircle, ChevronDown, Search,
-    Bell, User, ArrowRight, FileText, Send, Bot, User as UserIcon,
+    Bell, ArrowRight, Send, Bot, User as UserIcon,
     ChevronLeft, Save, Download, Bold, Italic, Underline, AlignLeft, List, Sparkles, Eye
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function EssayCopilot2() {
-    const [activeVersion, setActiveVersion] = useState('current');
-    const [wordCount, setWordCount] = useState(545);
-    const [targetWordCount, setTargetWordCount] = useState(750);
+    const targetWordCount = 750;
+
+    // Read the generated essay from localStorage
+    const [essayContent, setEssayContent] = useState<string>("");
+    const [wordCount, setWordCount] = useState(0);
+
+    useEffect(() => {
+        const generatedEssay = localStorage.getItem('generatedEssay');
+        if (generatedEssay) {
+            setEssayContent(generatedEssay);
+            // Calculate word count
+            const words = generatedEssay.trim().split(/\s+/).filter(w => w.length > 0);
+            setWordCount(words.length);
+        }
+    }, []);
 
     // Mock Data
     const versions = [
@@ -160,15 +172,18 @@ export default function EssayCopilot2() {
                     {/* Editor Canvas */}
                     <div className="flex-1 overflow-y-auto p-8 md:p-12">
                         <div className="max-w-3xl mx-auto bg-[var(--color-bg-secondary)]/30 min-h-[800px] p-8 md:p-12 rounded-xl border border-[var(--color-border)] shadow-sm">
-                            <p className="text-[var(--color-text-primary)] text-lg leading-relaxed outline-none" contentEditable suppressContentEditableWarning>
-                                Growing up as a first-generation college student, I've witnessed firsthand how technology can bridge gaps in education and opportunity. My journey began not in a high-tech lab, but in a small community library where I accessed the internet for the first time. That glowing screen wasn't just a portal to information; it was a window to a future I hadn't dared to imagine.
-                                <br /><br />
-                                As I delved deeper into computer science, I realized that code is more than just syntax and logic—it's a language of empowerment. I started a coding club at my local high school, aiming to demystify technology for students who, like me, felt like outsiders in the digital world. We started with simple HTML pages, but soon moved on to building apps that solved real community problems, like a ride-share coordinator for elderly residents.
-                                <br /><br />
-                                Leading this initiative taught me that true innovation isn't just about building the fastest algorithm, but about building solutions that are accessible and inclusive. I want to use my degree to develop educational software that adapts to different learning styles, ensuring that no student is left behind due to a lack of resources or personalized attention.
-                                <br /><br />
-                                Receiving the Tech Leaders Scholarship would not only alleviate the financial burden of my tuition but also connect me with a network of mentors who share my vision. I am committed to paying this opportunity forward, continuing to mentor young students and advocating for diversity in the tech industry.
-                            </p>
+                            <textarea
+                                className="w-full h-full min-h-[700px] bg-transparent text-[var(--color-text-primary)] text-lg leading-relaxed outline-none resize-none"
+                                value={essayContent}
+                                onChange={(e) => {
+                                    setEssayContent(e.target.value);
+                                    const words = e.target.value.trim().split(/\s+/).filter(w => w.length > 0);
+                                    setWordCount(words.length);
+                                    // Also update localStorage
+                                    localStorage.setItem('generatedEssay', e.target.value);
+                                }}
+                                placeholder="Your AI-generated essay will appear here. You can edit it to match your voice..."
+                            />
                         </div>
                     </div>
 
@@ -185,7 +200,7 @@ export default function EssayCopilot2() {
                         </div>
                         <div className="h-8 w-px bg-[var(--color-border)]"></div>
                         <div className="text-xs font-medium text-[var(--color-text-secondary)]">
-                            <span className="text-emerald-500 font-bold">73%</span> of target
+                            <span className="text-emerald-500 font-bold">{Math.round((wordCount / targetWordCount) * 100)}%</span> of target
                         </div>
                     </div>
                     <div className="bg-[var(--color-bg-primary)] border-t border-[var(--color-border)] px-6 py-4 flex items-center justify-between z-50">

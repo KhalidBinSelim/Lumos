@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import DashboardLayout from "./DashboardLayout";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -8,7 +8,11 @@ export default function EssayCopilot() {
   const [tone, setTone] = useState("Conversational & Personal");
   const [essayContent, setEssayContent] = useState("");
   const [wordCount, setWordCount] = useState(0);
-  
+  const [techProject, setTechProject] = useState("");
+  const [socialIssue, setSocialIssue] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   // Mock Data
   const scholarship = {
     title: "Tech Leaders Scholarship",
@@ -16,8 +20,51 @@ export default function EssayCopilot() {
     prompt: "Describe a specific way you plan to use technology to create positive social change in your community or the world. Include examples of leadership experiences that have prepared you for this goal."
   };
 
-  const handleGenerate = () => {
-    navigate('/essay-copilot2');
+  const handleGenerate = async () => {
+    setIsGenerating(true);
+    setError(null);
+
+    try {
+      // Build the prompt string from localStorage and text fields
+      const userData = localStorage.getItem('user') || '';
+      const scholarshipId = localStorage.getItem('scholarshipId') || '';
+
+      // Combine all data into a prompt
+      const combinedPrompt = `
+User Data: ${userData}
+Scholarship ID: ${scholarshipId}
+Writing Style: ${tone}
+Tech Project: ${techProject}
+Social Issue: ${socialIssue}
+Essay Prompt: ${scholarship.prompt}
+      `.trim();
+
+      // Call the AI API
+      const response = await fetch('http://localhost:8000/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ user_prompt: combinedPrompt }),
+      });
+
+      const data = await response.json();
+
+      if (data.essay) {
+        // Store the generated essay in localStorage for EssayCopilot2 to read
+        localStorage.setItem('generatedEssay', data.essay);
+        navigate('/essay-copilot2');
+      } else if (data.error) {
+        setError(data.error);
+      } else {
+        setError('Failed to generate essay. Please try again.');
+      }
+    } catch (err: any) {
+      console.error('Error generating essay:', err);
+      setError(err.message || 'Network error. Please check if the AI server is running.');
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleSkip = () => {
@@ -35,7 +82,7 @@ export default function EssayCopilot() {
       </div>
 
       <div className="relative z-10 max-w-5xl mx-auto p-4 sm:p-6">
-        
+
         {/* Step 1: Setup */}
         {step === 1 && (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -98,12 +145,12 @@ export default function EssayCopilot() {
                       <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${tone === t ? "border-[var(--color-primary-500)]" : "border-[var(--color-text-secondary)]"}`}>
                         {tone === t && <div className="w-2.5 h-2.5 rounded-full bg-[var(--color-primary-500)]" />}
                       </div>
-                      <input 
-                        type="radio" 
-                        name="tone" 
-                        className="hidden" 
-                        checked={tone === t} 
-                        onChange={() => setTone(t)} 
+                      <input
+                        type="radio"
+                        name="tone"
+                        className="hidden"
+                        checked={tone === t}
+                        onChange={() => setTone(t)}
                       />
                       <span className={`text-sm font-medium ${tone === t ? "text-[var(--color-text-primary)]" : "text-[var(--color-text-secondary)]"}`}>{t}</span>
                     </label>
@@ -117,11 +164,23 @@ export default function EssayCopilot() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm text-[var(--color-text-secondary)] mb-1">What tech project are you most proud of?</label>
-                  <input type="text" className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-lg px-4 py-2 text-[var(--color-text-primary)] focus:border-[var(--color-primary-500)] outline-none" placeholder="e.g. Built a website for local animal shelter" />
+                  <input
+                    type="text"
+                    className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-lg px-4 py-2 text-[var(--color-text-primary)] focus:border-[var(--color-primary-500)] outline-none"
+                    placeholder="e.g. Built a website for local animal shelter"
+                    value={techProject}
+                    onChange={(e) => setTechProject(e.target.value)}
+                  />
                 </div>
                 <div>
                   <label className="block text-sm text-[var(--color-text-secondary)] mb-1">What social issue matters most to you?</label>
-                  <input type="text" className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-lg px-4 py-2 text-[var(--color-text-primary)] focus:border-[var(--color-primary-500)] outline-none" placeholder="e.g. Digital literacy in underserved communities" />
+                  <input
+                    type="text"
+                    className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-lg px-4 py-2 text-[var(--color-text-primary)] focus:border-[var(--color-primary-500)] outline-none"
+                    placeholder="e.g. Digital literacy in underserved communities"
+                    value={socialIssue}
+                    onChange={(e) => setSocialIssue(e.target.value)}
+                  />
                 </div>
               </div>
               <div className="mt-4 text-xs text-[var(--color-text-secondary)] flex items-center gap-1">
@@ -130,18 +189,35 @@ export default function EssayCopilot() {
               </div>
             </div>
 
+            {error && (
+              <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">
+                ⚠️ {error}
+              </div>
+            )}
+
             <div className="flex items-center justify-end gap-4 pt-4">
-              <button 
+              <button
                 onClick={handleSkip}
-                className="px-6 py-3 rounded-xl text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] font-medium transition"
+                disabled={isGenerating}
+                className="px-6 py-3 rounded-xl text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] font-medium transition disabled:opacity-50"
               >
                 Skip & Write Myself
               </button>
-              <button 
+              <button
                 onClick={handleGenerate}
-                className="px-8 py-3 rounded-xl bg-[var(--color-primary-600)] hover:bg-[var(--color-primary-500)] text-white font-bold shadow-lg shadow-[var(--color-primary-500)]/20 transition flex items-center gap-2"
+                disabled={isGenerating}
+                className="px-8 py-3 rounded-xl bg-[var(--color-primary-600)] hover:bg-[var(--color-primary-500)] text-white font-bold shadow-lg shadow-[var(--color-primary-500)]/20 transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Generate Draft with AI <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                {isGenerating ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    Generate Draft with AI <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                  </>
+                )}
               </button>
             </div>
           </div>
@@ -212,7 +288,7 @@ export default function EssayCopilot() {
 
               {/* Editor Area (Center) */}
               <div className="flex-1 flex flex-col relative">
-                <textarea 
+                <textarea
                   className="flex-1 w-full bg-transparent p-6 resize-none outline-none text-[var(--color-text-primary)] leading-relaxed font-serif text-lg"
                   placeholder="Start writing your essay here..."
                   value={essayContent}
@@ -234,7 +310,7 @@ export default function EssayCopilot() {
                 <h3 className="text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider mb-4 flex items-center gap-2">
                   <span className="material-symbols-outlined text-sm">lightbulb</span> AI Suggestions
                 </h3>
-                
+
                 <div className="space-y-4">
                   <div className="p-3 rounded-xl bg-[var(--color-bg-primary)] border border-[var(--color-border)]">
                     <div className="flex items-start gap-2 mb-2">
