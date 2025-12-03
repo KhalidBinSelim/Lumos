@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import DashboardLayout from "./DashboardLayout";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function EssayCopilot() {
+  const navigate = useNavigate();
   const [step, setStep] = useState<1 | 2>(1);
   const [tone, setTone] = useState("Conversational & Personal");
   const [essayContent, setEssayContent] = useState("");
@@ -16,18 +17,7 @@ export default function EssayCopilot() {
   };
 
   const handleGenerate = () => {
-    // Mock generation
-    setEssayContent(`Growing up as a first-generation college student, I've witnessed firsthand how technology can bridge gaps in education and opportunity. My journey began not with a sleek laptop, but with a shared community center computer where I wrote my first line of code. That moment didn't just teach me syntax; it taught me possibility.
-
-In my community, access to information was a luxury. I saw brilliant minds stifled simply because they lacked the tools to express their potential. This observation sparked my passion for "Tech for All," a student organization I founded in my junior year of high school. We started small, refurbishing donated computers for local families, but the vision was always bigger.
-
-Leadership, to me, isn't about standing in front of a crowd; it's about empowering others to stand beside you. As president of Tech for All, I organized weekend coding workshops for over 50 middle school students. One specific Saturday stands out. A young girl named Maya, who had never touched a keyboard before, created a simple website about her love for gardening. The pride in her eyes was a reflection of the power of digital literacy.
-
-I plan to use technology to scale this impact. My goal is to develop an open-source platform that connects under-resourced schools with tech mentors and hardware donations. By leveraging cloud computing and mobile-first design, we can democratize access to computer science education, ensuring that the next generation of innovators reflects the diversity of our world.
-
-This scholarship would not just support my education; it would invest in a future where technology serves as a ladder for social mobility, rather than a barrier.`);
-    setWordCount(245); // Mock count
-    setStep(2);
+    navigate('/essay-copilot2');
   };
 
   const handleSkip = () => {

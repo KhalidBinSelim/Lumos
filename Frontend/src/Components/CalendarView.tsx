@@ -52,7 +52,7 @@ export default function CalendarView() {
         
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Deadlines & Calendar</h1>
+          <h2 className="text-2xl font-bold text-[var(--color-text-primary)]">Deadlines & Calendar</h2>
           <p className="text-[var(--color-text-secondary)]">Stay on top of your scholarship applications</p>
         </div>
 

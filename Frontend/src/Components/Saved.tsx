@@ -46,7 +46,7 @@ export default function Saved() {
       <div className="relative z-10 max-w-7xl mx-auto p-4 sm:p-6 space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Saved Scholarships</h1>
+          <h2 className="text-2xl font-bold text-[var(--color-text-primary)]">Saved Scholarships</h2>
           <p className="text-[var(--color-text-secondary)]">Manage your saved opportunities</p>
         </div>
 
