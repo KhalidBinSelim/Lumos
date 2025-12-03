@@ -24,10 +24,10 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/home" element={<Home />} />
-          <Route path="/details" element={<ScholarshipDetails />} />
+          <Route path="/details/:id" element={<ScholarshipDetails />} />
           <Route path="/phome" element={<PrimaryHome />} />
           <Route path="/discovery" element={<Discovery />} />
-          <Route path="/applications" element={<MyApplications />} />
+          <Route path="/applications" element={<Application />} />
           <Route path="/application" element={<Application />} />
           <Route path="/essay-copilot" element={<EssayCopilot />} />
           <Route path="/essay-copilot2" element={<EssayCopilot2 />} />

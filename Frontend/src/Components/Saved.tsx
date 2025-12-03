@@ -129,7 +129,8 @@ export default function Saved() {
 
                   <div className="flex flex-row md:flex-col justify-end gap-3 min-w-[160px]">
                     <Link
-                      to="/details"
+                      to={`/details/${scholarship.id}`}
+                      onClick={() => localStorage.setItem('scholarshipId', String(scholarship.id))}
                       className="flex-1 px-4 py-2 rounded-xl bg-[var(--color-bg-primary)] hover:bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] text-sm font-medium transition text-center flex items-center justify-center border border-[var(--color-border)]"
                     >
                       View Details

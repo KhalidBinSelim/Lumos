@@ -64,15 +64,7 @@ class ScholarshipRepository {
       query.$text = { $search: filters.search };
     }
 
-    // Amount filter
-    if (filters.minAmount) {
-      query.amount = { ...query.amount, $gte: parseInt(filters.minAmount) };
-    }
-    if (filters.maxAmount) {
-      query.amount = { ...query.amount, $lte: parseInt(filters.maxAmount) };
-    }
-    
-    // Amount ranges (from frontend)
+    // Amount ranges (from frontend) - takes priority over min/max
     if (filters.amountRanges?.length > 0) {
       const amountConditions = [];
       filters.amountRanges.forEach(range => {
@@ -92,7 +84,18 @@ class ScholarshipRepository {
         }
       });
       if (amountConditions.length > 0) {
-        query.$or = amountConditions;
+        query.$or = (query.$or || []).concat(amountConditions);
+      }
+    } else {
+      // Amount filter (min/max) - only if no ranges specified
+      if (filters.minAmount || filters.maxAmount) {
+        query.amount = {};
+        if (filters.minAmount) {
+          query.amount.$gte = parseInt(filters.minAmount);
+        }
+        if (filters.maxAmount) {
+          query.amount.$lte = parseInt(filters.maxAmount);
+        }
       }
     }
 

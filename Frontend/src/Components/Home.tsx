@@ -1,11 +1,115 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
+import { scholarshipsApi } from "../api/scholarships";
+import type { Scholarship } from "../api/scholarships";
+
+interface TopMatchScholarship {
+  id: string;
+  title: string;
+  amount: string;
+  date: string;
+  match: string;
+  color: string;
+}
 
 export default function Home() {
   const user = localStorage.getItem("user");
   const userObject = JSON.parse(user || "{}");
-  const [showWelcome, setShowWelcome] = useState(true);
+
+  // Check if welcome was previously dismissed
+  const wasDismissed = localStorage.getItem("welcomeDismissed") === "true";
+  const [showWelcome, setShowWelcome] = useState(!wasDismissed);
+
+  const [topMatches, setTopMatches] = useState<TopMatchScholarship[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Auto-hide welcome message after 5 seconds
+  useEffect(() => {
+    if (showWelcome && !wasDismissed) {
+      const timer = setTimeout(() => {
+        setShowWelcome(false);
+        localStorage.setItem("welcomeDismissed", "true");
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showWelcome, wasDismissed]);
+
+  // Handle manual dismissal
+  const handleDismissWelcome = () => {
+    setShowWelcome(false);
+    localStorage.setItem("welcomeDismissed", "true");
+  };
+
+  useEffect(() => {
+    const fetchTopMatches = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Use recommended if user is authenticated, otherwise use featured
+        const token = localStorage.getItem("token");
+        let response;
+
+        if (token && userObject?.id) {
+          // Get recommended scholarships (top matches based on user profile)
+          response = await scholarshipsApi.getRecommendedScholarships(2);
+        } else {
+          // Get featured scholarships
+          response = await scholarshipsApi.getFeaturedScholarships(2);
+        }
+
+        // Transform API response to match component format
+        const transformed: TopMatchScholarship[] = response.data.map((sch: Scholarship) => {
+          const matchScore = sch.match || sch.matchScore || 0;
+
+          // Determine color based on match score
+          let color = "from-[var(--color-primary-400)] to-[var(--color-primary-500)]";
+          if (matchScore >= 90) {
+            color = "from-green-500 to-emerald-400";
+          } else if (matchScore >= 80) {
+            color = "from-[var(--color-primary-400)] to-[var(--color-primary-500)]";
+          } else {
+            color = "from-pink-500 to-rose-400";
+          }
+
+          // Format amount
+          const amountStr = sch.amountDisplay || `$${sch.amount.toLocaleString()}`;
+
+          // Format date
+          const deadlineDate = new Date(sch.deadline);
+          const dateStr = deadlineDate.toLocaleDateString(undefined, {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+          });
+
+          return {
+            id: sch._id,
+            title: sch.title,
+            amount: amountStr,
+            date: dateStr,
+            match: `${matchScore}%`,
+            color: color,
+          };
+        });
+
+        setTopMatches(transformed);
+      } catch (err: any) {
+        console.error("Error fetching top matches:", err);
+        setError(err.message || "Failed to load top matches");
+        // Fallback to empty array or show error state
+        setTopMatches([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTopMatches();
+  }, [userObject?.id]);
 
   return (
     <div className="flex flex-col h-screen w-screen bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] overflow-hidden transition-colors duration-300">
@@ -35,7 +139,7 @@ export default function Home() {
                     </p>
                   </div>
                   <button
-                    onClick={() => setShowWelcome(false)}
+                    onClick={handleDismissWelcome}
                     className="px-4 py-2.5 rounded-full bg-gradient-to-r from-[var(--color-primary-500)] to-[var(--color-primary-600)] text-white text-sm font-semibold hover:scale-[1.03] hover:shadow-[0_0_20px_-5px_var(--color-primary-500)/60] transition"
                   >
                     ✕ Dismiss
@@ -98,6 +202,7 @@ export default function Home() {
                     detail: "Essay draft at 60% • Missing: LOR",
                     btn: "Continue Application →",
                     color: "from-[var(--color-primary-500)] to-[var(--color-primary-600)]",
+                    link: "/essay-copilot2",
                   },
                   {
                     title: "Johnson Grant - Incomplete Profile",
@@ -114,11 +219,20 @@ export default function Home() {
                       <p className="font-semibold text-[var(--color-text-primary)]">{action.title}</p>
                       <p className="text-[var(--color-text-secondary)] text-sm">{action.detail}</p>
                     </div>
-                    <button
-                      className={`mt-3 sm:mt-0 px-5 py-2 rounded-full text-white text-sm font-medium bg-gradient-to-r ${action.color} hover:scale-[1.03] transition`}
-                    >
-                      {action.btn}
-                    </button>
+                    {action.link ? (
+                      <Link
+                        to={action.link}
+                        className={`mt-3 sm:mt-0 px-5 py-2 rounded-full text-white text-sm font-medium bg-gradient-to-r ${action.color} hover:scale-[1.03] transition text-center whitespace-nowrap`}
+                      >
+                        {action.btn}
+                      </Link>
+                    ) : (
+                      <button
+                        className={`mt-3 sm:mt-0 px-5 py-2 rounded-full text-white text-sm font-medium bg-gradient-to-r ${action.color} hover:scale-[1.03] transition`}
+                      >
+                        {action.btn}
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>
@@ -130,63 +244,85 @@ export default function Home() {
                 <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">
                   🔥 Top Matches For You
                 </h2>
-                <a
-                  href="#"
+                <Link
+                  to="/discovery"
                   className="text-[var(--color-primary-500)] hover:text-[var(--color-primary-400)] text-sm"
                 >
                   View All →
-                </a>
+                </Link>
               </div>
-              <div className="grid gap-6 md:grid-cols-2">
-                {[
-                  {
-                    title: "Tech Leaders Scholarship",
-                    amount: "$5,000",
-                    date: "Feb 15, 2024",
-                    match: "89%",
-                    color: "from-[var(--color-primary-400)] to-[var(--color-primary-500)]",
-                  },
-                  {
-                    title: "Women in STEM Award",
-                    amount: "$3,000",
-                    date: "Mar 1, 2024",
-                    match: "82%",
-                    color: "from-pink-500 to-rose-400",
-                  },
-                ].map((sch) => (
-                  <div
-                    key={sch.title}
-                    className="rounded-2xl bg-[var(--color-bg-secondary)]/60 border border-[var(--color-border)] hover:border-[var(--color-primary-500)]/40 p-6 transition shadow-inner"
+
+              {loading ? (
+                <div className="grid gap-6 md:grid-cols-2">
+                  {[1, 2].map((i) => (
+                    <div
+                      key={i}
+                      className="rounded-2xl bg-[var(--color-bg-secondary)]/60 border border-[var(--color-border)] p-6 animate-pulse"
+                    >
+                      <div className="h-6 bg-[var(--color-bg-primary)] rounded w-3/4 mb-4"></div>
+                      <div className="h-4 bg-[var(--color-bg-primary)] rounded w-1/2 mb-3"></div>
+                      <div className="h-6 bg-[var(--color-bg-primary)] rounded w-24"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : error ? (
+                <div className="text-center py-8 text-[var(--color-text-secondary)]">
+                  <p className="mb-4">⚠️ {error}</p>
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="px-4 py-2 rounded-lg bg-[var(--color-primary-500)] text-white text-sm hover:bg-[var(--color-primary-600)] transition"
                   >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-semibold text-[var(--color-text-primary)]">
-                          {sch.title}
-                        </h3>
-                        <p className="text-sm text-[var(--color-text-secondary)]">
-                          💰 {sch.amount} • 📅 Due: {sch.date}
-                        </p>
-                        <div
-                          className={`mt-3 inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${sch.color} text-white`}
-                        >
-                          ⭐ {sch.match} Match
+                    Retry
+                  </button>
+                </div>
+              ) : topMatches.length === 0 ? (
+                <div className="text-center py-8 text-[var(--color-text-secondary)]">
+                  <p>No top matches found. Check back later!</p>
+                </div>
+              ) : (
+                <div className="grid gap-6 md:grid-cols-2">
+                  {topMatches.map((sch) => (
+                    <div
+                      key={sch.id}
+                      className="rounded-2xl bg-[var(--color-bg-secondary)]/60 border border-[var(--color-border)] hover:border-[var(--color-primary-500)]/40 p-6 transition shadow-inner"
+                    >
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="font-semibold text-[var(--color-text-primary)]">
+                            {sch.title}
+                          </h3>
+                          <p className="text-sm text-[var(--color-text-secondary)]">
+                            💰 {sch.amount} • 📅 Due: {sch.date}
+                          </p>
+                          <div
+                            className={`mt-3 inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${sch.color} text-white`}
+                          >
+                            ⭐ {sch.match} Match
+                          </div>
                         </div>
+                        <button className="material-symbols-outlined text-pink-500">
+                          favorite
+                        </button>
                       </div>
-                      <button className="material-symbols-outlined text-pink-500">
-                        favorite
-                      </button>
+                      <div className="flex flex-wrap gap-3 mt-5">
+                        <Link
+                          to={`/details/${sch.id}`}
+                          onClick={() => localStorage.setItem('scholarshipId', sch.id)}
+                          className="px-4 py-2 rounded-full bg-[var(--color-bg-primary)] hover:bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] text-sm border border-[var(--color-border)]"
+                        >
+                          View Details
+                        </Link>
+                        <Link
+                          to="/essay-copilot"
+                          className="px-4 py-2 rounded-full bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-white text-sm font-medium text-center"
+                        >
+                          Apply Now
+                        </Link>
+                      </div>
                     </div>
-                    <div className="flex flex-wrap gap-3 mt-5">
-                      <button className="px-4 py-2 rounded-full bg-[var(--color-bg-primary)] hover:bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] text-sm border border-[var(--color-border)]">
-                        View Details
-                      </button>
-                      <button className="px-4 py-2 rounded-full bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-white text-sm">
-                        Apply Now
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </section>
 
             {/* Activity Summary */}
