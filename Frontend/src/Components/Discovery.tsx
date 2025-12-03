@@ -369,8 +369,8 @@ export default function Discovery() {
                                 </div>
                             )}
                         </div>
-                        <div className="mt-3 flex flex-wrap gap-2 text-sm text-[var(--color-text-secondary)]">
-                            <span>Try:</span>
+                        <div className="mt-7 flex flex-wrap gap-2 text-sm text-[var(--color-text-secondary)]">
+                            <div>Try:</div>
                             {["Computer Science", "First-Gen", "$5000", "No Essay Required"].map((term) => (
                                 <button
                                     key={term}
@@ -519,7 +519,7 @@ export default function Discovery() {
                                             </div>
                                         </div>
 
-                                        <div className="flex flex-row md:flex-col justify-end gap-3 min-w-[160px]">
+                                        <div className="flex flex-row md:flex-col justify-end gap-1 margin-top-3 text-white min-w-[160px] max-h-[60px]">
                                             <Link
                                                 to={`/details/${scholarship.id}`}
                                                 onClick={() => localStorage.setItem('scholarshipId', String(scholarship.id))}
@@ -530,7 +530,7 @@ export default function Discovery() {
                                             <Link
                                                 to="/essay-copilot2"
                                                 onClick={() => localStorage.setItem('scholarshipId', String(scholarship.id))}
-                                                className="flex-1 px-4 py-2 rounded-xl bg-[var(--color-primary-600)] hover:bg-[var(--color-primary-500)] text-white text-sm font-bold transition shadow-lg shadow-[var(--color-primary-500)]/20 text-center"
+                                                className="flex-1 px-4 py-2 rounded-xl bg-[var(--color-primary-800)] hover:bg-[var(--color-primary-200)] text-white text-sm font-bold transition shadow-lg shadow-[var(--color-primary-500)]/20 text-center"
                                             >
                                                 Start Application
                                             </Link>
@@ -580,12 +580,12 @@ export default function Discovery() {
                     )}
 
                     {/* Not Finding What You Need */}
-                    <div className="mt-12 rounded-2xl border border-[var(--color-border)] bg-gradient-to-br from-[var(--color-bg-secondary)] via-[var(--color-bg-secondary)] to-[var(--color-primary-500)]/10 p-8">
+                    <div className="mt-12 rounded-2xl border border-[var(--color-border)] bg-gradient-to-br from-[var(--color-bg-secondary)] via-[var(--color-bg-secondary)] to-[var(--color-primary-500)]/10 p-8 align-center text-center">
                         <div className="flex items-start gap-4">
                             <div className="p-3 bg-yellow-500/10 rounded-xl">
-                                <span className="text-2xl">💡</span>
+                                {/* <div className="text-2xl">💡</div> */}
                             </div>
-                            <div>
+                            <div className="align-center text-center ml-64 mr-20">
                                 <h3 className="text-lg font-bold text-[var(--color-text-primary)] mb-2">NOT FINDING WHAT YOU NEED?</h3>
                                 <ul className="space-y-2 text-[var(--color-text-secondary)]">
                                     <li className="flex items-center gap-2">

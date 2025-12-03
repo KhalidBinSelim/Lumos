@@ -201,7 +201,7 @@ export default function Home() {
                     title: "Smith Scholarship - Due in 3 days",
                     detail: "Essay draft at 60% • Missing: LOR",
                     btn: "Continue Application →",
-                    color: "from-[var(--color-primary-500)] to-[var(--color-primary-600)]",
+                    color: "from-[var(--color-primary-100)] to-[var(--color-primary-700)]",
                     link: "/essay-copilot2",
                   },
                   {
@@ -314,7 +314,7 @@ export default function Home() {
                         </Link>
                         <Link
                           to="/essay-copilot"
-                          className="px-4 py-2 rounded-full bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-white text-sm font-medium text-center"
+                          className="px-4 py-2 rounded-full border border-[var(--color-border)] bg-[var(--color-primary-200)] hover:bg-[var(--color-primary-800)] text-white text-sm font-medium text-center"
                         >
                           Apply Now
                         </Link>
