@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import DashboardLayout from "./DashboardLayout";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { scholarshipsApi, type Scholarship } from "../api/scholarships";
 
 export default function ScholarshipDetails(): React.ReactElement {
@@ -21,10 +21,14 @@ export default function ScholarshipDetails(): React.ReactElement {
         oneDay: true,
     });
 
+    // Get scholarship ID from URL params
+    const { id } = useParams<{ id: string }>();
+
     // Fetch scholarship data on mount
     useEffect(() => {
         const fetchScholarship = async () => {
-            const scholarshipId = localStorage.getItem("scholarship_id");
+            // Get ID from URL params first, fallback to localStorage for backward compatibility
+            const scholarshipId = id || localStorage.getItem("scholarshipId") || localStorage.getItem("scholarship_id");
             console.log("Scholarship ID:", scholarshipId);
             if (!scholarshipId) {
                 setError("No scholarship selected. Please go back and select a scholarship.");
@@ -52,7 +56,7 @@ export default function ScholarshipDetails(): React.ReactElement {
         };
 
         fetchScholarship();
-    }, []);
+    }, [id]);
 
     // Deadline computation
     const deadlineInfo = useMemo(() => {

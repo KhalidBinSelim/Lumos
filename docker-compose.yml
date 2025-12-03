@@ -1,0 +1,10 @@
+services:
+  scholarship-agent:
+    build: .
+    container_name: scholarship-essay-agent
+    ports:
+      - "8000:8000"
+    environment:
+      - GOOGLE_API_KEY=AIzaSyBlYBzV-QW3a28736xZeA2_EpSyetAxmA8
+      - mongo_url=mongodb+srv://rayhanulamint2_db_user:typrOKP8m2D4JI5D@cluster0.stnxpls.mongodb.net/?appName=Cluster0
+    restart: unless-stopped

@@ -46,7 +46,7 @@ export default function Saved() {
       <div className="relative z-10 max-w-7xl mx-auto p-4 sm:p-6 space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Saved Scholarships</h1>
+          <h2 className="text-2xl font-bold text-[var(--color-text-primary)]">Saved Scholarships</h2>
           <p className="text-[var(--color-text-secondary)]">Manage your saved opportunities</p>
         </div>
 
@@ -129,7 +129,8 @@ export default function Saved() {
 
                   <div className="flex flex-row md:flex-col justify-end gap-3 min-w-[160px]">
                     <Link
-                      to="/details"
+                      to={`/details/${scholarship.id}`}
+                      onClick={() => localStorage.setItem('scholarshipId', String(scholarship.id))}
                       className="flex-1 px-4 py-2 rounded-xl bg-[var(--color-bg-primary)] hover:bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] text-sm font-medium transition text-center flex items-center justify-center border border-[var(--color-border)]"
                     >
                       View Details

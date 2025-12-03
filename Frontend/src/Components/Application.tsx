@@ -212,7 +212,7 @@ export default function ApplicationPage() {
           <div className="relative z-10 max-w-6xl mx-auto">
               <div className="mb-8 flex items-center justify-between">
                   <div>
-                      <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">My Applications</h1>
+                      <h2 className="text-2xl font-bold">My Applications</h2>
                       <p className="text-[var(--color-text-secondary)]">Track and manage your scholarship applications</p>
                   </div>
                   <button className="bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] text-white px-4 py-2 rounded-lg text-sm font-medium shadow-lg shadow-[var(--color-primary-500)]/20 flex items-center gap-2 transition-all hover:-translate-y-0.5">

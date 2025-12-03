@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import DashboardLayout from "./DashboardLayout";
 
 // Mock Data
@@ -11,7 +12,7 @@ const DEADLINES = [
 
 export default function Calendar() {
   const [view, setView] = useState<"month" | "week" | "list">("month");
-  
+
   const [currentDate, setCurrentDate] = useState(new Date(2024, 1, 1)); // Feb 2024 for mock
 
   const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
@@ -49,7 +50,7 @@ export default function Calendar() {
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto p-4 sm:p-6 space-y-6">
-        
+
         {/* Header */}
         <div>
           <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Deadlines & Calendar</h1>
@@ -136,7 +137,7 @@ export default function Calendar() {
                 </div>
               ))}
             </div>
-            
+
             {/* Calendar Grid */}
             <div className="grid grid-cols-7 auto-rows-fr">
               {getDaysArray().map((day, i) => {
@@ -159,7 +160,7 @@ export default function Calendar() {
                 );
               })}
             </div>
-            
+
             <div className="p-4 bg-[var(--color-bg-secondary)]/80 border-t border-[var(--color-border)] flex items-center gap-6 text-xs text-[var(--color-text-secondary)]">
               <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-rose-500" /> Urgent</span>
               <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-yellow-500" /> Soon</span>
@@ -178,19 +179,25 @@ export default function Calendar() {
               {DEADLINES.filter(d => d.urgent).map(d => (
                 <div key={d.id} className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-xl p-5 hover:border-rose-500/30 transition group">
                   <div className="flex justify-between items-start mb-2">
-                    <div className="text-rose-400 font-bold text-sm">Due: {new Date(d.date).toLocaleDateString(undefined, {month:'short', day:'numeric'})}</div>
+                    <div className="text-rose-400 font-bold text-sm">Due: {new Date(d.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</div>
                     <div className="text-xs text-[var(--color-text-secondary)]">3 days left</div>
                   </div>
                   <h4 className="font-bold text-[var(--color-text-primary)] text-lg mb-1 group-hover:text-rose-400 transition">{d.title}</h4>
                   <div className="text-[var(--color-text-secondary)] text-sm mb-4">💰 ${d.amount.toLocaleString()}</div>
-                  
+
                   <div className="flex items-center gap-2 mb-4 text-xs">
                     <span className="px-2 py-0.5 rounded bg-[var(--color-bg-primary)] text-[var(--color-text-secondary)]">Status: {d.status}</span>
                     <span className="text-rose-400">Missing: Essay</span>
                   </div>
 
                   <div className="flex gap-2">
-                    <button className="flex-1 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-sm font-bold transition">Continue</button>
+                    <Link
+                      to={`/details/${d.id}`}
+                      onClick={() => localStorage.setItem('scholarshipId', String(d.id))}
+                      className="flex-1 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-sm font-bold transition text-center"
+                    >
+                      Continue
+                    </Link>
                     <button className="px-3 py-2 rounded-lg bg-[var(--color-bg-primary)] hover:bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] transition">
                       <span className="material-symbols-outlined text-sm">notifications</span>
                     </button>
@@ -208,18 +215,24 @@ export default function Calendar() {
               {DEADLINES.filter(d => !d.urgent && new Date(d.date).getDate() <= 22).map(d => (
                 <div key={d.id} className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-xl p-5 hover:border-yellow-500/30 transition group">
                   <div className="flex justify-between items-start mb-2">
-                    <div className="text-yellow-400 font-bold text-sm">Due: {new Date(d.date).toLocaleDateString(undefined, {month:'short', day:'numeric'})}</div>
+                    <div className="text-yellow-400 font-bold text-sm">Due: {new Date(d.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</div>
                     <div className="text-xs text-[var(--color-text-secondary)]">10-17 days left</div>
                   </div>
                   <h4 className="font-bold text-[var(--color-text-primary)] text-lg mb-1 group-hover:text-yellow-400 transition">{d.title}</h4>
                   <div className="text-[var(--color-text-secondary)] text-sm mb-4">💰 ${d.amount.toLocaleString()}</div>
-                  
+
                   <div className="flex items-center gap-2 mb-4 text-xs">
-                      <span className="px-2 py-0.5 rounded bg-[var(--color-bg-primary)] text-[var(--color-text-secondary)]">Status: {d.status}</span>
+                    <span className="px-2 py-0.5 rounded bg-[var(--color-bg-primary)] text-[var(--color-text-secondary)]">Status: {d.status}</span>
                   </div>
 
                   <div className="flex gap-2">
-                    <button className="flex-1 py-2 rounded-lg bg-[var(--color-bg-primary)] hover:bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] text-sm font-medium transition">View Details</button>
+                    <Link
+                      to={`/details/${d.id}`}
+                      onClick={() => localStorage.setItem('scholarshipId', String(d.id))}
+                      className="flex-1 py-2 rounded-lg bg-[var(--color-bg-primary)] hover:bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] text-sm font-medium transition text-center"
+                    >
+                      View Details
+                    </Link>
                   </div>
                 </div>
               ))}

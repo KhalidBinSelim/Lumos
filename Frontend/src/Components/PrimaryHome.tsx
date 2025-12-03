@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import DashboardLayout from "./DashboardLayout";
 import OnboardingStep1 from "./OnboardingStep1";
 import OnboardingStep2 from "./OnboardingStep2";
@@ -17,7 +18,9 @@ export default function Welcome() {
     useState(false);
   const [showOnboardingStep5Modal, setShowOnboardingStep5Modal] =
     useState(false);
-  
+
+  const navigate = useNavigate();
+
   const user = localStorage.getItem("user");
   const userObject = JSON.parse(user || "{}");
   console.log(userObject.firstName, userObject.email);
@@ -64,7 +67,10 @@ export default function Welcome() {
             >
               Start Building Profile →
             </button>
-            <button className="text-[var(--color-text-secondary)] hover:text-[var(--color-primary-500)] text-sm mt-2 sm:mt-0 transition">
+            <button
+              onClick={() => navigate("/home")}
+              className="text-[var(--color-text-secondary)] hover:text-[var(--color-primary-500)] text-sm mt-2 sm:mt-0 transition"
+            >
               Skip for Now
             </button>
           </div>

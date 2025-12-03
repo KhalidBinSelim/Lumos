@@ -11,6 +11,24 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
     marketing: true,
   });
 
+  const [userProfile, setUserProfile] = useState({
+    name: "Khalid Bin Selim",
+    email: "khalid@example.com"
+  });
+
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [tempProfile, setTempProfile] = useState(userProfile);
+
+  const handleEditClick = () => {
+    setTempProfile(userProfile);
+    setIsEditingProfile(true);
+  };
+
+  const handleSaveProfile = () => {
+    setUserProfile(tempProfile);
+    setIsEditingProfile(false);
+  };
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="relative w-full max-w-2xl max-h-[85vh] flex flex-col bg-[var(--color-bg-secondary)] rounded-2xl border border-[var(--color-border)] shadow-2xl">
@@ -37,13 +55,16 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
             <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4 text-center">Account</h3>
             <div className="flex items-center gap-4 mb-6">
               <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[var(--color-primary-500)] to-[var(--color-primary-600)] flex items-center justify-center text-2xl font-bold text-white">
-                K
+                {userProfile.name.charAt(0)}
               </div>
               <div>
-                <div className="font-medium text-[var(--color-text-primary)]">Khalid Bin Selim</div>
-                <div className="text-sm text-[var(--color-text-secondary)]">khalid@example.com</div>
+                <div className="font-medium text-[var(--color-text-primary)]">{userProfile.name}</div>
+                <div className="text-sm text-[var(--color-text-secondary)]">{userProfile.email}</div>
               </div>
-              <button className="ml-auto px-4 py-2 rounded-lg border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-primary)] hover:text-[var(--color-text-primary)] transition text-sm">
+              <button 
+                onClick={handleEditClick}
+                className="ml-auto px-4 py-2 rounded-lg border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-primary)] hover:text-[var(--color-text-primary)] transition text-sm"
+              >
                 Edit Profile
               </button>
             </div>
@@ -142,6 +163,51 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
           </button>
         </div>
       </div>
+
+      {/* Edit Profile Modal */}
+      {isEditingProfile && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-md bg-[var(--color-bg-secondary)] rounded-2xl border border-[var(--color-border)] shadow-2xl p-6 space-y-6">
+            <h3 className="text-xl font-bold text-[var(--color-text-primary)]">Edit Profile</h3>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Full Name</label>
+                <input 
+                  type="text" 
+                  value={tempProfile.name}
+                  onChange={(e) => setTempProfile({...tempProfile, name: e.target.value})}
+                  className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-lg px-4 py-2 text-[var(--color-text-primary)] focus:border-[var(--color-primary-500)] outline-none transition"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Email Address</label>
+                <input 
+                  type="email" 
+                  value={tempProfile.email}
+                  onChange={(e) => setTempProfile({...tempProfile, email: e.target.value})}
+                  className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-lg px-4 py-2 text-[var(--color-text-primary)] focus:border-[var(--color-primary-500)] outline-none transition"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-2">
+              <button 
+                onClick={() => setIsEditingProfile(false)}
+                className="px-4 py-2 rounded-lg text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-primary)] hover:text-[var(--color-text-primary)] transition"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleSaveProfile}
+                className="px-6 py-2 rounded-lg bg-[var(--color-primary-600)] hover:bg-[var(--color-primary-500)] text-white font-medium shadow-lg shadow-[var(--color-primary-500)]/20 transition"
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
